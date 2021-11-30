@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AssemblyName>SquidEyes.Trading</AssemblyName>
+		<RootNamespace>SquidEyes.Trading</RootNamespace>
+		<Authors>Louis S. Berman</Authors>
+		<Company>SquidEyes, LLC</Company>
+		<Product>Trading</Product>
+		<Description>A set of shared models, extensions and helpers.</Description>
+		<Copyright>Copyright 2021 by by SquidEyes, LLC</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Ardalis.GuardClauses" Version="3.3.0" />
+		<PackageReference Include="FluentValidation" Version="10.3.4" />
+		<PackageReference Include="SquidEyes.Basics" Version="1.0.11" />
+	</ItemGroup>
+
+</Project>
