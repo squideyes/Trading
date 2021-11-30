@@ -9,9 +9,17 @@
 		<Authors>Louis S. Berman</Authors>
 		<Company>SquidEyes, LLC</Company>
 		<Product>Trading</Product>
-		<Description>A set of shared models, extensions and helpers.</Description>
+		<Description>A set of shared trading models, extensions and helpers.</Description>
 		<Copyright>Copyright 2021 by by SquidEyes, LLC</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>forex;trading;c#</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReleaseNotes />
+		<PackageProjectUrl>https://github.com/squideyes/Trading</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/squideyes/Trading</RepositoryUrl>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>		
+		
 	</PropertyGroup>
 
 	<ItemGroup>
