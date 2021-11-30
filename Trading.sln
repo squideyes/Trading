@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{535BD978-0
 		.editorconfig = .editorconfig
 		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE.md = LICENSE.md
+		.github\workflows\nuget.yml = .github\workflows\nuget.yml
 		README.md = README.md
 		Trading.sln.headertext = Trading.sln.headertext
 	EndProjectSection
