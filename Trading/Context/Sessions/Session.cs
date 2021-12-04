@@ -33,21 +33,45 @@ namespace SquidEyes.Trading.Context
         public TickOn MinTickOn { get; }
         public TickOn MaxTickOn { get; }
 
+        public bool InSession(TickOn tickOn) => tickOn != default
+            && tickOn >= MinTickOn && tickOn <= MaxTickOn;
+
+        public override string ToString() =>
+            $"{TradeDate.ToDateText()} ({Extent})";
+
         public bool Equals(Session? other)
         {
-            return other != null && Extent.Equals(other!.Extent)
-                && TradeDate.Equals(other.TradeDate);
+            if (ReferenceEquals(this, other))
+                return true;
+
+            if (other is null)
+                return false;
+
+            return Extent == other.Extent
+                && TradeDate == other.TradeDate;
         }
 
-        public override bool Equals(object? other) =>
-            Equals(other as Session);
+        public override bool Equals(object? other) => Equals(other as Session);
 
-        public override int GetHashCode() =>
-            HashCode.Combine(Extent, TradeDate, MinTickOn, MaxTickOn);
+        public override int GetHashCode() => HashCode.Combine(Extent, TradeDate);
 
-        public bool InSession(TickOn tickOn) =>
-            tickOn != default && tickOn >= MinTickOn && tickOn <= MaxTickOn;
+        public static bool operator ==(Session? a, Session? b)
+        {
+            if (Equals(a, null))
+            {
+                if (Equals(b, null))
+                    return true;
 
-        public override string ToString() => $"{TradeDate.ToDateText()} ({Extent})";
+                return false;
+            }
+            else if (Equals(b, null))
+            {
+                return false;
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Session? a, Session? b) => !(a == b);
     }
 }

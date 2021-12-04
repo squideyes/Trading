@@ -12,7 +12,6 @@ using SquidEyes.Trading.Context;
 using System;
 using Xunit;
 using static SquidEyes.Trading.Context.Extent;
-using static System.DateTimeKind;
 
 namespace SquidEyes.UnitTests.Context;
 
@@ -99,4 +98,84 @@ public class SessionTests
         new Session(extent, new DateOnly(2020, 1, 7))
             .InSession(tickOn).Should().Be(result);
     }
+
+    //////////////////////////
+
+    [Theory]
+    [InlineData(Day)]
+    [InlineData(Week)]
+    public void SessionNotEqualToNullSession(Extent extent) => new Session(
+        extent, new DateOnly(2020, 1, 6)).Equals(null).Should().BeFalse();
+
+    //////////////////////////
+
+    [Theory]
+    [InlineData(Day)]
+    [InlineData(Week)]
+    public void GetHashCodeReturnsExpectedResult(Extent extent)
+    {
+        new Session(extent, TradeDate).GetHashCode().Should()
+            .Be(new Session(extent, TradeDate).GetHashCode());
+
+        new Session(extent, TradeDate).GetHashCode().Should().NotBe(
+            new Session(extent, TradeDate.AddDays(7)).GetHashCode());
+    }
+
+    //////////////////////////
+
+    [Theory]
+    [InlineData(Day, true)]
+    [InlineData(Day, false)]
+    [InlineData(Week, true)]
+    [InlineData(Week, false)]
+    public void GenericEquals(Extent extent, bool result)
+    {
+        new Session(extent, TradeDate).Equals(result ? new Session(extent, TradeDate) 
+            : new Session(extent, TradeDate.AddDays(7))).Should().Be(result);
+    }
+
+    //////////////////////////
+
+    [Theory]
+    [InlineData(Day, true)]
+    [InlineData(Day, false)]
+    [InlineData(Week, true)]
+    [InlineData(Week, false)]
+    public void ObjectEqualsWithGoodSession(Extent extent, bool result)
+    {
+        new Session(extent, TradeDate).Equals(result ? new Session(extent, TradeDate) 
+            : new Session(extent, TradeDate.AddDays(7))).Should().Be(result);
+    }
+
+    //////////////////////////
+
+    [Fact]
+    public void ObjectEqualsWithNullSession() =>
+        new Session(Day, TradeDate).Equals((object?)null).Should().BeFalse();
+
+    //////////////////////////
+
+    [Theory]
+    [InlineData(Day, true)]
+    [InlineData(Day, false)]
+    [InlineData(Week, true)]
+    [InlineData(Week, false)]
+    public void EqualsOperator(Extent extent, bool result) =>  (new Session(
+        extent, TradeDate) == (result ? new Session(extent, TradeDate) 
+        : new Session(extent, TradeDate.AddDays(7)))).Should().Be(result);
+
+    //////////////////////////
+
+    [Theory]
+    [InlineData(Day, true)]
+    [InlineData(Day, false)]
+    [InlineData(Week, true)]
+    [InlineData(Week, false)]
+    public void NotEqualsOperator(Extent extent, bool result) => (new Session(
+        extent, TradeDate) != (result ? new Session(extent,
+        TradeDate.AddDays(7)) : new Session(extent, TradeDate))).Should().Be(result);
+
+    //////////////////////////
+
+    private static DateOnly TradeDate => new(2020, 1, 6);
 }
