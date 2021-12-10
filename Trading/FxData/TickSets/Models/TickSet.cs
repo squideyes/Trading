@@ -64,7 +64,7 @@ public class TickSet : ListBase<Tick>
         if (tick == default)
             throw new ArgumentOutOfRangeException(nameof(tick));
 
-        if(!Session.InSession(tick.TickOn))
+        if (!Session.InSession(tick.TickOn))
             throw new ArgumentOutOfRangeException(nameof(tick));
 
         if (lastTickOn.HasValue && tick.TickOn < lastTickOn)
@@ -104,6 +104,25 @@ public class TickSet : ListBase<Tick>
         sb.AppendDelimited(GetFileName(saveAs), '/');
 
         return sb.ToString();
+    }
+
+    public string GetFullPath(string basePath, SaveAs saveAs)
+    {
+        if (!basePath.IsFolderName())
+            throw new ArgumentOutOfRangeException(nameof(basePath));
+
+        if (!saveAs.IsEnumValue())
+            throw new ArgumentOutOfRangeException(nameof(saveAs));
+
+        var sb = new StringBuilder();
+
+        sb.Append(Source.ToCode());
+        sb.AppendDelimited("TICKSETS", Path.DirectorySeparatorChar);
+        sb.AppendDelimited(Pair, Path.DirectorySeparatorChar);
+        sb.AppendDelimited(Session.TradeDate.Year, Path.DirectorySeparatorChar);
+        sb.AppendDelimited(GetFileName(saveAs), Path.DirectorySeparatorChar);
+
+        return Path.Combine(basePath, sb.ToString());
     }
 
     public override string ToString() => GetFileName(SaveAs.STS);

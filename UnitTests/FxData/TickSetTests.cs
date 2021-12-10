@@ -173,6 +173,14 @@ public class TickSetTests
     ////////////////////////////
 
     [Theory]
+    [InlineData(SaveAs.CSV, @"C:\DC\TICKSETS\EURUSD\2020\DC_EURUSD_20200106_EST.csv")]
+    [InlineData(SaveAs.STS, @"C:\DC\TICKSETS\EURUSD\2020\DC_EURUSD_20200106_EST.sts")]
+    public void GoodFullPathGenerated(SaveAs saveAs, string fullPath) =>
+        GetTickSet(saveAs).GetFullPath("C:\\", saveAs).Should().Be(fullPath);
+
+    ////////////////////////////
+
+    [Theory]
     [InlineData("DC_EURUSD_20200106_EST.csv")]
     [InlineData("DC_EURUSD_20200106_EST.sts")]
     public void GoodFileNamesParsedWithoutError(string fileName)
