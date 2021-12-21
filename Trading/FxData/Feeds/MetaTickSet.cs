@@ -13,7 +13,7 @@ using System.Collections;
 
 namespace SquidEyes.Trading.FxData
 {
-    public class MetaTickSet : IEnumerable<(MetaTick MetaTick, bool IsLast)>
+    public class MetaTickSet : IEnumerable<MetaTick>
     {
         public readonly Dictionary<Pair, List<TickSet>> tickSets = new();
 
@@ -43,19 +43,16 @@ namespace SquidEyes.Trading.FxData
             this.tickSets.Add(tickSets[0].Pair, tickSets);
         }
 
-        public IEnumerator<(MetaTick MetaTick, bool IsLast)> GetEnumerator()
+        public IEnumerator<MetaTick> GetEnumerator()
         {
             if (tickSets.Count == 1)
             {
                 var pair = tickSets.Keys.First();
 
-                var count = 0;
-                var total = tickSets.Values.First().Select(t => t.Count).Sum();
-
                 foreach (var tickSet in tickSets.Values.First())
                 {
                     foreach (var tick in tickSet)
-                        yield return (new MetaTick(pair, tick), ++count == total);
+                        yield return new MetaTick(pair, tick);
                 }
             }
             else
@@ -87,8 +84,7 @@ namespace SquidEyes.Trading.FxData
                 {
                     var tuple = tuples[i];
 
-                    yield return (new MetaTick(
-                        tuple.Pair, tuple.Tick), i + 1 == tuples.Count);
+                    yield return new MetaTick(tuple.Pair, tuple.Tick);
                 }
             }
         }

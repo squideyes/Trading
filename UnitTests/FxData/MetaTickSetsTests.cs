@@ -50,7 +50,7 @@ namespace SquidEyes.UnitTests.FxData
                 metaTickSet.Add(GetTickSets(Symbol.USDJPY));
             }
 
-            //metaTickSet.Count().Should().Be(24);
+            metaTickSet.Count().Should().Be(72);
 
             foreach (var metaTick in metaTickSet)
             {
