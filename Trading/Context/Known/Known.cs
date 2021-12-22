@@ -51,15 +51,11 @@ public static class Known
                 (1, 1, Wednesday) => true,
                 (1, 1, Thursday) => true,
                 (1, 1, Friday) => true,
-                (1, 2, Monday) => true,
-                (12, 24, Friday) => true,
                 (12, 25, Monday) => true,
                 (12, 25, Tuesday) => true,
                 (12, 25, Wednesday) => true,
                 (12, 25, Thursday) => true,
                 (12, 25, Friday) => true,
-                (12, 26, Monday) => true,
-                (12, 31, Friday) => true,
                 _ => false,
             };
         }

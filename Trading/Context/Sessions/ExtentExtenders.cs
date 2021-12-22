@@ -14,6 +14,16 @@ namespace SquidEyes.Trading.Context;
 
 public static class ExtentExtenders
 {
+    public static int ToDays(this Extent extent)
+    {
+        return extent switch
+        {
+            Day => 1,
+            Week => 5,
+            _ => throw new ArgumentOutOfRangeException(nameof(extent))
+        };
+    }
+
     public static bool IsValidDayOfWeekForExtent(
         this Extent extent, DateOnly date)
     {

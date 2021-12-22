@@ -17,27 +17,67 @@ namespace SquidEyes.Trading.FxData
     {
         public readonly Dictionary<Pair, List<TickSet>> tickSets = new();
 
-        public MetaTickSet(Session session) => Session = session;
+        private DateOnly minTradeDate;
+        private DateOnly maxTradeDate;
 
+        public MetaTickSet(Source source, Session session)
+        {
+            Source = source.Validated(nameof(source), v => v.IsEnumValue());
+
+            Session = session;
+
+            minTradeDate = session.TradeDate;
+
+            maxTradeDate = session.Extent switch
+            {
+                Extent.Day => session.TradeDate,
+                Extent.Week => session.TradeDate.AddDays(4),
+                _ => throw new ArgumentOutOfRangeException(nameof(session))
+            };
+        }
+
+        public Source Source { get; }
         public Session Session { get; }
-
         public List<Pair> Pairs => tickSets.Keys.ToList();
 
         public void Add(List<TickSet> tickSets)
         {
-            if (!tickSets.HasItems(ts => ts.Any()))
+            var days = Session.Extent.ToDays();
+
+            if (!tickSets.Count.Between(1, days))
                 throw new ArgumentOutOfRangeException(nameof(tickSets));
 
-            if (tickSets.Any(ts => ts.Source != tickSets[0].Source))
+            if (tickSets.Any(ts => ts.Source != Source))
                 throw new ArgumentOutOfRangeException(nameof(tickSets));
 
-            if (tickSets.Any(ts => ts.Session != tickSets[0].Session))
+            if (tickSets.Any(ts => ts.Pair != tickSets.First().Pair))
                 throw new ArgumentOutOfRangeException(nameof(tickSets));
 
-            if (this.tickSets.Count > 0
-                && tickSets.Count != this.tickSets.First().Value.Count)
+            foreach (var tickSet in tickSets)
             {
-                throw new ArgumentOutOfRangeException(nameof(tickSets));
+                if (!tickSet.Session.TradeDate.Between(minTradeDate, maxTradeDate))
+                    throw new ArgumentOutOfRangeException(nameof(tickSets));
+            }
+
+            for (var i = 1; i < tickSets.Count; i++)
+            {
+                if (tickSets[i].Session.TradeDate <= tickSets[i - 1].Session.TradeDate)
+                    throw new ArgumentOutOfRangeException(nameof(tickSets));
+            }
+
+            if (this.tickSets.Count > 0)
+            {
+                if (tickSets.Count != this.tickSets.First().Value.Count)
+                    throw new ArgumentOutOfRangeException(nameof(tickSets));
+
+                for (var i = 0; i < tickSets.Count; i++)
+                {
+                    if (tickSets[i].Session.TradeDate != 
+                        this.tickSets.First().Value[i].Session.TradeDate)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(tickSets));
+                    }
+                }
             }
 
             this.tickSets.Add(tickSets[0].Pair, tickSets);
