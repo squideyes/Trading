@@ -7,11 +7,6 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-using FluentAssertions;
-using SquidEyes.Trading.Context;
-using SquidEyes.Trading.FxData;
-using System;
-using SquidEyes.Basics;
 using Xunit;
 
 namespace SquidEyes.UnitTests.FxData;
@@ -19,7 +14,7 @@ namespace SquidEyes.UnitTests.FxData;
 public class CandleTests
 {
     [Fact]
-    public void ConstructWithGodArgs()
+    public void ConstructorWithGoodArgs()
     {
     }
 

@@ -36,6 +36,8 @@ public struct Tick : IEquatable<Tick>
 
     public bool IsEmpty => TickOn == default;
 
+    public bool InSession(Session session) => session.InSession(TickOn);
+
     public override string ToString() => $"{TickOn},{Bid},{Ask}";
 
     public string ToCsvString(Pair pair) =>

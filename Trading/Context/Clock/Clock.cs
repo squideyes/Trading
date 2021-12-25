@@ -64,7 +64,7 @@ namespace SquidEyes.Trading.Context
 
         public static implicit operator string(Clock value) => value.ToString();
 
-        public static bool operator ==(Clock left, Clock right) => Equals(left, right);
+        public static bool operator ==(Clock left, Clock right) => left.Equals(right);
 
         public static bool operator !=(Clock left, Clock right) => !(left == right);
     }

@@ -28,7 +28,7 @@ public class PairTests
     [InlineData(USDCAD)]
     [InlineData(USDCHF)]
     [InlineData(USDJPY)]
-    public void GoodConstructorArgs(Symbol symbol)
+    public void ConstructorWithGoodArgs(Symbol symbol)
     {
         var (pair, digits) = GetPairAndDigits(symbol);
 
@@ -57,7 +57,7 @@ public class PairTests
     [Theory]
     [InlineData((Symbol)0, 5)]
     [InlineData(EURUSD, 0)]
-    public void BadConstructorArgs(Symbol symbol, int digits)
+    public void ConstructorWithBadArgs(Symbol symbol, int digits)
     {
         FluentActions.Invoking(() => _ = new Pair(symbol, digits))
             .Should().Throw<ArgumentOutOfRangeException>();

@@ -67,7 +67,7 @@ public class Pair : IEquatable<Pair>
 
     public override int GetHashCode() => Symbol.GetHashCode();
 
-    public static bool operator ==(Pair a, Pair b) => Equals(a, b);
+    public static bool operator ==(Pair left, Pair right) => left.Equals(right);
 
-    public static bool operator !=(Pair a, Pair b) => !(a == b);
+    public static bool operator !=(Pair left, Pair right) => !(left == right);
 }

@@ -21,27 +21,37 @@ public class RateTests
     [InlineData(3, 1, 0.001f)]
     [InlineData(5, 999999, 9.99999f)]
     [InlineData(3, 999999, 999.999f)]
-    public void ConstructWithGoodArgs(int digits, int intValue, float floatValue)
+    public void IntConstructorWithGoodArg(int digits, int intValue, float floatValue)
     {
-        var rate1 = new Rate(intValue);
+        var rate = new Rate(intValue);
 
-        rate1.Value.Should().Be(intValue);
-        rate1.GetFloat(digits).Should().Be(floatValue);
-        rate1.ToString().Should().Be(intValue.ToString());
-        rate1.ToString(digits).Should().Be(floatValue.ToString("N" + digits));
+        rate.Value.Should().Be(intValue);
+        rate.GetFloat(digits).Should().Be(floatValue);
+        rate.ToString().Should().Be(intValue.ToString());
+        rate.ToString(digits).Should().Be(floatValue.ToString("N" + digits));
+    }
 
-        var rate2 = new Rate(floatValue, digits);
+    //////////////////////////
 
-        rate2.Value.Should().Be(intValue);
-        rate2.GetFloat(digits).Should().Be(floatValue);
-        rate2.ToString().Should().Be(intValue.ToString());
-        rate2.ToString(digits).Should().Be(floatValue.ToString("N" + digits));
+    [Theory]
+    [InlineData(5, 1, 0.00001f)]
+    [InlineData(3, 1, 0.001f)]
+    [InlineData(5, 999999, 9.99999f)]
+    [InlineData(3, 999999, 999.999f)]
+    public void FloatConstructorWithGoodArgs(int digits, int intValue, float floatValue)
+    {
+        var rate = new Rate(floatValue, digits);
+
+        rate.Value.Should().Be(intValue);
+        rate.GetFloat(digits).Should().Be(floatValue);
+        rate.ToString().Should().Be(intValue.ToString());
+        rate.ToString(digits).Should().Be(floatValue.ToString("N" + digits));
     }
 
     //////////////////////////
 
     [Fact]
-    public void NoArgsConstruct()
+    public void ConstructorWithoutArg()
     {
         var rate = new Rate();
 
@@ -66,7 +76,7 @@ public class RateTests
     [Theory]
     [InlineData(0)]
     [InlineData(1000000)]
-    public void ContructWithBadArgs1(int value)
+    public void IntContructorWithBadArg(int value)
     {
         FluentActions.Invoking(() => _ = new Rate(value))
             .Should().Throw<ArgumentOutOfRangeException>();
@@ -75,11 +85,11 @@ public class RateTests
     //////////////////////////
 
     [Theory]
-    [InlineData(0.0, 5)]
-    [InlineData(10.0, 5)]
-    [InlineData(0.00001, 0)]
-    [InlineData(0.001, 0)]
-    public void ContructWithBadArgs2(float value, int digits)
+    [InlineData(0.0f, 5)]
+    [InlineData(10.0f, 5)]
+    [InlineData(0.00001f, 0)]
+    [InlineData(0.001f, 0)]
+    public void FloatContructorWithBadArgs(float value, int digits)
     {
         FluentActions.Invoking(() => _ = new Rate(value, digits))
             .Should().Throw<ArgumentOutOfRangeException>();

@@ -40,26 +40,60 @@ public static class Known
     public static DateTime MaxTickOnValue { get; }
     public static ImmutableSortedSet<Currency> Currencies { get; }
 
-    private static ImmutableSortedSet<DateOnly> GetTradeDates()
+    public static ImmutableSortedSet<DateOnly> GetTradeDates(int year, int month)
     {
-        static bool IsHoliday(DateOnly value)
+        if (!year.Between(MinYear, MaxYear))
+            throw new ArgumentOutOfRangeException(nameof(year));
+
+        if (!month.Between(1, 12))
+            throw new ArgumentOutOfRangeException(nameof(month));
+
+        var minDate = new DateOnly(year, month, 1);
+
+        while (!minDate.IsTradeDate())
+            minDate = minDate.AddDays(1);
+
+        var maxDate = new DateOnly(year, month, DateTime.DaysInMonth(year, month));
+
+        while (!maxDate.IsTradeDate())
+            maxDate = maxDate.AddDays(-1);
+
+        return GetTradeDatesInRange(minDate, maxDate).ToImmutableSortedSet();
+    }
+
+    private static bool IsHoliday(DateOnly value)
+    {
+        return (value.Month, value.Day, value.DayOfWeek) switch
         {
-            return (value.Month, value.Day, value.DayOfWeek) switch
-            {
-                (1, 1, Monday) => true,
-                (1, 1, Tuesday) => true,
-                (1, 1, Wednesday) => true,
-                (1, 1, Thursday) => true,
-                (1, 1, Friday) => true,
-                (12, 25, Monday) => true,
-                (12, 25, Tuesday) => true,
-                (12, 25, Wednesday) => true,
-                (12, 25, Thursday) => true,
-                (12, 25, Friday) => true,
-                _ => false,
-            };
+            (1, 1, Monday) => true,
+            (1, 1, Tuesday) => true,
+            (1, 1, Wednesday) => true,
+            (1, 1, Thursday) => true,
+            (1, 1, Friday) => true,
+            (12, 25, Monday) => true,
+            (12, 25, Tuesday) => true,
+            (12, 25, Wednesday) => true,
+            (12, 25, Thursday) => true,
+            (12, 25, Friday) => true,
+            _ => false,
+        };
+    }
+
+    private static List<DateOnly> GetTradeDatesInRange(DateOnly minDate, DateOnly maxDate)
+    {
+        var tradeDates = new List<DateOnly>();
+
+        for (var date = minDate; date <= maxDate; date = date.AddDays(1))
+        {
+            if (date.IsWeekday() && !IsHoliday(date))
+                tradeDates.Add(date);
         }
 
+        return tradeDates;
+    }
+
+    private static ImmutableSortedSet<DateOnly> GetTradeDates()
+    {
         var minDate = new DateOnly(MinYear, 1, 1);
 
         while (minDate.DayOfWeek != Monday)
@@ -70,15 +104,7 @@ public static class Known
         while (maxDate.DayOfWeek != Friday)
             maxDate = maxDate.AddDays(-1);
 
-        var tradeDates = new List<DateOnly>();
-
-        for (var date = minDate; date <= maxDate; date = date.AddDays(1))
-        {
-            if (date.IsWeekday() && !IsHoliday(date))
-                tradeDates.Add(date);
-        }
-
-        return tradeDates.ToImmutableSortedSet();
+        return GetTradeDatesInRange(minDate, maxDate).ToImmutableSortedSet();
     }
 
     private static IReadOnlyDictionary<Symbol, Pair> GetPairs()

@@ -24,7 +24,7 @@ public class ClockTests
     [InlineData(Unit.Hours, 5)]
     [InlineData(Unit.Minutes, 60)]
     [InlineData(Unit.Seconds, 60)]
-    public void BadConstructorArgs(Unit unit, int quantity)
+    public void ConstructorWithBadArgs(Unit unit, int quantity)
     {
         FluentActions.Invoking(() => _ = new Clock(unit, quantity))
             .Should().Throw<ArgumentOutOfRangeException>();
@@ -34,7 +34,7 @@ public class ClockTests
     [InlineData(Unit.Hours, 4)]
     [InlineData(Unit.Minutes, 59)]
     [InlineData(Unit.Seconds, 59)]
-    public void GoodConstructorArgs(Unit unit, int maxQuantity)
+    public void ConstructorWithGoodArgs(Unit unit, int maxQuantity)
     {
         for (int quantity = 1; quantity <= maxQuantity; quantity++)
         {

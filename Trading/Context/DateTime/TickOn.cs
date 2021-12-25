@@ -85,5 +85,3 @@ namespace SquidEyes.Trading.Context
             left.CompareTo(right) >= 0;
     }
 }
-
-

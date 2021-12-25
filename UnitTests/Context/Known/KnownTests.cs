@@ -9,6 +9,8 @@
 
 using FluentAssertions;
 using SquidEyes.Trading.Context;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -20,12 +22,59 @@ public class KnownTests
     public void KnownBaselineUnchanged()
     {
         Known.MinYear.Should().Be(2014);
+
         Known.MaxYear.Should().Be(2028);
-        Known.Pairs.Count.Should().Be(9);
-        Known.Currencies.Count.Should().Be(8);
-        Known.TradeDates.Count.Should().Be(3881);
-        Known.ConvertWith.Count.Should().Be(9);
+
+        foreach (var symbol in Enum.GetValues<Symbol>())
+            Known.Pairs.ContainsKey(symbol).Should().BeTrue();
+
+        foreach (var currency in Enum.GetValues<Currency>())
+            Known.Currencies.Contains(currency).Should().BeTrue();
+
+        Known.TradeDates.Count.Should().Be(3889);
+
+        foreach (var pair in Known.Pairs.Values)
+            Known.ConvertWith.ContainsKey(pair);
+
         Known.MinTradeDate.Should().Be(Known.TradeDates.First());
+
         Known.MaxTradeDate.Should().Be(Known.TradeDates.Last());
+
+        Known.MinTickOnValue.Should().Be(
+            new DateTime(2014, 1, 5, 17, 0, 0, DateTimeKind.Unspecified));
+
+        Known.MaxTickOnValue.Should().Be(
+            new DateTime(2028, 12, 29, 16, 59, 59, 999, DateTimeKind.Unspecified));
+    }
+
+    [Fact]
+    public void GetTradeDatesByYearMonthReturnsExpectedDates()
+    {
+        var byMonth = new Dictionary<(int, int), List<DateOnly>>();
+
+        foreach (var tradeDate in Known.TradeDates)
+        {
+            var key = (tradeDate.Year, tradeDate.Month);
+
+            if (!byMonth.ContainsKey(key))
+                byMonth.Add(key, new List<DateOnly>());
+
+            byMonth[key].Add(tradeDate);
+        }
+
+        for (var year = Known.MinYear; year <= Known.MaxYear; year++)
+        {
+            for (var month = 1; month < 12; month++)
+            {
+                var tradeDates = Known.GetTradeDates(year, month);
+
+                var lookup = byMonth[(year, month)];
+
+                tradeDates.Count.Should().Be(lookup.Count);
+
+                for (var i = 0; i < lookup.Count; i++)
+                    tradeDates[i].Should().Be(lookup[i]);
+            }
+        }
     }
 }

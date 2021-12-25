@@ -11,7 +11,7 @@ namespace SquidEyes.Trading.FxData
 {
     public static class FloatExtenders
     {
-        public static bool IsRate(this float value, int digits) =>
+        public static bool IsRateValue(this float value, int digits) =>
             Rate.IsRate(value, digits);
     }
 }
