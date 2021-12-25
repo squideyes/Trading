@@ -9,12 +9,15 @@
 
 using SquidEyes.Basics;
 using SquidEyes.Trading.Context;
+using System.IO.Compression;
 using System.Text;
 
 namespace SquidEyes.Trading.FxData;
 
 public class Bundle : ListBase<TickSet>
 {
+    public static readonly MajorMinor Version = new(1, 0);
+
     public Bundle(Source source, Pair pair, int year, int month)
     {
         Source = source.Validated(nameof(source), v => v.IsEnumValue());
@@ -32,8 +35,13 @@ public class Bundle : ListBase<TickSet>
     public int Year { get; }
     public int Month { get; }
 
+    public TickSet this[int index] => Items[index];
+
     public void Add(TickSet tickSet)
     {
+        if (tickSet.Count == 0)
+            throw new InvalidOperationException("An empty tick-set may not be bundled!");
+
         if (tickSet.Source != Source)
             throw new ArgumentOutOfRangeException(nameof(tickSet));
 
@@ -74,10 +82,12 @@ public class Bundle : ListBase<TickSet>
             { "Pair", Pair.ToString() },
             { "Year", Year.ToString() },
             { "Month", Month.ToString() },
-            { "Days", string.Join(",", Items.Select(
-                i => i.Session.TradeDate.Day.ToString())) }
+            { "Days", GetDays() }
         };
     }
+
+    private string GetDays() => string.Join(",",
+        Items.Select(i => i.Session.TradeDate.Day.ToString()));
 
     public override string ToString() => FileName;
 
@@ -101,5 +111,39 @@ public class Bundle : ListBase<TickSet>
         sb.AppendDelimited(FileName, Path.DirectorySeparatorChar);
 
         return Path.Combine(basePath, sb.ToString());
+    }
+
+    public void SaveToStream(Stream stream)
+    {
+        using var archive = new ZipArchive(stream, ZipArchiveMode.Create, true);
+
+        foreach (var tickSet in Items)
+        {
+            var fileName = tickSet.GetFileName(SaveAs.STS);
+
+            var entry = archive.CreateEntry(fileName);
+
+            using var entryStream = entry.Open();
+
+            tickSet.SaveToStream(entryStream, SaveAs.STS);
+        }
+    }
+
+    public void LoadFromStream(Stream stream)
+    {
+        var archive = new ZipArchive(stream, ZipArchiveMode.Read);
+
+        var entries = archive.Entries;
+
+        foreach (var entry in entries)
+        {
+            var entryStream = entry.Open();
+
+            var tickSet = TickSet.Create(entry.Name);
+
+            tickSet.LoadFromStream(entryStream, SaveAs.STS);
+
+            Add(tickSet);
+        }
     }
 }

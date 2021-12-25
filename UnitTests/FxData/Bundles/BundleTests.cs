@@ -2,6 +2,7 @@
 using SquidEyes.Trading.Context;
 using SquidEyes.Trading.FxData;
 using System;
+using System.IO;
 using System.Linq;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace SquidEyes.UnitTests.FxData
 
             var tradeDate = new DateOnly(2020, 1, 6);
 
-            var tickSet = new TickSet(Source.SquidEyes, pair, tradeDate);
+            var tickSet = GetTickSet(pair, tradeDate);
 
             var bundle = GetEmptyBundle();
 
@@ -54,14 +55,14 @@ namespace SquidEyes.UnitTests.FxData
 
             for (var i = 0; i < tradeDates.Count - 1; i++)
             {
-                var tickSet = new TickSet(Source.SquidEyes, pair, tradeDates[i]);
+                var tickSet = GetTickSet(pair, tradeDates[i]);
 
                 bundle.Add(tickSet);
 
                 bundle.IsComplete().Should().BeFalse();
             }
 
-            bundle.Add(new TickSet(Source.SquidEyes, pair, tradeDates.Last()));
+            bundle.Add(GetTickSet(pair, tradeDates.Last()));
 
             bundle.IsComplete().Should().BeTrue();
         }
@@ -71,7 +72,7 @@ namespace SquidEyes.UnitTests.FxData
         {
             var bundle = GetEmptyBundle();
 
-            bundle.Add(new TickSet(Source.SquidEyes, 
+            bundle.Add(new TickSet(Source.SquidEyes,
                 Known.Pairs[Symbol.EURUSD], new DateOnly(2020, 1, 6)));
 
             bundle.GetMetadata()["Source"].Should().Be("SquidEyes");
@@ -101,6 +102,56 @@ namespace SquidEyes.UnitTests.FxData
             var bundle = GetEmptyBundle();
 
             bundle.ToString().Should().Be(bundle.FileName);
+        }
+
+        [Fact]
+        public void CanRoundtripThroughStream()
+        {
+            var pair = Known.Pairs[Symbol.EURUSD];
+
+            var tradeDate = new DateOnly(2020, 1, 6);
+
+            var source = GetEmptyBundle();
+
+            source.Add(GetTickSet(pair, tradeDate));
+
+            var stream = new MemoryStream();
+
+            source.SaveToStream(stream);
+
+            stream.Position = 0;
+
+            var target = GetEmptyBundle();
+
+            target.LoadFromStream(stream);
+
+            source.Source.Should().Be(target.Source);
+            source.Pair.Should().Be(target.Pair);
+            source.Year.Should().Be(target.Year);
+            source.Month.Should().Be(target.Month);
+            source.Count.Should().Be(target.Count);
+
+            for (var x = 0; x < target.Count; x++)
+            {
+                var tickSet1 = target[x];
+                var tickSet2 = source[x];
+
+                tickSet1.Count.Should().Be(tickSet2.Count);
+
+                for (var y = 0; y < tickSet1.Count; y++)
+                    tickSet1[y].Should().Be(tickSet2[y]);
+            }
+        }
+
+        private static TickSet GetTickSet(
+            Pair pair, DateOnly tradeDate, int bid = 1, int ask = 2)
+        {
+            var tickSet = new TickSet(Source.SquidEyes, pair, tradeDate);
+
+            tickSet.Add(new Tick(
+                tickSet.Session.MinTickOn, new Rate(bid), new Rate(ask)));
+
+            return tickSet;
         }
 
         private static Bundle GetEmptyBundle() =>
