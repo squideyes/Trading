@@ -16,7 +16,7 @@ namespace SquidEyes.Trading.Context;
 
 public static class Known
 {
-    public const int MinYear = 2014;
+    public const int MinYear = 2018;
     public const int MaxYear = 2028;
 
     static Known()
@@ -96,12 +96,12 @@ public static class Known
     {
         var minDate = new DateOnly(MinYear, 1, 1);
 
-        while (minDate.DayOfWeek != Monday)
+        while (minDate.DayOfWeek != Monday || IsHoliday(minDate))
             minDate = minDate.AddDays(1);
 
         var maxDate = new DateOnly(MaxYear, 12, 31);
 
-        while (maxDate.DayOfWeek != Friday)
+        while (maxDate.DayOfWeek != Friday || IsHoliday(minDate))
             maxDate = maxDate.AddDays(-1);
 
         return GetTradeDatesInRange(minDate, maxDate).ToImmutableSortedSet();

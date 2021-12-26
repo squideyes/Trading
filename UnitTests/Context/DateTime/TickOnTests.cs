@@ -236,7 +236,7 @@ public class TickOnTests
     {
         TickOn tickOn = Known.MinTickOnValue;
 
-        DateTime dateTime = (DateTime)tickOn;
+        var dateTime = (DateTime)tickOn;
 
         tickOn.Value.Should().Be(dateTime);
 

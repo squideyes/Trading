@@ -21,7 +21,7 @@ public class KnownTests
     [Fact]
     public void KnownBaselineUnchanged()
     {
-        Known.MinYear.Should().Be(2014);
+        Known.MinYear.Should().Be(2018);
 
         Known.MaxYear.Should().Be(2028);
 
@@ -31,17 +31,21 @@ public class KnownTests
         foreach (var currency in Enum.GetValues<Currency>())
             Known.Currencies.Contains(currency).Should().BeTrue();
 
-        Known.TradeDates.Count.Should().Be(3889);
+        Known.TradeDates.Count.Should().Be(2850);
 
         foreach (var pair in Known.Pairs.Values)
             Known.ConvertWith.ContainsKey(pair);
 
         Known.MinTradeDate.Should().Be(Known.TradeDates.First());
 
+        Known.MinTradeDate.DayOfWeek.Should().Be(DayOfWeek.Monday);
+
         Known.MaxTradeDate.Should().Be(Known.TradeDates.Last());
 
+        Known.MaxTradeDate.DayOfWeek.Should().Be(DayOfWeek.Friday);
+
         Known.MinTickOnValue.Should().Be(
-            new DateTime(2014, 1, 5, 17, 0, 0, DateTimeKind.Unspecified));
+            new DateTime(2018, 1, 7, 17, 0, 0, DateTimeKind.Unspecified));
 
         Known.MaxTickOnValue.Should().Be(
             new DateTime(2028, 12, 29, 16, 59, 59, 999, DateTimeKind.Unspecified));

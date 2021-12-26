@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Xunit;
+using SquidEyes.Basics;
 
 namespace SquidEyes.UnitTests.FxData
 {
@@ -17,11 +18,9 @@ namespace SquidEyes.UnitTests.FxData
 
             var tradeDate = new DateOnly(2020, 1, 6);
 
-            var tickSet = GetTickSet(pair, tradeDate);
-
             var bundle = GetEmptyBundle();
 
-            bundle.Add(tickSet);
+            bundle.Add(GetTickSet(pair, tradeDate));
 
             bundle.Pair.Should().Be(pair);
             bundle.Year.Should().Be(2020);
@@ -55,9 +54,7 @@ namespace SquidEyes.UnitTests.FxData
 
             for (var i = 0; i < tradeDates.Count - 1; i++)
             {
-                var tickSet = GetTickSet(pair, tradeDates[i]);
-
-                bundle.Add(tickSet);
+                bundle.Add(GetTickSet(pair, tradeDates[i]));
 
                 bundle.IsComplete().Should().BeFalse();
             }
@@ -72,8 +69,7 @@ namespace SquidEyes.UnitTests.FxData
         {
             var bundle = GetEmptyBundle();
 
-            bundle.Add(new TickSet(Source.SquidEyes,
-                Known.Pairs[Symbol.EURUSD], new DateOnly(2020, 1, 6)));
+            bundle.Add(GetTickSet(bundle.Pair, new DateOnly(2020, 1, 6)));
 
             bundle.GetMetadata()["Source"].Should().Be("SquidEyes");
             bundle.GetMetadata()["Pair"].Should().Be("EURUSD");
@@ -81,8 +77,7 @@ namespace SquidEyes.UnitTests.FxData
             bundle.GetMetadata()["Month"].Should().Be("1");
             bundle.GetMetadata()["Days"].Should().Be("6");
 
-            bundle.Add(new TickSet(Source.SquidEyes,
-                Known.Pairs[Symbol.EURUSD], new DateOnly(2020, 1, 7)));
+            bundle.Add(GetTickSet(bundle.Pair, new DateOnly(2020, 1, 7)));
 
             bundle.GetMetadata()["Days"].Should().Be("6,7");
         }
@@ -90,19 +85,13 @@ namespace SquidEyes.UnitTests.FxData
         [Fact]
         public void GoodFullPathGenerated()
         {
-            var bundle = GetEmptyBundle();
-
-            bundle.GetFullPath("C:\\TickData").Should().Be(
+            GetEmptyBundle().GetFullPath("C:\\TickData").Should().Be(
                 "C:\\TickData\\SE\\BUNDLES\\EURUSD\\2020\\SE_EURUSD_2020_01_EST.stsb");
         }
 
         [Fact]
-        public void ToStringReturnsFileName()
-        {
-            var bundle = GetEmptyBundle();
-
-            bundle.ToString().Should().Be(bundle.FileName);
-        }
+        public void ToStringReturnsFileName() =>
+            GetEmptyBundle().AsAction(b => b.ToString().Should().Be(b.FileName));
 
         [Fact]
         public void CanRoundtripThroughStream()
