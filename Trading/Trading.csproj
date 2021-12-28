@@ -24,8 +24,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Ardalis.GuardClauses" Version="3.3.0" />
-		<PackageReference Include="FluentValidation" Version="10.3.4" />
-		<PackageReference Include="SquidEyes.Basics" Version="1.0.11" />
+		<PackageReference Include="FluentValidation" Version="10.3.6" />
+		<PackageReference Include="SquidEyes.Basics" Version="1.0.12" />
 	</ItemGroup>
 
 </Project>
