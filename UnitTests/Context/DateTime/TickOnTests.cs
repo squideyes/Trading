@@ -1,9 +1,9 @@
-﻿// ********************************************************
-// Copyright (C) 2021 Louis S. Berman (louis@squideyes.com) 
-// 
+// ********************************************************
+// Copyright (C) 2021 Louis S. Berman (louis@squideyes.com)
+//
 // This file is part of SquidEyes.Trading
-// 
-// The use of this source code is licensed under the terms 
+//
+// The use of this source code is licensed under the terms
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
@@ -257,4 +257,3 @@ public class TickOnTests
     private static TickOn GetTickOn(int days) =>
         new(Known.MinTickOnValue.AddDays(days));
 }
-

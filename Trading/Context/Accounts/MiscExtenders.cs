@@ -7,11 +7,13 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.Context
+namespace SquidEyes.Trading.Context;
+
+public static class MiscExtenders
 {
-    public enum Extent
-    {
-        Day = 1,
-        Week
-    }
+    public static bool IsSquidEyesId(this string value) =>
+        SquidEyesId.IsValid(value);
+
+    public static bool IsAccountId(this string value) =>
+        AccountId.IsValid(value);
 }
