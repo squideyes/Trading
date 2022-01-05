@@ -188,7 +188,7 @@ namespace SquidEyes.UnitTests.Testing
 
             using var stream = new MemoryStream(DC_EURUSD_20200106_EST_STS);
 
-            tickSet.LoadFromStream(stream, SaveAs.STS);
+            tickSet.LoadFromStream(stream, DataKind.STS);
 
             candles = new List<ICandle>();
 

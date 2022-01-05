@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Xunit;
+using Xunit.Categories;
 using static SquidEyes.UnitTests.Properties.TestData;
 
 namespace SquidEyes.UnitTests.FxData;
@@ -29,17 +30,17 @@ public class TickSetTests
 
         var (pair, baseDate) = GetPairAndBaseDate();
 
-        var csv = GetTickSet(SaveAs.CSV);
+        var csv = GetTickSet(DataKind.CSV);
 
         var stream = new MemoryStream();
 
-        csv.SaveToStream(stream, SaveAs.STS);
+        csv.SaveToStream(stream, DataKind.STS);
 
         stream.Position = 0;
 
         var sts = new TickSet(Source.Dukascopy, pair, baseDate);
 
-        sts.LoadFromStream(stream, SaveAs.STS);
+        sts.LoadFromStream(stream, DataKind.STS);
 
         CsvEqualsSts(csv, sts);
     }
@@ -49,7 +50,7 @@ public class TickSetTests
     [Fact]
     public void ClearDoesIndeedClear()
     {
-        var tickSet = GetTickSet(SaveAs.CSV);
+        var tickSet = GetTickSet(DataKind.CSV);
 
         tickSet.Count.Should().Be(77046);
 
@@ -103,10 +104,29 @@ public class TickSetTests
     ////////////////////////////
 
     [Fact]
+    [IntegrationTest]
+    public void CsvAndStsTickSetsEqualThroughFile()
+    {
+        var csv = GetTickSet(DataKind.CSV);
+
+        var sts = new TickSet(Source.Dukascopy, csv.Pair, csv.Session.TradeDate);
+
+        var fileName = Path.GetTempFileName();
+
+        using (var stream = File.OpenWrite(fileName))
+            csv.SaveToStream(stream, DataKind.STS);
+
+        using (var stream = File.OpenRead(fileName))
+            sts.LoadFromStream(stream, DataKind.STS);
+
+        CsvEqualsSts(csv, sts);
+    }
+
+    [Fact]
     public void CsvAndStsTickSetsEqual()
     {
-        var csv = GetTickSet(SaveAs.CSV);
-        var sts = GetTickSet(SaveAs.STS);
+        var csv = GetTickSet(DataKind.CSV);
+        var sts = GetTickSet(DataKind.STS);
 
         CsvEqualsSts(csv, sts);
     }
@@ -116,17 +136,17 @@ public class TickSetTests
     [Fact]
     public void ToStringReturnsGetFileNameResult()
     {
-        var tickSet = GetTickSet(SaveAs.STS);
+        var tickSet = GetTickSet(DataKind.STS);
 
-        tickSet.ToString().Should().Be(tickSet.GetFileName(SaveAs.STS));
+        tickSet.ToString().Should().Be(tickSet.GetFileName(DataKind.STS));
     }
 
     ////////////////////////////
 
     [Theory]
-    [InlineData(SaveAs.CSV)]
-    [InlineData(SaveAs.STS)]
-    public void GetMetadataReturnsExpectedValues(SaveAs saveAs)
+    [InlineData(DataKind.CSV)]
+    [InlineData(DataKind.STS)]
+    public void GetMetadataReturnsExpectedValues(DataKind dataKind)
     {
         static DateTime ParseCreatedOn(string value)
         {
@@ -136,9 +156,9 @@ public class TickSetTests
                 return DateTime.Parse(value, null, DateTimeStyles.RoundtripKind);
         }
 
-        var tickSet = GetTickSet(saveAs);
+        var tickSet = GetTickSet(dataKind);
 
-        var metaData = tickSet.GetMetadata(saveAs);
+        var metaData = tickSet.GetMetadata(dataKind);
 
         var createdOn = ParseCreatedOn(metaData["CreatedOn"]);
 
@@ -148,7 +168,7 @@ public class TickSetTests
         metaData["Count"].Should().Be(tickSet.Count.ToString());
         metaData["Extent"].Should().Be(tickSet.Session.Extent.ToString());
         metaData["Pair"].Should().Be(tickSet.Pair.ToString());
-        metaData["SaveAs"].Should().Be(saveAs.ToString());
+        metaData["SaveAs"].Should().Be(dataKind.ToString());
         metaData["Source"].Should().Be(tickSet.Source.ToString());
         metaData["TradeDate"].Should().Be(tickSet.Session.TradeDate.ToString());
         metaData["Version"].Should().Be(TickSet.Version.ToString());
@@ -157,26 +177,26 @@ public class TickSetTests
     ////////////////////////////
 
     [Theory]
-    [InlineData(SaveAs.CSV, "DC_EURUSD_20200106_EST.csv")]
-    [InlineData(SaveAs.STS, "DC_EURUSD_20200106_EST.sts")]
-    public void GoodFileNameGenerated(SaveAs saveAs, string fileName) =>
-        GetTickSet(saveAs).GetFileName(saveAs).Should().Be(fileName);
+    [InlineData(DataKind.CSV, "DC_EURUSD_20200106_EST.csv")]
+    [InlineData(DataKind.STS, "DC_EURUSD_20200106_EST.sts")]
+    public void GoodFileNameGenerated(DataKind dataKind, string fileName) =>
+        GetTickSet(dataKind).GetFileName(dataKind).Should().Be(fileName);
 
     ////////////////////////////
 
     [Theory]
-    [InlineData(SaveAs.CSV, "DC/TICKSETS/EURUSD/2020/DC_EURUSD_20200106_EST.csv")]
-    [InlineData(SaveAs.STS, "DC/TICKSETS/EURUSD/2020/DC_EURUSD_20200106_EST.sts")]
-    public void GoodBlobNameGenerated(SaveAs saveAs, string blobName) =>
-        GetTickSet(saveAs).GetBlobName(saveAs).Should().Be(blobName);
+    [InlineData(DataKind.CSV, "DC/TICKSETS/EURUSD/2020/DC_EURUSD_20200106_EST.csv")]
+    [InlineData(DataKind.STS, "DC/TICKSETS/EURUSD/2020/DC_EURUSD_20200106_EST.sts")]
+    public void GoodBlobNameGenerated(DataKind dataKind, string blobName) =>
+        GetTickSet(dataKind).GetBlobName(dataKind).Should().Be(blobName);
 
     ////////////////////////////
 
     [Theory]
-    [InlineData(SaveAs.CSV, @"C:\DC\TICKSETS\EURUSD\2020\DC_EURUSD_20200106_EST.csv")]
-    [InlineData(SaveAs.STS, @"C:\DC\TICKSETS\EURUSD\2020\DC_EURUSD_20200106_EST.sts")]
-    public void GoodFullPathGenerated(SaveAs saveAs, string fullPath) =>
-        GetTickSet(saveAs).GetFullPath("C:\\", saveAs).Should().Be(fullPath);
+    [InlineData(DataKind.CSV, @"C:\DC\TICKSETS\EURUSD\2020\DC_EURUSD_20200106_EST.csv")]
+    [InlineData(DataKind.STS, @"C:\DC\TICKSETS\EURUSD\2020\DC_EURUSD_20200106_EST.sts")]
+    public void GoodFullPathGenerated(DataKind dataKind, string fullPath) =>
+        GetTickSet(dataKind).GetFullPath("C:\\", dataKind).Should().Be(fullPath);
 
     ////////////////////////////
 
@@ -260,27 +280,27 @@ public class TickSetTests
         csv.Session.Should().Be(sts.Session);
         csv.Source.Should().Be(sts.Source);
 
-        for (int i = 0; i < csv.Count; i++)
+        for (var i = 0; i < csv.Count; i++)
             csv[i].Should().Be(sts[i]);
     }
 
     private static (Pair, DateOnly) GetPairAndBaseDate() =>
         (Known.Pairs[Symbol.EURUSD], new DateOnly(2020, 1, 6));
 
-    private static TickSet GetTickSet(SaveAs saveAs)
+    private static TickSet GetTickSet(DataKind dataKind)
     {
         var (pair, baseDate) = GetPairAndBaseDate();
 
         var tickSet = new TickSet(Source.Dukascopy, pair, baseDate);
 
-        if (saveAs == SaveAs.CSV)
+        if (dataKind == DataKind.CSV)
         {
             foreach (var fields in new CsvEnumerator(
                 DC_EURUSD_20200106_EST_CSV.ToStream(), 3))
             {
                 var tickOn = DateTime.Parse(fields[0]);
-                var bid = new Rate(float.Parse(fields[1]), 5);
-                var ask = new Rate(float.Parse(fields[2]), 5);
+                var bid = new Rate(float.Parse(fields[1]), pair.Digits);
+                var ask = new Rate(float.Parse(fields[2]), pair.Digits);
 
                 tickSet.Add(new Tick(tickOn, bid, ask));
             }
@@ -288,7 +308,7 @@ public class TickSetTests
         else
         {
             tickSet.LoadFromStream(
-                DC_EURUSD_20200106_EST_STS.ToStream(), SaveAs.STS);
+                DC_EURUSD_20200106_EST_STS.ToStream(), DataKind.STS);
         }
 
         return tickSet;

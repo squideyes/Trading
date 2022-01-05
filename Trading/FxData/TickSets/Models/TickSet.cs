@@ -78,7 +78,7 @@ public class TickSet : ListBase<Tick>
     public void AddRange(IEnumerable<Tick> ticks) =>
         ticks.ForEach(tick => Add(tick));
 
-    public string GetFileName(SaveAs saveAs)
+    public string GetFileName(DataKind dataKind)
     {
         var sb = new StringBuilder();
 
@@ -88,12 +88,12 @@ public class TickSet : ListBase<Tick>
         sb.Append('_');
         sb.Append("EST");
         sb.Append('.');
-        sb.Append(saveAs.ToLower());
+        sb.Append(dataKind.ToLower());
 
         return sb.ToString();
     }
 
-    public string GetBlobName(SaveAs saveAs)
+    public string GetBlobName(DataKind dataKind)
     {
         var sb = new StringBuilder();
 
@@ -101,18 +101,18 @@ public class TickSet : ListBase<Tick>
         sb.AppendDelimited("TICKSETS", '/');
         sb.AppendDelimited(Pair, '/');
         sb.AppendDelimited(Session.TradeDate.Year, '/');
-        sb.AppendDelimited(GetFileName(saveAs), '/');
+        sb.AppendDelimited(GetFileName(dataKind), '/');
 
         return sb.ToString();
     }
 
-    public string GetFullPath(string basePath, SaveAs saveAs)
+    public string GetFullPath(string basePath, DataKind dataKind)
     {
         if (!basePath.IsFolderName())
             throw new ArgumentOutOfRangeException(nameof(basePath));
 
-        if (!saveAs.IsEnumValue())
-            throw new ArgumentOutOfRangeException(nameof(saveAs));
+        if (!dataKind.IsEnumValue())
+            throw new ArgumentOutOfRangeException(nameof(dataKind));
 
         var sb = new StringBuilder();
 
@@ -120,20 +120,20 @@ public class TickSet : ListBase<Tick>
         sb.AppendDelimited("TICKSETS", Path.DirectorySeparatorChar);
         sb.AppendDelimited(Pair, Path.DirectorySeparatorChar);
         sb.AppendDelimited(Session.TradeDate.Year, Path.DirectorySeparatorChar);
-        sb.AppendDelimited(GetFileName(saveAs), Path.DirectorySeparatorChar);
+        sb.AppendDelimited(GetFileName(dataKind), Path.DirectorySeparatorChar);
 
         return Path.Combine(basePath, sb.ToString());
     }
 
-    public override string ToString() => GetFileName(SaveAs.STS);
+    public override string ToString() => GetFileName(DataKind.STS);
 
-    public Dictionary<string, string> GetMetadata(SaveAs saveAs)
+    public Dictionary<string, string> GetMetadata(DataKind dataKind)
     {
         return new Dictionary<string, string>
         {
             { "Version", Version.ToString() },
             { "CreatedOn", DateTime.UtcNow.ToString("O") },
-            { "SaveAs", saveAs.ToString() },
+            { "SaveAs", dataKind.ToString() },
             { "Source", Source.ToString() },
             { "Pair", Pair.ToString() },
             { "Extent", Session.Extent.ToString() },
@@ -142,15 +142,15 @@ public class TickSet : ListBase<Tick>
         };
     }
 
-    public void SaveToStream(Stream stream, SaveAs saveAs)
+    public void SaveToStream(Stream stream, DataKind dataKind)
     {
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
 
-        if (!saveAs.IsEnumValue())
-            throw new ArgumentOutOfRangeException(nameof(saveAs));
+        if (!dataKind.IsEnumValue())
+            throw new ArgumentOutOfRangeException(nameof(dataKind));
 
-        if (saveAs == SaveAs.CSV)
+        if (dataKind == DataKind.CSV)
         {
             var writer = new StreamWriter(stream);
 
@@ -240,19 +240,19 @@ public class TickSet : ListBase<Tick>
         }
     }
 
-    public void LoadFromStream(Stream stream, SaveAs saveAs)
+    public void LoadFromStream(Stream stream, DataKind dataKind)
     {
         if (stream == null)
             throw new ArgumentNullException(nameof(stream));
 
-        if (!saveAs.IsEnumValue())
-            throw new ArgumentOutOfRangeException(nameof(saveAs));
+        if (!dataKind.IsEnumValue())
+            throw new ArgumentOutOfRangeException(nameof(dataKind));
 
         Items.Clear();
 
         lastTickOn = null;
 
-        if (saveAs == SaveAs.CSV)
+        if (dataKind == DataKind.CSV)
         {
             foreach (var fields in new CsvEnumerator(stream, 3))
             {
@@ -427,7 +427,7 @@ public class TickSet : ListBase<Tick>
         if (string.IsNullOrWhiteSpace(fileName))
             throw new ArgumentOutOfRangeException(nameof(fileName));
 
-        if (!Enum.TryParse(Path.GetExtension(fileName)[1..], true, out SaveAs _))
+        if (!Enum.TryParse(Path.GetExtension(fileName)[1..], true, out DataKind _))
             throw new ArgumentOutOfRangeException(nameof(fileName));
 
         var fields = Path.GetFileNameWithoutExtension(fileName).Split('_');

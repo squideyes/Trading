@@ -119,13 +119,13 @@ public class Bundle : ListBase<TickSet>
 
         foreach (var tickSet in Items)
         {
-            var fileName = tickSet.GetFileName(SaveAs.STS);
+            var fileName = tickSet.GetFileName(DataKind.STS);
 
             var entry = archive.CreateEntry(fileName);
 
             using var entryStream = entry.Open();
 
-            tickSet.SaveToStream(entryStream, SaveAs.STS);
+            tickSet.SaveToStream(entryStream, DataKind.STS);
         }
     }
 
@@ -141,7 +141,7 @@ public class Bundle : ListBase<TickSet>
 
             var tickSet = TickSet.Create(entry.Name);
 
-            tickSet.LoadFromStream(entryStream, SaveAs.STS);
+            tickSet.LoadFromStream(entryStream, DataKind.STS);
 
             Add(tickSet);
         }

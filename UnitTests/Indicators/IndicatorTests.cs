@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using Xunit;
 using static SquidEyes.UnitTests.Testing.IndicatorData;
 
-namespace SquidEyes.UnitTests
+namespace SquidEyes.UnitTests.Indicators
 {
     public class IndicatorTests
     {

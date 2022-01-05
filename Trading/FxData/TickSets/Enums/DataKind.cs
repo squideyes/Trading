@@ -10,7 +10,7 @@
 namespace SquidEyes.Trading.FxData;
 
 [Flags]
-public enum SaveAs
+public enum DataKind
 {
     CSV = 1,
     STS = 2
