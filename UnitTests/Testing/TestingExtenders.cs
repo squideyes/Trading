@@ -25,4 +25,14 @@ internal static class TestingExtenders
             _ => throw new ArgumentOutOfRangeException(nameof(errorType))
         };
     }
+
+    public static int ToDigits(this double value)
+    {
+        var digits = 0;
+
+        while (Math.Round(value, digits) != value)
+            digits++;
+
+        return digits;
+    }
 }

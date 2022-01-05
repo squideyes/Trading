@@ -71,7 +71,7 @@ public class TickSetTests
     [Fact]
     public void AddRangeWithGoodArgs()
     {
-        var tickSet = new TickSet(Source.Dukascopy, 
+        var tickSet = new TickSet(Source.Dukascopy,
             Known.Pairs[Symbol.EURUSD], Known.MinTradeDate);
 
         var tick1 = GetTick(tickSet, 0);
