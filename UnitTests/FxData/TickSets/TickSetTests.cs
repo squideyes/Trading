@@ -109,7 +109,7 @@ public class TickSetTests
     {
         var csv = GetTickSet(DataKind.CSV);
 
-        var sts = new TickSet(Source.Dukascopy, csv.Pair, csv.Session.TradeDate);
+        var sts = new TickSet(csv.Source, csv.Pair, csv.Session.TradeDate);
 
         var fileName = Path.GetTempFileName();
 

@@ -30,7 +30,7 @@ public struct Rate : IEquatable<Rate>, IComparable<Rate>
     }
 
     public Rate(float value, int digits)
-        : this((int)(value * GetFactor(digits)))
+        : this((int)FastMath.Round(value * GetFactor(digits)))
     {
     }
 

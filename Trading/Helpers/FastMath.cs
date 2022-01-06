@@ -28,7 +28,7 @@ namespace SquidEyes.Trading.Shared.Helpers
         {
             var result = new float[15];
 
-            for (int i = 0; i < result.Length; i++)
+            for (var i = 0; i < result.Length; i++)
                 result[i] = MathF.Pow(10, i);
 
             return result;
