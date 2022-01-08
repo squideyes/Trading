@@ -1,4 +1,4 @@
-# Rules in this file were initially inferred by Visual Studio IntelliCode from the C:\Users\trader\Documents\Code\Latest\Trading codebase based on best match to current usage at 11/30/2021
+# Rules in this file were initially inferred by Visual Studio IntelliCode from the C:\Users\trader\Documents\Code\Latest\Trading codebase based on best match to current usage at 1/8/2022
 # You can modify the rules from these initially generated values to suit your own policies
 # You can learn more about editorconfig here: https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference
 [*.cs]
@@ -9,14 +9,21 @@
 #use soft tabs (spaces) for indentation
 indent_style = space
 
+#Formatting - indentation options
+
+#indent switch case contents.
+csharp_indent_case_contents = true
+#indent switch labels
+csharp_indent_switch_labels = true
+
 #Formatting - new line options
 
 #place else statements on a new line
 csharp_new_line_before_else = true
 #require members of object initializers to be on the same line
 csharp_new_line_before_members_in_object_initializers = false
-#require braces to be on a new line for types, methods, object_collection_array_initializers, and control_blocks (also known as "Allman" style)
-csharp_new_line_before_open_brace = types, methods, object_collection_array_initializers, control_blocks
+#require braces to be on a new line for control_blocks, types, object_collection_array_initializers, and methods (also known as "Allman" style)
+csharp_new_line_before_open_brace =all
 
 #Formatting - organize using options
 
@@ -60,8 +67,6 @@ csharp_prefer_braces = false:suggestion
 csharp_style_expression_bodied_indexers = true:suggestion
 #prefer expression-bodied members for methods when they will be a single line
 csharp_style_expression_bodied_methods = when_on_single_line:suggestion
-#prefer expression-bodied members for operators
-csharp_style_expression_bodied_operators = true:suggestion
 #prefer expression-bodied members for properties
 csharp_style_expression_bodied_properties = true:suggestion
 

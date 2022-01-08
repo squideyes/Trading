@@ -201,7 +201,7 @@ public class TickSet : ListBase<Tick>
                 }
                 else
                 {
-                    byte header = PACKED;
+                    var header = PACKED;
 
                     if (tickOnDelta != 0)
                         header |= GetTickOnFlags(tickOnDelta);

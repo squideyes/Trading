@@ -14,7 +14,7 @@ namespace SquidEyes.Trading.FxData;
 
 public class IntervalFeed : ICandleFeed
 {
-    //private DateTime? lastOpenOn = null;
+    private DateTime? lastOpenOn = null;
     private Candle? candle = null;
 
     public event EventHandler<CandleArgs>? OnCandle;
@@ -38,24 +38,24 @@ public class IntervalFeed : ICandleFeed
         if (tick == default)
             throw new ArgumentNullException(nameof(tick));
 
-        //var openOn = tick.TickOn.ToOpenOn(Interval);
+        var openOn = tick.TickOn.ToOpenOn(Session, Interval);
 
-        //if (candle == null)
-        //{
-        //    candle = new Candle(tick, Interval);
-        //}
-        //else if (lastOpenOn < openOn)
-        //{
-        //    OnCandle?.Invoke(this, new CandleArgs(tick, candle));
+        if (candle == null)
+        {
+            candle = new Candle(Session, tick, Interval);
+        }
+        else if (lastOpenOn < openOn)
+        {
+            OnCandle?.Invoke(this, new CandleArgs(tick, candle));
 
-        //    candle = new Candle(tick, Interval);
-        //}
-        //else
-        //{
-        //    candle.Adjust(tick, Interval);
-        //}
+            candle = new Candle(Session, tick, Interval);
+        }
+        else
+        {
+            candle.Adjust(tick, Interval);
+        }
 
-        //lastOpenOn = openOn;
+        lastOpenOn = openOn;
     }
 
     public void RaiseOnCandleAndReset(Tick tick)

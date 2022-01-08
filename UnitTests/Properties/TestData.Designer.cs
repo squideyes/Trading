@@ -90,5 +90,129 @@ namespace SquidEyes.UnitTests.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 01/06/2020 17:00:00.066,1.11960,1.11980
+        ///01/06/2020 17:00:00.204,1.11935,1.11980
+        ///01/06/2020 17:00:01.027,1.11928,1.11980
+        ///01/06/2020 17:00:01.270,1.11928,1.11973
+        ///01/06/2020 17:00:01.790,1.11928,1.11966
+        ///01/06/2020 17:00:02.570,1.11928,1.11965
+        ///01/06/2020 17:00:02.709,1.11931,1.11966
+        ///01/06/2020 17:00:02.760,1.11928,1.11966
+        ///01/06/2020 17:00:02.811,1.11928,1.11977
+        ///01/06/2020 17:00:02.861,1.11928,1.11969
+        ///01/06/2020 17:00:03.060,1.11930,1.11969
+        ///01/06/2020 17:00:03.270,1.11928,1.11969
+        ///01/06/2020 17:00:03. [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string DC_EURUSD_20200107_EST_CSV {
+            get {
+                return ResourceManager.GetString("DC_EURUSD_20200107_EST_CSV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DC_EURUSD_20200107_EST_STS {
+            get {
+                object obj = ResourceManager.GetObject("DC_EURUSD_20200107_EST_STS", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 01/07/2020 17:00:00.483,1.11529,1.11543
+        ///01/07/2020 17:00:00.534,1.11529,1.11545
+        ///01/07/2020 17:00:01.068,1.11527,1.11543
+        ///01/07/2020 17:00:02.357,1.11527,1.11540
+        ///01/07/2020 17:00:02.408,1.11513,1.11523
+        ///01/07/2020 17:00:02.519,1.11514,1.11523
+        ///01/07/2020 17:00:02.782,1.11514,1.11519
+        ///01/07/2020 17:00:03.572,1.11523,1.11530
+        ///01/07/2020 17:00:03.623,1.11523,1.11540
+        ///01/07/2020 17:00:03.991,1.11524,1.11540
+        ///01/07/2020 17:00:04.437,1.11527,1.11540
+        ///01/07/2020 17:00:04.538,1.11527,1.11539
+        ///01/07/2020 17:00:07. [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string DC_EURUSD_20200108_EST_CSV {
+            get {
+                return ResourceManager.GetString("DC_EURUSD_20200108_EST_CSV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DC_EURUSD_20200108_EST_STS {
+            get {
+                object obj = ResourceManager.GetObject("DC_EURUSD_20200108_EST_STS", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DC_EURUSD_20200109_EST_STS {
+            get {
+                object obj = ResourceManager.GetObject("DC_EURUSD_20200109_EST_STS", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 01/08/2020 17:00:00.001,1.11053,1.11059
+        ///01/08/2020 17:00:00.102,1.11049,1.11059
+        ///01/08/2020 17:00:00.203,1.11049,1.11060
+        ///01/08/2020 17:00:00.498,1.11049,1.11061
+        ///01/08/2020 17:00:01.794,1.11053,1.11061
+        ///01/08/2020 17:00:02.445,1.11055,1.11061
+        ///01/08/2020 17:00:03.240,1.11054,1.11061
+        ///01/08/2020 17:00:03.598,1.11055,1.11061
+        ///01/08/2020 17:00:04.098,1.11053,1.11061
+        ///01/08/2020 17:00:04.227,1.11052,1.11061
+        ///01/08/2020 17:00:04.327,1.11049,1.11061
+        ///01/08/2020 17:00:05.261,1.11054,1.11061
+        ///01/08/2020 17:00:06. [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string DC_EURUSD_20200109_ESTCSV {
+            get {
+                return ResourceManager.GetString("DC_EURUSD_20200109_ESTCSV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DC_EURUSD_20200110_EST_STS {
+            get {
+                object obj = ResourceManager.GetObject("DC_EURUSD_20200110_EST_STS", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 01/09/2020 17:00:00.168,1.11051,1.11068
+        ///01/09/2020 17:00:01.713,1.11049,1.11066
+        ///01/09/2020 17:00:03.883,1.11050,1.11065
+        ///01/09/2020 17:00:04.156,1.11049,1.11066
+        ///01/09/2020 17:00:11.932,1.11052,1.11063
+        ///01/09/2020 17:00:18.081,1.11039,1.11050
+        ///01/09/2020 17:00:18.732,1.11040,1.11049
+        ///01/09/2020 17:00:19.338,1.11039,1.11050
+        ///01/09/2020 17:00:55.825,1.11030,1.11081
+        ///01/09/2020 17:00:59.393,1.11043,1.11057
+        ///01/09/2020 17:02:00.892,1.11045,1.11057
+        ///01/09/2020 17:02:04.047,1.11045,1.11056
+        ///01/09/2020 17:02:16. [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string DC_EURUSD_20200110_ESTCSV {
+            get {
+                return ResourceManager.GetString("DC_EURUSD_20200110_ESTCSV", resourceCulture);
+            }
+        }
     }
 }

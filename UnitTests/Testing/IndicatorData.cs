@@ -11,7 +11,8 @@ using SquidEyes.Trading.Context;
 using SquidEyes.Trading.FxData;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
+using SquidEyes.Basics;
 using static SquidEyes.UnitTests.Properties.TestData;
 
 namespace SquidEyes.UnitTests.Testing
@@ -177,27 +178,30 @@ namespace SquidEyes.UnitTests.Testing
             };
         }
 
-
         public static List<ICandle> GetCandles()
         {
             if (candles != null)
                 return candles;
 
-            var tickSet = new TickSet(Source.SquidEyes,
+            var tickSet = new TickSet(Source.Dukascopy,
                 Known.Pairs[Symbol.EURUSD], new DateOnly(2020, 1, 6));
 
-            using var stream = new MemoryStream(DC_EURUSD_20200106_EST_STS);
-
-            tickSet.LoadFromStream(stream, DataKind.STS);
+            tickSet.LoadFromStream(
+                DC_EURUSD_20200106_EST_STS.ToStream(), DataKind.STS);
 
             candles = new List<ICandle>();
 
-            var feed = new IntervalFeed(tickSet.Pair, tickSet.Session);
+            var feed = new IntervalFeed(
+                tickSet.Pair, tickSet.Session, 300);
 
             feed.OnCandle += (s, e) => candles.Add(e.Candle);
 
-            foreach (var tick in tickSet)
+            var ticks = tickSet.ToList();
+
+            foreach (var tick in tickSet.Take(tickSet.Count - 1))
                 feed.HandleTick(tick);
+
+            feed.RaiseOnCandleAndReset(ticks.Last());
 
             return candles;
         }

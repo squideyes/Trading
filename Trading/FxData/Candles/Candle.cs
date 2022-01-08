@@ -21,7 +21,12 @@ public class Candle : IEquatable<Candle>, ICandle
         {
             OpenOn = tick.TickOn.ToOpenOn(session, interval.Value);
 
-            CloseOn = OpenOn.Value.Add(interval.Value).AddMilliseconds(-1);
+            var closeOn = OpenOn.Value.Add(interval.Value).AddMilliseconds(-1);
+
+            if (closeOn <= session.MaxTickOn.Value)
+                CloseOn = closeOn;
+            else
+                CloseOn = session.MaxTickOn;
         }
         else
         {
