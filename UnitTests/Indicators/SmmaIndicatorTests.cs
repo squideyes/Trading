@@ -72,9 +72,8 @@ namespace SquidEyes.UnitTests.Indicators
 
             for (var i = 0; i < candles.Count; i++)
             {
-                var result = indicator.AddAndCalc(candles[i]);
-
-                result.Value.Should().BeApproximately(results[i], 8);
+                indicator.AddAndCalc(candles[i]).Value
+                    .Should().BeApproximately(results[i], 8);
             }
         }
     }
