@@ -44,19 +44,37 @@ public class Candle : IEquatable<Candle>, ICandle
             if (!session.InSession(openOn))
                 throw new ArgumentOutOfRangeException(nameof(session));
 
-            if (closeOn <= openOn || !session.InSession(openOn))
+            if (!session.InSession(closeOn))
                 throw new ArgumentOutOfRangeException(nameof(session));
+
+            if (closeOn <= openOn)
+                throw new ArgumentOutOfRangeException(nameof(session));
+
+            if (open == default)
+                throw new ArgumentOutOfRangeException(nameof(open));
+
+            if (high == default)
+                throw new ArgumentOutOfRangeException(nameof(high));
 
             if (low == default)
                 throw new ArgumentOutOfRangeException(nameof(low));
 
-            if (high == default || high < low)
+            if (close == default)
+                throw new ArgumentOutOfRangeException(nameof(close));
+
+            if (high < low)
                 throw new ArgumentOutOfRangeException(nameof(high));
 
-            if (open == default || open < low || open > high)
+            if (open < low)
                 throw new ArgumentOutOfRangeException(nameof(open));
 
-            if (close == default || close < low || close > high)
+            if (open > high)
+                throw new ArgumentOutOfRangeException(nameof(open));
+
+            if (close < low)
+                throw new ArgumentOutOfRangeException(nameof(close));
+
+            if (close > high)
                 throw new ArgumentOutOfRangeException(nameof(close));
         }
 
@@ -114,7 +132,7 @@ public class Candle : IEquatable<Candle>, ICandle
 
     public bool Equals(Candle? other)
     {
-        return other != null
+        return other! != null!
             && OpenOn.Equals(other.OpenOn)
             && CloseOn.Equals(other.CloseOn)
             && Open.Equals(other.Open)
@@ -126,7 +144,11 @@ public class Candle : IEquatable<Candle>, ICandle
     public override bool Equals(object? other) => Equals(other as Candle);
 
     public override int GetHashCode() =>
-        HashCode.Combine(OpenOn, Open, High, Low, Close);
+        HashCode.Combine(OpenOn, CloseOn, Open, High, Low, Close);
 
     public Candle Clone() => (Candle)MemberwiseClone();
+
+    public static bool operator ==(Candle left, Candle right) => left.Equals(right);
+
+    public static bool operator !=(Candle left, Candle right) => !(left == right);
 }

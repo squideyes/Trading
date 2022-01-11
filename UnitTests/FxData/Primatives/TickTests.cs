@@ -137,8 +137,8 @@ public class TickTests
     {
         var tick = GetTick(1, 2);
 
-        var hashCode = HashCode.Combine(tick.TickOn.GetHashCode(),
-            tick.Bid.GetHashCode(), tick.Ask.GetHashCode());
+        var hashCode = HashCode.Combine(
+            tick.TickOn, tick.Bid, tick.Ask);
 
         tick.GetHashCode().Should().Be(hashCode);
     }
