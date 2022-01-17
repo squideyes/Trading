@@ -247,7 +247,7 @@ public class TickSetTests
         Tick GetTick(int milliseconds, int bid, int ask)
         {
             return new Tick(((DateTime)session!.MinTickOn)
-                .AddSeconds(milliseconds), new Rate(bid), new Rate(ask));
+                .AddSeconds(milliseconds), bid, ask);
         }
 
         var tickSet = new TickSet(Source.Dukascopy, pair, tradeDate)

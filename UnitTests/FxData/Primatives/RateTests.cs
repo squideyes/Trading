@@ -209,4 +209,23 @@ public class RateTests
     [InlineData(1, 2, false)]
     public void GreaterThanOrEqualToOperator(int v1, int v2, bool result) =>
         (new Rate(v1) >= new Rate(v2)).Should().Be(result);
+
+    //////////////////////////
+
+    [Theory]
+    [InlineData(Rate.MinValue)]
+    [InlineData(Rate.MaxValue)]
+    public void IntToRateToOperatorWithGoodArg(int value) =>
+        ((Rate)value).Value.Should().Be(value);
+
+    //////////////////////////
+
+    [Theory]
+    [InlineData(Rate.MaxValue + 1)]
+    [InlineData(Rate.MinValue - 1)]
+    public void IntToRateToOperatorWithBadArg(int value)
+    {
+        FluentActions.Invoking(() => _ = (Rate)value)
+            .Should().Throw<ArgumentOutOfRangeException>();
+    }
 }

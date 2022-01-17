@@ -101,4 +101,6 @@ public struct Rate : IEquatable<Rate>, IComparable<Rate>
 
     public static bool operator >=(Rate left, Rate right) =>
         left.CompareTo(right) >= 0;
+
+    public static implicit operator Rate(int value) => new(value);
 }

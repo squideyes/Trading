@@ -35,12 +35,12 @@ public class IntervalFeed : ICandleFeed
 
     public void HandleTick(Tick tick)
     {
-        if (tick == default)
+        if (tick.IsDefaultValue())
             throw new ArgumentNullException(nameof(tick));
 
         var openOn = tick.TickOn.ToOpenOn(Session, Interval);
 
-        if (candle == null)
+        if (Equals(candle, null!))
         {
             candle = new Candle(Session, tick, Interval);
         }

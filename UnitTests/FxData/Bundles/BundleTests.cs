@@ -146,8 +146,7 @@ namespace SquidEyes.UnitTests.FxData
         {
             var tickSet = new TickSet(Source.SquidEyes, pair, tradeDate);
 
-            tickSet.Add(new Tick(
-                tickSet.Session.MinTickOn, new Rate(bid), new Rate(ask)));
+            tickSet.Add(new Tick(tickSet.Session.MinTickOn, bid, ask));
 
             return tickSet;
         }

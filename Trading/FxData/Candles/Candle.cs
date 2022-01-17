@@ -19,6 +19,9 @@ public class Candle : IEquatable<Candle>, ICandle
     {
         if (interval.HasValue)
         {
+            if (interval <= TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(interval));
+
             OpenOn = tick.TickOn.ToOpenOn(session, interval.Value);
 
             var closeOn = OpenOn.Value.Add(interval.Value).AddMilliseconds(-1);
@@ -50,16 +53,16 @@ public class Candle : IEquatable<Candle>, ICandle
             if (closeOn <= openOn)
                 throw new ArgumentOutOfRangeException(nameof(session));
 
-            if (open == default)
+            if (open.IsDefaultValue())
                 throw new ArgumentOutOfRangeException(nameof(open));
 
-            if (high == default)
+            if (high.IsDefaultValue())
                 throw new ArgumentOutOfRangeException(nameof(high));
 
-            if (low == default)
+            if (low.IsDefaultValue())
                 throw new ArgumentOutOfRangeException(nameof(low));
 
-            if (close == default)
+            if (close.IsDefaultValue())
                 throw new ArgumentOutOfRangeException(nameof(close));
 
             if (high < low)
@@ -96,17 +99,20 @@ public class Candle : IEquatable<Candle>, ICandle
 
     internal void Adjust(Tick tick, TimeSpan? interval = null)
     {
-        if (!interval.HasValue)
+        if (tick.IsDefaultValue())
+            throw new ArgumentOutOfRangeException(nameof(tick));
+
+        if (interval == null)
             CloseOn = tick.TickOn;
 
-        var mid = tick.Mid;
+        var rate = tick.Mid;
 
-        if (mid > High)
-            High = mid;
-        else if (mid < Low)
-            Low = mid;
+        if (rate > High)
+            High = rate;
+        else if (rate < Low)
+            Low = rate;
 
-        Close = mid;
+        Close = rate;
     }
 
     public string ToCsvString() => ToString();
@@ -132,7 +138,7 @@ public class Candle : IEquatable<Candle>, ICandle
 
     public bool Equals(Candle? other)
     {
-        return other! != null!
+        return !Equals(other!, null!)
             && OpenOn.Equals(other.OpenOn)
             && CloseOn.Equals(other.CloseOn)
             && Open.Equals(other.Open)

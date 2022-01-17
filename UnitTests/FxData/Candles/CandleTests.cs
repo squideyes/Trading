@@ -38,10 +38,10 @@ public class CandleTests
         var session = goodSession ? GetSession() : default;
         var openOn = goodSession && goodOpenOn ? session!.MinTickOn : default;
         var closeOn = goodSession && goodCloseOn ? session!.MaxTickOn : default;
-        var open = goodOpen ? new Rate(3) : default;
-        var high = goodHigh ? new Rate(3) : default;
-        var low = goodLow ? new Rate(3) : default;
-        var close = goodClose ? new Rate(3) : default;
+        var open = goodOpen ? 3 : default;
+        var high = goodHigh ? 3 : default;
+        var low = goodLow ? 3 : default;
+        var close = goodClose ? 3 : default;
 
         FluentActions.Invoking(() => _ = new Candle(session!,
             openOn, closeOn, open, high, low, close)).Should().Throw<Exception>();
@@ -65,37 +65,21 @@ public class CandleTests
         var openOn = session!.MinTickOn.Value.AddHours(openOnHours);
         var closeOn = session!.MaxTickOn.Value.AddHours(closeOnHours);
 
-        FluentActions.Invoking(() => _ = new Candle(session!, openOn, closeOn,
-            new Rate(open), new Rate(high), new Rate(low), new Rate(close)))
-            .Should().Throw<ArgumentOutOfRangeException>();
+        FluentActions.Invoking(() => _ = new Candle(
+            session!, openOn, closeOn, open, high, low, close))
+                .Should().Throw<ArgumentOutOfRangeException>();
     }
 
     //////////////////////////////
 
-    //[Theory]
-    //[InlineData(5, 1, 999999, "01/05/2020 17:00:00.000,0.00001,9.99999")]
-    //[InlineData(3, 1, 999999, "01/05/2020 17:00:00.000,0.001,999.999")]
-    //public void DigitsToCsvString(
-    //    int digits, int bidValue, int askValue, string result)
-    //{
-    //    GetTick(bidValue, askValue)
-    //        .AsFunc(x => x.ToCsvString(digits).Should().Be(result));
-    //}
+    [Fact]
+    public void CloneReturnsMemberwiseClone()
+    {
+        var source = GetCandle(3, 4, 1, 2);
+        var target = source.Clone();
 
-    //////////////////////////////
-
-    //[Theory]
-    //[InlineData(5, 1, 999999, "01/05/2020 17:00:00.000,0.00001,9.99999")]
-    //[InlineData(3, 1, 999999, "01/05/2020 17:00:00.000,0.001,999.999")]
-    //public void PairToCsvString(
-    //    int digits, int bidValue, int askValue, string result)
-    //{
-    //    var pair = digits == 5 ?
-    //        Known.Pairs[Symbol.EURUSD] : Known.Pairs[Symbol.USDJPY];
-
-    //    GetTick(bidValue, askValue)
-    //        .AsFunc(x => x.ToCsvString(pair).Should().Be(result));
-    //}
+        source.Equals(target).Should().BeTrue();
+    }
 
     //////////////////////////////
 
@@ -166,10 +150,10 @@ public class CandleTests
     [InlineData(false)]
     public void CandleEqualsCandle(bool result)
     {
-        var tick1 = GetCandle(3, 4, 1, 2);
-        var tick2 = result ? GetCandle(3, 4, 1, 2) : GetCandle(3, 4, 1, 3);
+        var candle1 = GetCandle(3, 4, 1, 2);
+        var candle2 = result ? GetCandle(3, 4, 1, 2) : GetCandle(3, 4, 1, 3);
 
-        tick1.Equals(tick2).Should().Be(result);
+        candle1.Equals(candle2).Should().Be(result);
     }
 
     //////////////////////////////
@@ -187,16 +171,45 @@ public class CandleTests
 
     //////////////////////////////
 
-    //[Theory]
-    //[InlineData(true)]
-    //[InlineData(false)]
-    //public void TickNotEqualsTickOperator(bool result)
-    //{
-    //    var tick1 = GetTick(1, 2);
-    //    var tick2 = result ? GetTick(2, 3) : GetTick(1, 2);
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void CandleNotEqualsCandleOperator(bool result)
+    {
+        var candle1 = GetCandle(3, 4, 1, 2);
+        var candle2 = result ? GetCandle(3, 4, 1, 3) : GetCandle(3, 4, 1, 2);
 
-    //    (tick1 != tick2).Should().Be(result);
-    //}
+        (candle1 != candle2).Should().Be(result);
+    }
+
+    //////////////////////////////
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void IntervalAdjustDoesIndeedAdjust(bool hasInterval)
+    {
+        TimeSpan? interval = hasInterval ? TimeSpan.FromSeconds(10) : null;
+
+        var candle = GetCandle(5, 5, 5, 5);
+
+        void AdjustAndValidate(int rate, int open, int high, int low, int close)
+        {
+            candle.Adjust(new Tick(candle.OpenOn.Value, rate, rate), interval);
+
+            candle.Open.Should().Be(open);
+            candle.High.Should().Be(high);
+            candle.Low.Should().Be(low);
+            candle.Close.Should().Be(close);
+        }
+
+        AdjustAndValidate(5, 5, 5, 5, 5);
+        AdjustAndValidate(7, 5, 7, 5, 7);
+        AdjustAndValidate(3, 5, 7, 3, 3);
+        AdjustAndValidate(4, 5, 7, 3, 4);
+        AdjustAndValidate(5, 5, 7, 3, 5);
+        AdjustAndValidate(6, 5, 7, 3, 6);
+    }
 
     //////////////////////////////
 
@@ -207,7 +220,7 @@ public class CandleTests
     {
         var session = GetSession();
 
-        return new Candle(GetSession(), session.MinTickOn, session.MaxTickOn,
-            new Rate(open), new Rate(high), new Rate(low), new Rate(close));
+        return new Candle(GetSession(),
+            session.MinTickOn, session.MaxTickOn, open, high, low, close);
     }
 }

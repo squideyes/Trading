@@ -201,8 +201,7 @@ public class IntervalFeedTests
             var closeOn = tradeDate.AddDays(offset)
                 .ToDateTime(TimeOnly.Parse(closeOnString));
 
-            candles.Add(new Candle(session, openOn, closeOn, new Rate(open),
-                new Rate(high), new Rate(low), new Rate(close)));
+            candles.Add(new Candle(session, openOn, closeOn, open, high, low, close));
         }
 
         Add(-1, "17:00:00.000", "17:06:59.999", 111671, 111679, 111650, 111652);

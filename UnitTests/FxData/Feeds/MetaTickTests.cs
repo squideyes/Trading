@@ -25,8 +25,8 @@ public class MetaTickTests
 
         metaTick.Pair.Should().Be(Known.Pairs[EURUSD]);
         metaTick.Tick.TickOn.Should().Be(GetTickOn(1));
-        metaTick.Tick.Bid.Should().Be(new Rate(2));
-        metaTick.Tick.Ask.Should().Be(new Rate(3));
+        metaTick.Tick.Bid.Should().Be(2);
+        metaTick.Tick.Ask.Should().Be(3);
     }
 
     [Theory]
@@ -109,5 +109,5 @@ public class MetaTickTests
         new DateTime(2020, 1, 6, 17, 0, seconds, DateTimeKind.Unspecified);
 
     private static MetaTick GetMetaTick(Symbol symbol, int seconds, int bid, int ask) =>
-        new(Known.Pairs[symbol], new Tick(GetTickOn(seconds), new Rate(bid), new Rate(ask)));
+        new(Known.Pairs[symbol], new Tick(GetTickOn(seconds), bid, ask));
 }

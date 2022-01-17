@@ -118,7 +118,7 @@ namespace SquidEyes.UnitTests.FxData
             TickOn tickOn = new DateTime(
                 2020, 1, 5 + days, 17, 0, seconds, DateTimeKind.Unspecified);
 
-            return new Tick(tickOn, new Rate(bid), new Rate(bid + 1));
+            return new Tick(tickOn, bid, bid + 1);
         }
 
         private static TickSet GetTickSet(

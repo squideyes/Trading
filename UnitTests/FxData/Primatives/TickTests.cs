@@ -19,8 +19,7 @@ namespace SquidEyes.UnitTests.FxData;
 public class TickTests
 {
     [Fact]
-    public void ContructWithGoodArgs() =>
-        _ = new Tick(GetTickOn(), new Rate(1), new Rate(2));
+    public void ContructWithGoodArgs() => _ = new Tick(GetTickOn(), 1, 2);
 
     ////////////////////////////
 
@@ -29,8 +28,7 @@ public class TickTests
     [InlineData(true, Rate.MinValue - 1, Rate.MaxValue)]
     [InlineData(true, Rate.MinValue, Rate.MaxValue + 1)]
     [InlineData(true, Rate.MinValue + 1, Rate.MinValue)]
-    public void ConstructWithBadArgs(
-        bool goodTickOn, int bidValue, int askValue)
+    public void ConstructWithBadArgs(bool goodTickOn, int bid, int ask)
     {
         TickOn tickOn;
 
@@ -39,8 +37,8 @@ public class TickTests
         else
             tickOn = default;
 
-        FluentActions.Invoking(() => _ = new Tick(tickOn, new Rate(bidValue),
-            new Rate(askValue))).Should().Throw<ArgumentException>();
+        FluentActions.Invoking(() => _ = new Tick(tickOn, 
+            bid, ask)).Should().Throw<ArgumentException>();
     }
 
     ////////////////////////////
@@ -48,8 +46,8 @@ public class TickTests
     [Fact]
     public void ConstructWithDefaultBid()
     {
-        FluentActions.Invoking(() => _ = new Tick(GetTickOn(), default,
-            new Rate(Rate.MinValue))).Should().Throw<ArgumentException>();
+        FluentActions.Invoking(() => _ = new Tick(GetTickOn(), 
+            default, Rate.MinValue)).Should().Throw<ArgumentException>();
     }
 
     ////////////////////////////
@@ -58,7 +56,7 @@ public class TickTests
     public void ConstructWithDefaultAsk()
     {
         FluentActions.Invoking(() => _ = new Tick(GetTickOn(), 
-            new Rate(Rate.MinValue), default)).Should().Throw<ArgumentException>();
+            Rate.MinValue, default)).Should().Throw<ArgumentException>();
     }
 
     ////////////////////////////
@@ -104,7 +102,7 @@ public class TickTests
     [InlineData(1, 3, 2)]
     [InlineData(1, 4, 2)]
     public void MidSetCorrectly(int bidValue, int askValue, int result) =>
-        GetTick(bidValue, askValue).Mid.Should().Be(new Rate(result));
+        GetTick(bidValue, askValue).Mid.Should().Be(result);
 
     ////////////////////////////
 
@@ -115,7 +113,7 @@ public class TickTests
     public void SpreadSetCorrectly(int bidValue, int askValue, int result)
     {
         GetTick(bidValue, askValue)
-            .AsFunc(x => x.Spread.Should().Be(new Rate(result)));
+            .AsFunc(x => x.Spread.Should().Be(result));
     }
 
     ////////////////////////////
@@ -188,5 +186,5 @@ public class TickTests
         new(new DateTime(2020, 1, 5, 17, 0, 0, DateTimeKind.Unspecified));
 
     private static Tick GetTick(int bidValue, int askValue) =>
-        new(GetTickOn(), new Rate(bidValue), new Rate(askValue));
+        new(GetTickOn(), bidValue, askValue);
 }
