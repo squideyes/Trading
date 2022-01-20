@@ -20,11 +20,14 @@ namespace SquidEyes.Trading.FxData
         private DateOnly minTradeDate;
         private DateOnly maxTradeDate;
 
-        public MetaTickSet(Source source, Session session)
+        public MetaTickSet(Source source, Session session, HashSet<Pair> pairs)
         {
             Source = source.Validated(nameof(source), v => v.IsEnumValue());
-
             Session = session;
+            Pairs = pairs.Validated(nameof(pairs), v => v.HasItems());
+
+            foreach (var pair in pairs)
+                tickSets.Add(pair, new List<TickSet>());
 
             minTradeDate = session.TradeDate;
 
@@ -38,49 +41,42 @@ namespace SquidEyes.Trading.FxData
 
         public Source Source { get; }
         public Session Session { get; }
-        public List<Pair> Pairs => tickSets.Keys.ToList();
+        public HashSet<Pair> Pairs { get; }
 
         public void Add(List<TickSet> tickSets)
         {
-            var days = Session.Extent.ToDays();
-
-            if (!tickSets.Count.Between(1, days))
+            if (!tickSets.HasItems())
                 throw new ArgumentOutOfRangeException(nameof(tickSets));
 
             if (tickSets.Any(ts => ts.Source != Source))
                 throw new ArgumentOutOfRangeException(nameof(tickSets));
 
-            if (tickSets.Any(ts => ts.Pair != tickSets.First().Pair))
+            if (tickSets.Any(ts => ts.Session != tickSets[0].Session))
+                throw new ArgumentOutOfRangeException(nameof(tickSets));
+
+            var tradeDate = tickSets[0].Session.TradeDate;
+
+            if (!tradeDate.Between(minTradeDate, maxTradeDate))
+                throw new ArgumentOutOfRangeException(nameof(tickSets));
+
+            if (this.tickSets.First().Value.Count >= 1 
+                && tradeDate <= this.tickSets.First().Value.Last().Session.TradeDate)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tickSets));
+            }
+
+            if (tickSets.Count != Pairs.Count)
+                throw new ArgumentOutOfRangeException(nameof(tickSets));
+
+            if (!tickSets.Select(ts => ts.Pair).IsUnique())
+                throw new ArgumentOutOfRangeException(nameof(tickSets));
+
+            if (tickSets.Any(ts => !Pairs.Contains(ts.Pair)))
                 throw new ArgumentOutOfRangeException(nameof(tickSets));
 
             foreach (var tickSet in tickSets)
-            {
-                if (!tickSet.Session.TradeDate.Between(minTradeDate, maxTradeDate))
-                    throw new ArgumentOutOfRangeException(nameof(tickSets));
-            }
+                this.tickSets[tickSet.Pair].Add(tickSet);
 
-            for (var i = 1; i < tickSets.Count; i++)
-            {
-                if (tickSets[i].Session.TradeDate <= tickSets[i - 1].Session.TradeDate)
-                    throw new ArgumentOutOfRangeException(nameof(tickSets));
-            }
-
-            if (this.tickSets.Count > 0)
-            {
-                if (tickSets.Count != this.tickSets.First().Value.Count)
-                    throw new ArgumentOutOfRangeException(nameof(tickSets));
-
-                for (var i = 0; i < tickSets.Count; i++)
-                {
-                    if (tickSets[i].Session.TradeDate != 
-                        this.tickSets.First().Value[i].Session.TradeDate)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(tickSets));
-                    }
-                }
-            }
-
-            this.tickSets.Add(tickSets[0].Pair, tickSets);
         }
 
         public IEnumerator<MetaTick> GetEnumerator()
@@ -115,16 +111,10 @@ namespace SquidEyes.Trading.FxData
                     }
                 }
 
-                var tuples = new List<(Pair Pair, Tick Tick)>();
-
                 foreach (var tickOn in datas.Keys.OrderBy(t => t))
-                    tuples.AddRange(datas[tickOn].OrderBy(d => random.Next()));
-
-                for (var i = 0; i < tuples.Count; i++)
                 {
-                    var tuple = tuples[i];
-
-                    yield return new MetaTick(tuple.Pair, tuple.Tick);
+                    foreach (var data in datas[tickOn].OrderBy(d => random.Next()))
+                        yield return new MetaTick(data.Pair, data.Tick);
                 }
             }
         }
