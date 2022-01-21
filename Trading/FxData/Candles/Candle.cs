@@ -8,8 +8,8 @@
 // ********************************************************
 
 using SquidEyes.Basics;
-using System.Text;
 using SquidEyes.Trading.Context;
+using System.Text;
 
 namespace SquidEyes.Trading.FxData;
 

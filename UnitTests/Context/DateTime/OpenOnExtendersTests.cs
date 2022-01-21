@@ -48,7 +48,6 @@ public class OpenOnExtendersTests
     {
         public IsOpenOnWithMixedArgsData()
         {
-
             Add(DT("01/06/2020 16:00:45.000"), false);
             Add(DT("01/06/2020 16:00:59.999"), false);
             Add(DT("01/06/2020 17:00:00.000"), true);
@@ -107,7 +106,7 @@ public class OpenOnExtendersTests
     {
         var session = new Session(Extent.Day, new DateOnly(2020, 1, 6));
 
-        FluentActions.Invoking(() => _ = new TickOn().ToOpenOn(session, 
+        FluentActions.Invoking(() => _ = new TickOn().ToOpenOn(session,
             FromSeconds(5))).Should().Throw<ArgumentOutOfRangeException>();
     }
 

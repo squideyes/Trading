@@ -26,7 +26,7 @@ public abstract class BasicIndicatorBase
     protected Pair Pair { get; }
     protected RateToUse RateToUse { get; }
 
-    static protected BasicResult GetBasicResult(TickOn openOn, double value) => new()
+    protected static BasicResult GetBasicResult(TickOn openOn, double value) => new()
     {
         OpenOn = openOn,
         Value = value

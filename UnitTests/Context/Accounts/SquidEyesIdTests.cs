@@ -7,9 +7,9 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-using Xunit;
 using FluentAssertions;
 using SquidEyes.Trading.Context;
+using Xunit;
 
 namespace SquidEyes.UnitTests.Context;
 

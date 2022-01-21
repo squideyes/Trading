@@ -32,7 +32,7 @@ public class CciIndicator : BasicIndicatorBase, IBasicIndicator
     {
         double result;
 
-        typical.Add(candle.AsFunc(c => 
+        typical.Add(candle.AsFunc(c =>
             (c.High.Value + c.Low.Value + c.Close.Value) / 3.0));
 
         var sma0 = sma.AddAndCalc(candle.OpenOn, typical[0]).Value;

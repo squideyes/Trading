@@ -149,6 +149,7 @@ public class MetaTickSetTests
                 tickSet.Add(GetTick(days, 4, 14));
                 tickSet.Add(GetTick(days, 5, 15));
                 break;
+
             case 2:
                 tickSet.Add(GetTick(days, 0, 7));
                 tickSet.Add(GetTick(days, 1, 8));
@@ -157,6 +158,7 @@ public class MetaTickSetTests
                 tickSet.Add(GetTick(days, 4, 6));
                 tickSet.Add(GetTick(days, 5, 5));
                 break;
+
             case 3:
                 tickSet.Add(GetTick(days, 0, 12));
                 tickSet.Add(GetTick(days, 1, 11));
@@ -165,6 +167,7 @@ public class MetaTickSetTests
                 tickSet.Add(GetTick(days, 4, 5));
                 tickSet.Add(GetTick(days, 5, 4));
                 break;
+
             case 4:
                 tickSet.Add(GetTick(days, 0, 12));
                 tickSet.Add(GetTick(days, 1, 11));
@@ -173,6 +176,7 @@ public class MetaTickSetTests
                 tickSet.Add(GetTick(days, 4, 13));
                 tickSet.Add(GetTick(days, 5, 14));
                 break;
+
             default:
                 throw new ArgumentOutOfRangeException(nameof(dataId));
         }

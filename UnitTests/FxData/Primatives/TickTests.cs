@@ -8,10 +8,10 @@
 // ********************************************************
 
 using FluentAssertions;
+using SquidEyes.Basics;
 using SquidEyes.Trading.Context;
 using SquidEyes.Trading.FxData;
 using System;
-using SquidEyes.Basics;
 using Xunit;
 
 namespace SquidEyes.UnitTests.FxData;
@@ -37,7 +37,7 @@ public class TickTests
         else
             tickOn = default;
 
-        FluentActions.Invoking(() => _ = new Tick(tickOn, 
+        FluentActions.Invoking(() => _ = new Tick(tickOn,
             bid, ask)).Should().Throw<ArgumentException>();
     }
 
@@ -46,7 +46,7 @@ public class TickTests
     [Fact]
     public void ConstructWithDefaultBid()
     {
-        FluentActions.Invoking(() => _ = new Tick(GetTickOn(), 
+        FluentActions.Invoking(() => _ = new Tick(GetTickOn(),
             default, Rate.MinValue)).Should().Throw<ArgumentException>();
     }
 
@@ -55,7 +55,7 @@ public class TickTests
     [Fact]
     public void ConstructWithDefaultAsk()
     {
-        FluentActions.Invoking(() => _ = new Tick(GetTickOn(), 
+        FluentActions.Invoking(() => _ = new Tick(GetTickOn(),
             Rate.MinValue, default)).Should().Throw<ArgumentException>();
     }
 

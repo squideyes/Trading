@@ -8,13 +8,13 @@
 // ********************************************************
 
 using FluentAssertions;
+using SquidEyes.Basics;
 using SquidEyes.Trading.Context;
 using SquidEyes.Trading.FxData;
 using System;
 using System.IO;
 using System.Linq;
 using Xunit;
-using SquidEyes.Basics;
 
 namespace SquidEyes.UnitTests.FxData
 {

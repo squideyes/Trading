@@ -87,7 +87,6 @@ public class SessionTests
             Add(Day, DT("01/06/2020 17:00:00.000"), true);
             Add(Day, DT("01/07/2020 16:59:59.999"), true);
             Add(Day, DT("01/07/2020 17:00:00.000"), false);
-
         }
     }
 
@@ -130,7 +129,7 @@ public class SessionTests
     [InlineData(Week, false)]
     public void GenericEquals(Extent extent, bool result)
     {
-        new Session(extent, TradeDate).Equals(result ? new Session(extent, TradeDate) 
+        new Session(extent, TradeDate).Equals(result ? new Session(extent, TradeDate)
             : new Session(extent, TradeDate.AddDays(7))).Should().Be(result);
     }
 
@@ -143,7 +142,7 @@ public class SessionTests
     [InlineData(Week, false)]
     public void ObjectEqualsWithGoodSession(Extent extent, bool result)
     {
-        new Session(extent, TradeDate).Equals(result ? new Session(extent, TradeDate) 
+        new Session(extent, TradeDate).Equals(result ? new Session(extent, TradeDate)
             : new Session(extent, TradeDate.AddDays(7))).Should().Be(result);
     }
 
@@ -160,8 +159,8 @@ public class SessionTests
     [InlineData(Day, false)]
     [InlineData(Week, true)]
     [InlineData(Week, false)]
-    public void EqualsOperator(Extent extent, bool result) =>  (new Session(
-        extent, TradeDate) == (result ? new Session(extent, TradeDate) 
+    public void EqualsOperator(Extent extent, bool result) => (new Session(
+        extent, TradeDate) == (result ? new Session(extent, TradeDate)
         : new Session(extent, TradeDate.AddDays(7)))).Should().Be(result);
 
     //////////////////////////

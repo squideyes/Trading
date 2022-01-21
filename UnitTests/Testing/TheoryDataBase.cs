@@ -16,7 +16,7 @@ namespace SquidEyes.UnitTests.Testing;
 
 public abstract class TheoryDataBase : IEnumerable<object[]>
 {
-    readonly List<object[]> data = new();
+    private readonly List<object[]> data = new();
 
     protected void AddRow(params object[] values) => data.Add(values);
 

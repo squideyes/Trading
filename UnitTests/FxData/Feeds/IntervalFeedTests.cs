@@ -83,7 +83,7 @@ public class IntervalFeedTests
 
         var candles = new List<ICandle>();
 
-        feed.OnCandle += (s, e) =>  candles.Add(e.Candle);
+        feed.OnCandle += (s, e) => candles.Add(e.Candle);
 
         var list = metaTicks.ToList();
 

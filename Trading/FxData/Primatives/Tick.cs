@@ -7,8 +7,8 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-using SquidEyes.Trading.Context;
 using SquidEyes.Basics;
+using SquidEyes.Trading.Context;
 
 namespace SquidEyes.Trading.FxData;
 
@@ -16,7 +16,7 @@ public struct Tick : IEquatable<Tick>
 {
     public Tick(TickOn tickOn, Rate bid, Rate ask)
     {
-        TickOn = tickOn.Validated(nameof(tickOn), v => !v.IsDefaultValue());        
+        TickOn = tickOn.Validated(nameof(tickOn), v => !v.IsDefaultValue());
         Bid = bid.Validated(nameof(bid), v => !v.IsDefaultValue());
         Ask = ask.Validated(nameof(ask), v => !v.IsDefaultValue() && v >= bid);
     }

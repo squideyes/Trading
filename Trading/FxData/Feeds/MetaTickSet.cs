@@ -76,7 +76,6 @@ public class MetaTickSet : IEnumerable<MetaTick>
 
         foreach (var tickSet in tickSets)
             this.tickSets[tickSet.Pair].Add(tickSet);
-
     }
 
     public IEnumerator<MetaTick> GetEnumerator()
