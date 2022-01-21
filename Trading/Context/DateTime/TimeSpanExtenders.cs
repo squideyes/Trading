@@ -7,17 +7,16 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.Context
+namespace SquidEyes.Trading.Context;
+
+public static class TimeSpanExtenders
 {
-    public static class TimeSpanExtenders
+    public static string ToTimeSpanText(
+        this TimeSpan value, bool daysOptional = true)
     {
-        public static string ToTimeSpanText(
-            this TimeSpan value, bool daysOptional = true)
-        {
-            if (daysOptional && value < TimeSpan.FromDays(1))
-                return value.ToString("hh\\:mm\\:ss\\.fff");
-            else
-                return value.ToString("d\\.hh\\:mm\\:ss\\.fff");
-        }
+        if (daysOptional && value < TimeSpan.FromDays(1))
+            return value.ToString("hh\\:mm\\:ss\\.fff");
+        else
+            return value.ToString("d\\.hh\\:mm\\:ss\\.fff");
     }
 }

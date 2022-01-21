@@ -7,11 +7,10 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.Context
+namespace SquidEyes.Trading.Context;
+
+public enum Extent
 {
-    public enum Extent
-    {
-        Day = 1,
-        Week
-    }
+    Day = 1,
+    Week
 }

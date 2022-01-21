@@ -7,11 +7,10 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.FxData
+namespace SquidEyes.Trading.FxData;
+
+public static class FloatExtenders
 {
-    public static class FloatExtenders
-    {
-        public static bool IsRateValue(this float value, int digits) =>
-            Rate.IsRate(value, digits);
-    }
+    public static bool IsRateValue(this float value, int digits) =>
+        Rate.IsRate(value, digits);
 }

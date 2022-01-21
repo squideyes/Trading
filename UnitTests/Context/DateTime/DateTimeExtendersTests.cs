@@ -11,7 +11,6 @@ using FluentAssertions;
 using SquidEyes.Trading.Context;
 using System;
 using Xunit;
-using static System.DateTimeKind;
 
 namespace SquidEyes.UnitTests.Context;
 

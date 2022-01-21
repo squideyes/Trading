@@ -7,18 +7,17 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.Context
+namespace SquidEyes.Trading.Context;
+
+public enum Symbol
 {
-    public enum Symbol
-    {
-        AUDUSD = 1,
-        EURGBP,
-        EURJPY,
-        EURUSD,
-        GBPUSD,
-        NZDUSD,
-        USDCAD,
-        USDCHF,
-        USDJPY
-    }
+    AUDUSD = 1,
+    EURGBP,
+    EURJPY,
+    EURUSD,
+    GBPUSD,
+    NZDUSD,
+    USDCAD,
+    USDCHF,
+    USDJPY
 }

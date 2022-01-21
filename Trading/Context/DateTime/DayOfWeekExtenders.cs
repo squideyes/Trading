@@ -9,12 +9,10 @@
 
 using static System.DayOfWeek;
 
+namespace SquidEyes.Trading.Context;
 
-namespace SquidEyes.Trading.Context
+public static class DayOfWeekExtenders
 {
-    public static class DayOfWeekExtenders
-    {
-        public static bool IsWeekday(this DayOfWeek dayOfWeek) =>
-            dayOfWeek >= Monday && dayOfWeek <= Friday;
-    }
+    public static bool IsWeekday(this DayOfWeek dayOfWeek) =>
+        dayOfWeek >= Monday && dayOfWeek <= Friday;
 }

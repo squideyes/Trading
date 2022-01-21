@@ -7,31 +7,30 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.Shared.Helpers
+namespace SquidEyes.Trading.Shared.Helpers;
+
+public static class FastMath
 {
-    public static class FastMath
+    private static readonly float[] adjustments = GetAdjustments();
+
+    public static float Round(float value) =>
+        MathF.Floor(value + 0.5f);
+
+    public static float Round(float value, int digits)
     {
-        private static readonly float[] adjustments = GetAdjustments();
+        var adjustment = adjustments[digits];
 
-        public static float Round(float value) =>
-            MathF.Floor(value + 0.5f);
+        return MathF.Floor(
+            value * adjustment + 0.5f) / adjustments[digits];
+    }
 
-        public static float Round(float value, int digits)
-        {
-            var adjustment = adjustments[digits];
+    private static float[] GetAdjustments()
+    {
+        var result = new float[15];
 
-            return MathF.Floor(
-                value * adjustment + 0.5f) / adjustments[digits];
-        }
+        for (var i = 0; i < result.Length; i++)
+            result[i] = MathF.Pow(10, i);
 
-        private static float[] GetAdjustments()
-        {
-            var result = new float[15];
-
-            for (var i = 0; i < result.Length; i++)
-                result[i] = MathF.Pow(10, i);
-
-            return result;
-        }
+        return result;
     }
 }

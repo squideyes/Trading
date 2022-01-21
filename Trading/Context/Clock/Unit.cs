@@ -7,12 +7,11 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.Context
+namespace SquidEyes.Trading.Context;
+
+public enum Unit
 {
-    public enum Unit
-    {
-        Hours = 1,
-        Minutes,
-        Seconds
-    }
+    Hours = 1,
+    Minutes,
+    Seconds
 }

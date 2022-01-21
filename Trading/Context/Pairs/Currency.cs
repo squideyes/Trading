@@ -7,17 +7,16 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.Context
+namespace SquidEyes.Trading.Context;
+
+public enum Currency
 {
-    public enum Currency
-    {
-        USD = 1,
-        JPY,
-        CAD,
-        CHF,
-        GBP,
-        AUD,
-        EUR,
-        NZD
-    }
+    USD = 1,
+    JPY,
+    CAD,
+    CHF,
+    GBP,
+    AUD,
+    EUR,
+    NZD
 }

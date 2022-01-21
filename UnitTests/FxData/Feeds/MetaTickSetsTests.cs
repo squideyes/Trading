@@ -15,159 +15,168 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace SquidEyes.UnitTests.FxData
+namespace SquidEyes.UnitTests.FxData;
+
+public class MetaTickSetTests
 {
-    public class MetaTickSetTests
+    [Theory]
+    [InlineData(Extent.Day, true)]
+    [InlineData(Extent.Day, false)]
+    [InlineData(Extent.Week, true)]
+    [InlineData(Extent.Week, false)]
+    public void ConstructsWithGoodArgs(Extent extent, bool withJpy)
     {
-        [Theory]
-        [InlineData(Extent.Day, true)]
-        [InlineData(Extent.Day, false)]
-        [InlineData(Extent.Week, true)]
-        [InlineData(Extent.Week, false)]
-        public void ConstructsWithGoodArgs(Extent extent, bool withJpy)
+        var tradeDate = new DateOnly(2020, 1, 6);
+
+        var session = new Session(Extent.Week, tradeDate);
+
+        var pairs = new HashSet<Pair>() { Known.Pairs[Symbol.EURUSD] };
+
+        if (withJpy)
         {
-            var tradeDate = new DateOnly(2020, 1, 6);
+            pairs.Add(Known.Pairs[Symbol.EURJPY]);
+            pairs.Add(Known.Pairs[Symbol.USDJPY]);
+        }
 
-            var session = new Session(Extent.Week, tradeDate);
+        List<TickSet> GetTickSets(int days, int dataId)
+        {
+            var tickSets = new List<TickSet>();
 
-            var pairs = new HashSet<Pair>() { Known.Pairs[Symbol.EURUSD] };
+            foreach (var pair in pairs)
+                tickSets.Add(GetTickSet(pair, tradeDate, days, dataId));
 
-            if (withJpy)
-            {
-                pairs.Add(Known.Pairs[Symbol.EURJPY]);
-                pairs.Add(Known.Pairs[Symbol.USDJPY]);
-            }
+            return tickSets;
+        };
 
-            List<TickSet> GetTickSets(int days, int dataId)
-            {
-                var tickSets = new List<TickSet>();
-
-                foreach(var pair in pairs)
-                    tickSets.Add(GetTickSet(pair, tradeDate, days, dataId));
-
-                return tickSets;
-            };
-
-            var metaTicks = new MetaTickSet(Source.SquidEyes, session, pairs)
+        var metaTicks = new MetaTickSet(Source.SquidEyes, session, pairs)
             {
                 GetTickSets(0, 1)
             };
 
-            if (extent == Extent.Week)
-            {
-                metaTicks.Add(GetTickSets(1, 2));
-                metaTicks.Add(GetTickSets(2, 3));
-                metaTicks.Add(GetTickSets(4, 4));
-            }
-
-            var count = extent == Extent.Week ? 24 : 6;
-
-            metaTicks.Count().Should().Be(withJpy ? count * 3 : count);
-        }
-
-        //[Fact]
-        //public void EnumeratesMultipleTickSetPairs()
-        //{
-        //    static string GetString(int index)
-        //    {
-        //        return index switch
-        //        {
-        //            0 => "EURJPY,01/05/2020 17:00:00.000,1,2",
-        //            1 => "USDJPY,01/05/2020 17:00:01.000,2,3",
-        //            2 => "EURUSD,01/05/2020 17:00:02.000,3,4",
-        //            3 => "EURUSD,01/05/2020 17:00:03.000,5,6",
-        //            4 => "EURJPY,01/05/2020 17:00:03.000,4,5",
-        //            5 => "EURJPY,01/05/2020 17:00:04.000,7,8",
-        //            6 => "USDJPY,01/05/2020 17:00:04.000,6,7",
-        //            7 => "USDJPY,01/05/2020 17:00:05.000,9,10",
-        //            8 => "EURJPY,01/05/2020 17:00:05.000,8,9",
-        //            _ => throw new ArgumentOutOfRangeException(nameof(index))
-        //        };
-        //    }
-
-        //    var tradeDate = new DateOnly(2020, 1, 6);
-
-        //    var session = new Session(Extent.Day, tradeDate);
-
-        //    var metaTickSet = new MetaTickSet(Source.SquidEyes, session);
-
-        //    var tickSet1 = new TickSet(Source.SquidEyes, Known.Pairs[Symbol.EURJPY], tradeDate);
-        //    var tickSet2 = new TickSet(Source.SquidEyes, Known.Pairs[Symbol.USDJPY], tradeDate);
-        //    var tickSet3 = new TickSet(Source.SquidEyes, Known.Pairs[Symbol.EURUSD], tradeDate);
-
-        //    tickSet1.Add(GetTick(0, 0, 1));
-        //    tickSet2.Add(GetTick(0, 1, 2));
-        //    tickSet3.Add(GetTick(0, 2, 3));
-        //    tickSet1.Add(GetTick(0, 3, 4));
-        //    tickSet3.Add(GetTick(0, 3, 5));
-        //    tickSet2.Add(GetTick(0, 4, 6));
-        //    tickSet1.Add(GetTick(0, 4, 7));
-        //    tickSet1.Add(GetTick(0, 5, 8));
-        //    tickSet2.Add(GetTick(0, 5, 9));
-
-        //    metaTickSet.Add(new List<TickSet> { tickSet1 });
-        //    metaTickSet.Add(new List<TickSet> { tickSet2 });
-        //    metaTickSet.Add(new List<TickSet> { tickSet3 });
-
-        //    var metaTicks = metaTickSet.ToList();
-
-        //    for (var i = 0; i < metaTicks.Count; i++)
-        //        metaTicks[i].ToString().Should().Be(GetString(i));
-        //}
-
-        private static Tick GetTick(int days, int seconds, int bid)
+        if (extent == Extent.Week)
         {
-            TickOn tickOn = new DateTime(
-                2020, 1, 5 + days, 17, 0, seconds, DateTimeKind.Unspecified);
-
-            return new Tick(tickOn, bid, bid + 1);
+            metaTicks.Add(GetTickSets(1, 2));
+            metaTicks.Add(GetTickSets(2, 3));
+            metaTicks.Add(GetTickSets(4, 4));
         }
 
-        private static TickSet GetTickSet(
-            Pair pair, DateOnly tradeDate, int days, int dataId)
+        var count = extent == Extent.Week ? 24 : 6;
+
+        metaTicks.Count().Should().Be(withJpy ? count * 3 : count);
+    }
+
+    [Fact]
+    public void EnumeratesMultipleTickSetPairs()
+    {
+        static string GetString(int index)
         {
-            var tickSet = new TickSet(
-                Source.SquidEyes, pair, tradeDate.AddDays(days));
-
-            switch (dataId)
+            return index switch
             {
-                case 1:
-                    tickSet.Add(GetTick(days, 0, 7));
-                    tickSet.Add(GetTick(days, 1, 8));
-                    tickSet.Add(GetTick(days, 2, 9));
-                    tickSet.Add(GetTick(days, 3, 6));
-                    tickSet.Add(GetTick(days, 4, 14));
-                    tickSet.Add(GetTick(days, 5, 15));
-                    break;
-                case 2:
-                    tickSet.Add(GetTick(days, 0, 7));
-                    tickSet.Add(GetTick(days, 1, 8));
-                    tickSet.Add(GetTick(days, 2, 9));
-                    tickSet.Add(GetTick(days, 3, 14));
-                    tickSet.Add(GetTick(days, 4, 6));
-                    tickSet.Add(GetTick(days, 5, 5));
-                    break;
-                case 3:
-                    tickSet.Add(GetTick(days, 0, 12));
-                    tickSet.Add(GetTick(days, 1, 11));
-                    tickSet.Add(GetTick(days, 2, 10));
-                    tickSet.Add(GetTick(days, 3, 13));
-                    tickSet.Add(GetTick(days, 4, 5));
-                    tickSet.Add(GetTick(days, 5, 4));
-                    break;
-                case 4:
-                    tickSet.Add(GetTick(days, 0, 12));
-                    tickSet.Add(GetTick(days, 1, 11));
-                    tickSet.Add(GetTick(days, 2, 10));
-                    tickSet.Add(GetTick(days, 3, 5));
-                    tickSet.Add(GetTick(days, 4, 13));
-                    tickSet.Add(GetTick(days, 5, 14));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(dataId));
-            }
-
-            return tickSet;
+                0 => "EURJPY,01/05/2020 17:00:00.000,1,2",
+                1 => "USDJPY,01/05/2020 17:00:01.000,2,3",
+                2 => "EURUSD,01/05/2020 17:00:02.000,3,4",
+                3 => "EURUSD,01/05/2020 17:00:03.000,5,6",
+                4 => "EURJPY,01/05/2020 17:00:03.000,4,5",
+                5 => "USDJPY,01/05/2020 17:00:04.000,6,7",
+                6 => "EURJPY,01/05/2020 17:00:04.000,7,8",
+                7 => "EURJPY,01/05/2020 17:00:05.000,8,9",
+                8 => "USDJPY,01/05/2020 17:00:05.000,9,10",
+                _ => throw new ArgumentOutOfRangeException(nameof(index))
+            };
         }
+
+        var tradeDate = new DateOnly(2020, 1, 6);
+
+        var session = new Session(Extent.Day, tradeDate);
+
+        var pairs = new HashSet<Pair>()
+            {
+                Known.Pairs[Symbol.USDJPY],
+                Known.Pairs[Symbol.EURJPY],
+                Known.Pairs[Symbol.EURUSD]
+            };
+
+        var metaTickSet = new MetaTickSet(Source.SquidEyes, session, pairs);
+
+        var eurJpy = new TickSet(
+            Source.SquidEyes, Known.Pairs[Symbol.EURJPY], tradeDate);
+
+        var usdJpy = new TickSet(
+            Source.SquidEyes, Known.Pairs[Symbol.USDJPY], tradeDate);
+
+        var eurUsd = new TickSet(
+            Source.SquidEyes, Known.Pairs[Symbol.EURUSD], tradeDate);
+
+        eurJpy.Add(GetTick(0, 0, 1));
+        usdJpy.Add(GetTick(0, 1, 2));
+        eurUsd.Add(GetTick(0, 2, 3));
+        eurJpy.Add(GetTick(0, 3, 4));
+        eurUsd.Add(GetTick(0, 3, 5));
+        usdJpy.Add(GetTick(0, 4, 6));
+        eurJpy.Add(GetTick(0, 4, 7));
+        eurJpy.Add(GetTick(0, 5, 8));
+        usdJpy.Add(GetTick(0, 5, 9));
+
+        metaTickSet.Add(new List<TickSet> { eurJpy, usdJpy, eurUsd });
+
+        var metaTicks = metaTickSet.ToList();
+
+        for (var i = 0; i < metaTicks.Count; i++)
+            metaTicks[i].ToString().Should().Be(GetString(i));
+    }
+
+    private static Tick GetTick(int days, int seconds, int bid)
+    {
+        TickOn tickOn = new DateTime(
+            2020, 1, 5 + days, 17, 0, seconds, DateTimeKind.Unspecified);
+
+        return new Tick(tickOn, bid, bid + 1);
+    }
+
+    private static TickSet GetTickSet(
+        Pair pair, DateOnly tradeDate, int days, int dataId)
+    {
+        var tickSet = new TickSet(
+            Source.SquidEyes, pair, tradeDate.AddDays(days));
+
+        switch (dataId)
+        {
+            case 1:
+                tickSet.Add(GetTick(days, 0, 7));
+                tickSet.Add(GetTick(days, 1, 8));
+                tickSet.Add(GetTick(days, 2, 9));
+                tickSet.Add(GetTick(days, 3, 6));
+                tickSet.Add(GetTick(days, 4, 14));
+                tickSet.Add(GetTick(days, 5, 15));
+                break;
+            case 2:
+                tickSet.Add(GetTick(days, 0, 7));
+                tickSet.Add(GetTick(days, 1, 8));
+                tickSet.Add(GetTick(days, 2, 9));
+                tickSet.Add(GetTick(days, 3, 14));
+                tickSet.Add(GetTick(days, 4, 6));
+                tickSet.Add(GetTick(days, 5, 5));
+                break;
+            case 3:
+                tickSet.Add(GetTick(days, 0, 12));
+                tickSet.Add(GetTick(days, 1, 11));
+                tickSet.Add(GetTick(days, 2, 10));
+                tickSet.Add(GetTick(days, 3, 13));
+                tickSet.Add(GetTick(days, 4, 5));
+                tickSet.Add(GetTick(days, 5, 4));
+                break;
+            case 4:
+                tickSet.Add(GetTick(days, 0, 12));
+                tickSet.Add(GetTick(days, 1, 11));
+                tickSet.Add(GetTick(days, 2, 10));
+                tickSet.Add(GetTick(days, 3, 5));
+                tickSet.Add(GetTick(days, 4, 13));
+                tickSet.Add(GetTick(days, 5, 14));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(dataId));
+        }
+
+        return tickSet;
     }
 }

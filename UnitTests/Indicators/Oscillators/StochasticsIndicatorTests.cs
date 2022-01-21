@@ -13,15 +13,15 @@ using SquidEyes.Trading.Indicators;
 using SquidEyes.UnitTests.Testing;
 using Xunit;
 
-namespace SquidEyes.UnitTests.Indicators
+namespace SquidEyes.UnitTests.Indicators;
+
+public class StochasticsIndicatorTests
 {
-    public class StochasticsIndicatorTests
+    [Fact]
+    public void StochasticsIndicatorBaseline()
     {
-        [Fact]
-        public void StochasticsIndicatorBaseline()
+        var results = new (double AddK, double AddD, double UpdateK, double UpdateD)[]
         {
-            var results = new (double AddK, double AddD, double UpdateK, double UpdateD)[]
-            {
                 (21.05263158, 21.05263158, 21.05263158, 21.05263158),
                 (12.25045372, 16.65154265, 12.25045372, 16.65154265),
                 (20.49573627, 17.93294052, 20.49573627, 17.93294052),
@@ -309,28 +309,27 @@ namespace SquidEyes.UnitTests.Indicators
                 (95.75346735, 91.18866634, 95.75346735, 91.18866634),
                 (95.49850670, 91.53930657, 95.49850670, 91.53930657),
                 (91.95677076, 91.29413725, 91.95677076, 91.29413725),
-                (85.38103901, 90.69461170, 85.38103901, 90.69461170)            
-            };
+                (85.38103901, 90.69461170, 85.38103901, 90.69461170)
+        };
 
-            var indicator = new StochasticsIndicator(
-                14, 7, 3, Known.Pairs[Symbol.EURUSD]);
+        var indicator = new StochasticsIndicator(
+            14, 7, 3, Known.Pairs[Symbol.EURUSD]);
 
-            var candles = IndicatorData.GetCandles();
+        var candles = IndicatorData.GetCandles();
 
-            candles.Count.Should().Be(results.Length);
+        candles.Count.Should().Be(results.Length);
 
-            for (var i = 0; i < candles.Count; i++)
-            {
-                var add = indicator.AddAndCalc(candles[i]);
+        for (var i = 0; i < candles.Count; i++)
+        {
+            var add = indicator.AddAndCalc(candles[i]);
 
-                add.K.Should().BeApproximately(results[i].AddK, 8);
-                add.D.Should().BeApproximately(results[i].AddD, 8);
+            add.K.Should().BeApproximately(results[i].AddK, 8);
+            add.D.Should().BeApproximately(results[i].AddD, 8);
 
-                var update = indicator.UpdateAndCalc(candles[i]);
+            var update = indicator.UpdateAndCalc(candles[i]);
 
-                update.K.Should().BeApproximately(results[i].UpdateK, 8);
-                update.D.Should().BeApproximately(results[i].UpdateD, 8);
-            }
+            update.K.Should().BeApproximately(results[i].UpdateK, 8);
+            update.D.Should().BeApproximately(results[i].UpdateD, 8);
         }
     }
 }

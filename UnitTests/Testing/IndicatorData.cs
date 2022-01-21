@@ -15,33 +15,32 @@ using System.Collections.Generic;
 using System.Linq;
 using static SquidEyes.UnitTests.Properties.TestData;
 
-namespace SquidEyes.UnitTests.Testing
+namespace SquidEyes.UnitTests.Testing;
+
+internal static class IndicatorData
 {
-    internal static class IndicatorData
+    public static List<ICandle> GetCandles()
     {
-        public static List<ICandle> GetCandles()
-        {
-            var tickSet = new TickSet(Source.Dukascopy,
-                Known.Pairs[Symbol.EURUSD], new DateOnly(2020, 1, 6));
+        var tickSet = new TickSet(Source.Dukascopy,
+            Known.Pairs[Symbol.EURUSD], new DateOnly(2020, 1, 6));
 
-            tickSet.LoadFromStream(
-                DC_EURUSD_20200106_EST_STS.ToStream(), DataKind.STS);
+        tickSet.LoadFromStream(
+            DC_EURUSD_20200106_EST_STS.ToStream(), DataKind.STS);
 
-            var candles = new List<ICandle>();
+        var candles = new List<ICandle>();
 
-            var feed = new IntervalFeed(
-                tickSet.Pair, tickSet.Session, 300);
+        var feed = new IntervalFeed(
+            tickSet.Pair, tickSet.Session, 300);
 
-            feed.OnCandle += (s, e) => candles.Add(e.Candle);
+        feed.OnCandle += (s, e) => candles.Add(e.Candle);
 
-            var ticks = tickSet.ToList();
+        var ticks = tickSet.ToList();
 
-            foreach (var tick in tickSet.Take(tickSet.Count - 1))
-                feed.HandleTick(tick);
+        foreach (var tick in tickSet.Take(tickSet.Count - 1))
+            feed.HandleTick(tick);
 
-            feed.RaiseOnCandleAndReset(ticks.Last());
+        feed.RaiseOnCandleAndReset(ticks.Last());
 
-            return candles;
-        }
+        return candles;
     }
 }
