@@ -39,88 +39,79 @@ public class IntervalFeedTests
 
     //////////////////////////
 
-    //[Theory]
-    //[InlineData(Extent.Day)]
-    //[InlineData(Extent.Week)]
-    //public void RaiseOnCandleAndResetDoes(Extent extent)
-    //{
-    //    static (MetaTickSet MetaTicks, IntervalFeed Feed) GetMetaTicksAndFeed(
-    //        int seconds, Extent extent = Extent.Day)
-    //    {
-    //        var pair = Known.Pairs[Symbol.EURUSD];
+    [Theory]
+    [InlineData(Extent.Day)]
+    [InlineData(Extent.Week)]
+    public void RaiseOnCandleAndResetDoes(Extent extent)
+    {
+        static (MetaTickSet MetaTicks, IntervalFeed Feed) GetMetaTicksAndFeed(
+            int seconds, Extent extent = Extent.Day)
+        {
+            var pair = Known.Pairs[Symbol.EURUSD];
 
-    //        var tradeDate = new DateOnly(2020, 1, 6);
+            var tradeDate = new DateOnly(2020, 1, 6);
 
-    //        var session = new Session(extent, tradeDate);
+            var session = new Session(extent, tradeDate);
 
-    //        var metaTicks = new MetaTickSet(Source.Dukascopy, session);
+            var metaTicks = new MetaTickSet(
+                Source.Dukascopy, session, new HashSet<Pair> { pair });
 
-    //        TickSet GetTickSet(byte[] bytes, int days)
-    //        {
-    //            var tickSet = new TickSet(
-    //                Source.Dukascopy, pair!, tradeDate.AddDays(days));
+            void AddTickSet(byte[] bytes, int days)
+            {
+                var tickSet = new TickSet(
+                    Source.Dukascopy, pair!, tradeDate.AddDays(days));
 
-    //            tickSet.LoadFromStream(bytes.ToStream(), DataKind.STS);
+                tickSet.LoadFromStream(bytes.ToStream(), DataKind.STS);
 
-    //            return tickSet;
-    //        }
+                metaTicks.Add(new List<TickSet> { tickSet });
+            }
 
-    //        var tickSets = new List<TickSet>
-    //        {
-    //            GetTickSet(DC_EURUSD_20200106_EST_STS, 0)
-    //        };
+            AddTickSet(DC_EURUSD_20200106_EST_STS, 0);
 
-    //        if (extent == Extent.Week)
-    //        {
-    //            tickSets.Add(GetTickSet(DC_EURUSD_20200107_EST_STS, 1));
-    //            tickSets.Add(GetTickSet(DC_EURUSD_20200108_EST_STS, 2));
-    //            tickSets.Add(GetTickSet(DC_EURUSD_20200109_EST_STS, 3));
-    //            tickSets.Add(GetTickSet(DC_EURUSD_20200110_EST_STS, 4));
-    //        }
+            if (extent == Extent.Week)
+            {
+                AddTickSet(DC_EURUSD_20200107_EST_STS, 1);
+                AddTickSet(DC_EURUSD_20200108_EST_STS, 2);
+                AddTickSet(DC_EURUSD_20200109_EST_STS, 3);
+                AddTickSet(DC_EURUSD_20200110_EST_STS, 4);
+            }
 
-    //        metaTicks.Add(tickSets);
+            return (metaTicks, new IntervalFeed(pair, session, seconds));
+        }
 
-    //        return (metaTicks, new IntervalFeed(pair, session, seconds));
-    //    }
+        var (metaTicks, feed) = GetMetaTicksAndFeed(60 * 7, extent);
 
-    //    var (metaTicks, feed) = GetMetaTicksAndFeed(60 * 7, extent);
+        var candles = new List<ICandle>();
 
-    //    var candles = new List<ICandle>();
+        feed.OnCandle += (s, e) =>  candles.Add(e.Candle);
 
-    //    feed.OnCandle += (s, e) =>
-    //    {
-    //        candles.Add(e.Candle);
+        var list = metaTicks.ToList();
 
-    //        System.Diagnostics.Debug.WriteLine(e.Candle.ToString());
-    //    };
+        foreach (var metaTick in list.Take(list.Count - 1))
+            feed.HandleTick(metaTick.Tick);
 
-    //    var list = metaTicks.ToList();
+        candles.Count.Should().Be(extent == Extent.Day ? 205 : 1028);
 
-    //    foreach (var metaTick in list.Take(list.Count - 1))
-    //        feed.HandleTick(metaTick.Tick);
+        var day = extent == Extent.Day ? 6 : 10;
 
-    //    candles.Count.Should().Be(extent == Extent.Day ? 205 : 1028);
+        var offset = extent == Extent.Day ? 1 : 0;
 
-    //    var day = extent == Extent.Day ? 6 : 10;
+        candles.Last().OpenOn.Should().Be(
+            new DateTime(2020, 1, day, 16, 49 - offset, 0));
 
-    //    var offset = extent == Extent.Day ? 1 : 0;
+        candles.Last().CloseOn.Should().Be(
+            new DateTime(2020, 1, day, 16, 55 - offset, 59, 999));
 
-    //    candles.Last().OpenOn.Should().Be(
-    //        new DateTime(2020, 1, day, 16, 49 - offset, 0));
+        feed.RaiseOnCandleAndReset(list.Last().Tick);
 
-    //    candles.Last().CloseOn.Should().Be(
-    //        new DateTime(2020, 1, day, 16, 55 - offset, 59, 999));
+        candles.Last().OpenOn.Should().Be(
+            new DateTime(2020, 1, day, 16, 56 - offset, 0));
 
-    //    feed.RaiseOnCandleAndReset(list.Last().Tick);
+        candles.Last().CloseOn.Should().Be(
+            new DateTime(2020, 1, day, 16, 59, 59, 999));
 
-    //    candles.Last().OpenOn.Should().Be(
-    //        new DateTime(2020, 1, day, 16, 56 - offset, 0));
-
-    //    candles.Last().CloseOn.Should().Be(
-    //        new DateTime(2020, 1, day, 16, 59, 59, 999));
-
-    //    candles.Count.Should().Be(extent == Extent.Day ? 206 : 1029);
-    //}
+        candles.Count.Should().Be(extent == Extent.Day ? 206 : 1029);
+    }
 
     //////////////////////////
 
