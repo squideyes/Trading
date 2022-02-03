@@ -33,6 +33,8 @@ public class OffsetEmbargo : EmbargoBase
 
     public override bool IsEmbargoed(Session session, TickOn tickOn)
     {
+        ArgumentNullException.ThrowIfNull(session);
+
         var tradeDate = tickOn.ToTradeDate(true);
 
         if (dayOfWeek.HasValue && tradeDate.DayOfWeek != dayOfWeek)
@@ -44,6 +46,7 @@ public class OffsetEmbargo : EmbargoBase
         return tickOn >= minTickOn && tickOn <= maxTickOn;
     }
 
+    // TODO: ??????????????????????????????
     public override string ToString() => GetToString(
         $"{minOffset.ToTimeSpanText()} to {maxOffset.ToTimeSpanText()}", dayOfWeek, true);
 

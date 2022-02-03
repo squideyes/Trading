@@ -28,6 +28,8 @@ public class TemaIndicator : BasicIndicatorBase, IBasicIndicator
 
     public BasicResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         var value1 = ema1.AddAndCalc(candle).Value;
         var dataPoint1 = GetBasicResult(candle.OpenOn, value1);
 

@@ -44,6 +44,8 @@ public class Candle : IEquatable<Candle>, ICandle
     {
         if (validate)
         {
+            ArgumentNullException.ThrowIfNull(session);
+
             if (!session.InSession(openOn))
                 throw new ArgumentOutOfRangeException(nameof(session));
 
@@ -124,6 +126,8 @@ public class Candle : IEquatable<Candle>, ICandle
 
     public string ToString(Pair pair)
     {
+        ArgumentNullException.ThrowIfNull(pair);
+
         var sb = new StringBuilder();
 
         sb.Append(OpenOn);

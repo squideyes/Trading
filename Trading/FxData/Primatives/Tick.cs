@@ -35,8 +35,12 @@ public struct Tick : IEquatable<Tick>
 
     public override string ToString() => $"{TickOn},{Bid},{Ask}";
 
-    public string ToCsvString(Pair pair) =>
-        ToCsvString(pair.Digits);
+    public string ToCsvString(Pair pair)
+    {
+        ArgumentNullException.ThrowIfNull(pair);
+
+        return ToCsvString(pair.Digits);
+    }
 
     public string ToCsvString(int digits) =>
         $"{TickOn},{Bid.ToString(digits)},{Ask.ToString(digits)}";

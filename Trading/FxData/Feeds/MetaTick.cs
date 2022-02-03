@@ -15,6 +15,8 @@ namespace SquidEyes.Trading.FxData
     {
         public MetaTick(Pair pair, Tick tick)
         {
+            ArgumentNullException.ThrowIfNull(pair);
+
             Pair = pair;
             Tick = tick;
         }

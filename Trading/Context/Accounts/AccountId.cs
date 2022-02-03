@@ -28,7 +28,7 @@ public class AccountId
         traderId = default!;
         ordinal = default;
 
-        if (value.Length != 18)
+        if (value?.Length != 18)
             return false;
 
         traderId = value[0..12];

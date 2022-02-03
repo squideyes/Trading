@@ -20,6 +20,8 @@ public class OneTimeEmbargo : EmbargoBase
         DateTime maxTickOn, bool isAdHoc = false)
         : base(isAdHoc ? EmbargoKind.AdHoc : EmbargoKind.OneTime)
     {
+        ArgumentNullException.ThrowIfNull(session);
+
         this.minTickOn = minTickOn.Validated(
             nameof(minTickOn), v => session.InSession(minTickOn));
 
@@ -28,8 +30,12 @@ public class OneTimeEmbargo : EmbargoBase
                 && minTickOn.ToTradeDate() == maxTickOn.ToTradeDate());
     }
 
-    public override bool IsEmbargoed(Session session, TickOn tickOn) =>
-        tickOn >= minTickOn && tickOn <= maxTickOn;
+    public override bool IsEmbargoed(Session session, TickOn tickOn)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+
+        return tickOn >= minTickOn && tickOn <= maxTickOn;
+    }
 
     public override string ToString() =>
         $"OneTime Embargo ({minTickOn.ToTickOnText()} to {maxTickOn.ToTickOnText()}";

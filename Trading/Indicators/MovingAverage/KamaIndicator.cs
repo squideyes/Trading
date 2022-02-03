@@ -36,6 +36,8 @@ public class KamaIndicator : BasicIndicatorBase, IBasicIndicator
 
     public BasicResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         var dataPoint = candle.ToBasicResult(Pair, RateToUse);
 
         BasicResult UpdateIndexAndLastResultThenGetResult(double value)

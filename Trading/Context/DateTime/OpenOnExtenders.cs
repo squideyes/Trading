@@ -21,6 +21,8 @@ public static class OpenOnExtenders
 
     public static bool IsOpenOn(this TickOn value, Session session, TimeSpan interval)
     {
+        ArgumentNullException.ThrowIfNull(session);
+
         if (!IsInterval(interval))
             throw new ArgumentOutOfRangeException(nameof(interval));
 
@@ -30,6 +32,8 @@ public static class OpenOnExtenders
     public static DateTime ToOpenOn(
         this TickOn value, Session session, TimeSpan interval)
     {
+        ArgumentNullException.ThrowIfNull(session);
+
         if (!IsInterval(interval.Ticks))
             throw new ArgumentOutOfRangeException(nameof(interval));
 

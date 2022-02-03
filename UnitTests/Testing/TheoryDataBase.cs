@@ -20,7 +20,7 @@ public abstract class TheoryDataBase : IEnumerable<object[]>
 
     protected void AddRow(params object[] values) => data.Add(values);
 
-    protected static DateTime DT(
+    static protected DateTime DT(
         string value, DateTimeKind kind = DateTimeKind.Unspecified)
     {
         if (kind == DateTimeKind.Utc)
@@ -29,11 +29,11 @@ public abstract class TheoryDataBase : IEnumerable<object[]>
             return DateTime.Parse(value);
     }
 
-    protected static DateOnly DO(string value) => DateOnly.Parse(value);
+    static protected DateOnly DO(string value) => DateOnly.Parse(value);
 
-    protected static TimeOnly TO(string value) => TimeOnly.Parse(value);
+    static protected TimeOnly TO(string value) => TimeOnly.Parse(value);
 
-    protected static TimeSpan TS(string value) => TimeSpan.Parse(value);
+    static protected TimeSpan TS(string value) => TimeSpan.Parse(value);
 
     public IEnumerator<object[]> GetEnumerator() =>
         data.GetEnumerator();

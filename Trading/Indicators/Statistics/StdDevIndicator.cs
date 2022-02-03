@@ -29,6 +29,8 @@ public class StdDevIndicator : BasicIndicatorBase, IBasicIndicator
 
     public BasicResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         var (openOn, value) = candle.ToBasicResult(Pair, RateToUse)
             .AsFunc(r => (r.OpenOn, r.Value));
 

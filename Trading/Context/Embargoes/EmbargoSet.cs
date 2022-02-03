@@ -13,15 +13,27 @@ namespace SquidEyes.Trading.Context;
 
 public class EmbargoSet : ListBase<IEmbargo>
 {
-    public EmbargoSet(Session session) => Session = session;
+    public EmbargoSet(Session session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+
+        Session = session;
+    }
 
     public Session Session { get; }
 
-    public void Add(IEmbargo embargo) => Items.Add(embargo);
+    public void Add(IEmbargo embargo)
+    {
+        ArgumentNullException.ThrowIfNull(embargo);
+
+        Items.Add(embargo);
+    }
 
     public (bool IsEmbargoed, IEmbargo? Embargo) IsEmbargoed(
         Session session, TickOn tickOn)
     {
+        ArgumentNullException.ThrowIfNull(session);
+
         if (!Session.InSession(tickOn))
             return (false, null);
 

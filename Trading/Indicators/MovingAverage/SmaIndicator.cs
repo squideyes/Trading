@@ -27,8 +27,12 @@ public class SmaIndicator : BasicIndicatorBase, IBasicIndicator
         buffer = new SlidingBuffer<double>(period + 1);
     }
 
-    public BasicResult AddAndCalc(ICandle candle) =>
-        AddAndCalc(candle.OpenOn, candle.GetRate(Pair, RateToUse));
+    public BasicResult AddAndCalc(ICandle candle)
+    {
+        ArgumentNullException.ThrowIfNull(candle);
+
+        return AddAndCalc(candle.OpenOn, candle.GetRate(Pair, RateToUse));
+    }
 
     public BasicResult AddAndCalc(TickOn openOn, double price)
     {

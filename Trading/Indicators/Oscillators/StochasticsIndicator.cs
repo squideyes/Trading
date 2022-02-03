@@ -27,7 +27,7 @@ public class StochasticsIndicator
         this.periodK = periodK.Validated(nameof(periodK), v => v >= 2);
         this.periodD = periodD.Validated(nameof(periodD), v => v >= 2);
         this.smooth = smooth.Validated(nameof(smooth), v => v >= 1);
-        this.pair = pair;
+        this.pair = pair ?? throw new ArgumentNullException(nameof(pair));
 
         candles = new SlidingBuffer<ICandle>(this.periodK, true);
 
@@ -38,8 +38,7 @@ public class StochasticsIndicator
 
     public StochasticsResult AddAndCalc(ICandle candle)
     {
-        if (candle == null)
-            throw new ArgumentNullException(nameof(candle));
+        ArgumentNullException.ThrowIfNull(candle);
 
         candles.Add(candle);
 
@@ -50,8 +49,7 @@ public class StochasticsIndicator
 
     public StochasticsResult UpdateAndCalc(ICandle candle)
     {
-        if (candle == null)
-            throw new ArgumentNullException(nameof(candle));
+        ArgumentNullException.ThrowIfNull(candle);
 
         candles.Update(candle);
 
@@ -62,6 +60,8 @@ public class StochasticsIndicator
 
     private StochasticsResult GetStochasticsResult(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         var smaFastK = new SmaIndicator(smooth, pair, RateToUse.Close);
         var smaK = new SmaIndicator(periodD, pair, RateToUse.Close);
 

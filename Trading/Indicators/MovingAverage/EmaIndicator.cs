@@ -25,11 +25,17 @@ public class EmaIndicator : BasicIndicatorBase, IBasicIndicator
         constant2 = 1.0 - (2.0 / (1 + period));
     }
 
-    public BasicResult AddAndCalc(ICandle candle) =>
-        AddAndCalc(candle.ToBasicResult(Pair, RateToUse.Close));
+    public BasicResult AddAndCalc(ICandle candle)
+    {
+        ArgumentNullException.ThrowIfNull(candle);
+
+        return AddAndCalc(candle.ToBasicResult(Pair, RateToUse.Close));
+    }
 
     public BasicResult AddAndCalc(BasicResult result)
     {
+        ArgumentNullException.ThrowIfNull(result);
+
         var ema = !lastEma.HasValue ? result.Value :
             result.Value * constant1 + constant2 * lastEma;
 

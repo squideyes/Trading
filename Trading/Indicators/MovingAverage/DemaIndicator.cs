@@ -26,6 +26,8 @@ public class DemaIndicator : BasicIndicatorBase, IBasicIndicator
 
     public BasicResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         var value1 = ema1.AddAndCalc(candle).Value;
 
         var result = GetBasicResult(candle.OpenOn, value1);

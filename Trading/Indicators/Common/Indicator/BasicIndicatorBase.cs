@@ -18,7 +18,7 @@ public abstract class BasicIndicatorBase
         int period, Pair pair, RateToUse rateToUse, int minPeriod)
     {
         Period = period.Validated(nameof(period), v => v >= minPeriod);
-        Pair = pair;
+        Pair = pair ?? throw new ArgumentNullException(nameof(pair));
         RateToUse = rateToUse.Validated(nameof(rateToUse), v => v.IsEnumValue());
     }
 

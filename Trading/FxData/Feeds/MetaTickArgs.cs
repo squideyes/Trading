@@ -11,7 +11,8 @@ namespace SquidEyes.Trading.FxData;
 
 public class MetaTickArgs : EventArgs
 {
-    public MetaTickArgs(MetaTick metaTick) => MetaTick = metaTick;
+    public MetaTickArgs(MetaTick metaTick) => MetaTick = 
+        metaTick ?? throw new ArgumentNullException(nameof(metaTick));
 
     public MetaTick MetaTick { get; }
 }

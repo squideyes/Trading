@@ -34,6 +34,8 @@ public class BollingerBandsIndictor : BasicIndicatorBase
 
     public ChannelResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         var smaValue = smaIndicator.AddAndCalc(candle).Value;
 
         var stdDevValue = stdDevIndicator.AddAndCalc(candle).Value;

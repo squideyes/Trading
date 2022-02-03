@@ -13,7 +13,13 @@ namespace SquidEyes.Trading.FxData
 {
     public static class CandleExtenders
     {
-        public static bool InSession(this ICandle candle, Session session) =>
-            session.InSession(candle.OpenOn) && session.InSession(candle.CloseOn);
+        public static bool InSession(this ICandle candle, Session session)
+        {
+            ArgumentNullException.ThrowIfNull(candle);
+            ArgumentNullException.ThrowIfNull(session);
+
+            return session.InSession(candle.OpenOn) 
+                && session.InSession(candle.CloseOn);
+        }
     }
 }

@@ -43,12 +43,14 @@ public class MacdIndicator
         constant5 = 2.0 / (1 + smooth);
         constant6 = 1 - (2.0 / (1 + smooth));
 
-        this.pair = pair;
+        this.pair = pair ?? throw new ArgumentNullException(nameof(pair));
         this.rateToUse = rateToUse;
     }
 
     public MacdResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         var dataPoint = candle.ToBasicResult(pair, rateToUse);
 
         fastEmas.Add(0.0);

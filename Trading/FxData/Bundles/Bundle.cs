@@ -39,6 +39,8 @@ public class Bundle : ListBase<TickSet>
 
     public void Add(TickSet tickSet)
     {
+        ArgumentNullException.ThrowIfNull(tickSet);
+
         if (tickSet.Count == 0)
             throw new InvalidOperationException("An empty tick-set may not be bundled!");
 
@@ -115,6 +117,8 @@ public class Bundle : ListBase<TickSet>
 
     public void SaveToStream(Stream stream)
     {
+        ArgumentNullException.ThrowIfNull(stream);
+
         using var archive = new ZipArchive(stream, ZipArchiveMode.Create, true);
 
         foreach (var tickSet in Items)
@@ -131,6 +135,8 @@ public class Bundle : ListBase<TickSet>
 
     public void LoadFromStream(Stream stream)
     {
+        ArgumentNullException.ThrowIfNull(stream);
+
         var archive = new ZipArchive(stream, ZipArchiveMode.Read);
 
         var entries = archive.Entries;

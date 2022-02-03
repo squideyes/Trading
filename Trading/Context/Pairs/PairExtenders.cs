@@ -15,6 +15,8 @@ public static class PairExtenders
 {
     private static List<Pair> GetExtraPairs(this Pair pair)
     {
+        ArgumentNullException.ThrowIfNull(pair);
+
         if (!Known.Pairs.ContainsKey(pair.Symbol))
             throw new ArgumentOutOfRangeException(nameof(pair));
 

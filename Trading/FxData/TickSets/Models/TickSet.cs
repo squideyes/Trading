@@ -144,8 +144,7 @@ public class TickSet : ListBase<Tick>
 
     public void SaveToStream(Stream stream, DataKind dataKind)
     {
-        if (stream == null)
-            throw new ArgumentNullException(nameof(stream));
+        ArgumentNullException.ThrowIfNull(stream);
 
         if (!dataKind.IsEnumValue())
             throw new ArgumentOutOfRangeException(nameof(dataKind));
@@ -242,8 +241,7 @@ public class TickSet : ListBase<Tick>
 
     public void LoadFromStream(Stream stream, DataKind dataKind)
     {
-        if (stream == null)
-            throw new ArgumentNullException(nameof(stream));
+        ArgumentNullException.ThrowIfNull(stream);
 
         if (!dataKind.IsEnumValue())
             throw new ArgumentOutOfRangeException(nameof(dataKind));
@@ -378,7 +376,7 @@ public class TickSet : ListBase<Tick>
     private static TickOn ReadTickOn(
         BinaryReader reader, byte header, Tick lastTick)
     {
-        int value = ReadValue(reader, header, 0b0011_0000, 4);
+        var value = ReadValue(reader, header, 0b0011_0000, 4);
 
         return lastTick.TickOn.Value.AddMilliseconds(value);
     }

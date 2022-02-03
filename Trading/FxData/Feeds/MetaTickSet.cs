@@ -23,7 +23,7 @@ public class MetaTickSet : IEnumerable<MetaTick>
     public MetaTickSet(Source source, Session session, HashSet<Pair> pairs)
     {
         Source = source.Validated(nameof(source), v => v.IsEnumValue());
-        Session = session;
+        Session = session?? throw new ArgumentNullException(nameof(session));
         Pairs = pairs.Validated(nameof(pairs), v => v.HasItems());
 
         foreach (var pair in pairs)

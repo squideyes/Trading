@@ -26,6 +26,8 @@ public class PeggedEmbargo : EmbargoBase
 
     public override bool IsEmbargoed(Session session, TickOn tickOn)
     {
+        ArgumentNullException.ThrowIfNull(session);
+
         if (tickOn == default)
             throw new ArgumentOutOfRangeException(nameof(tickOn));
 

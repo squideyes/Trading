@@ -25,6 +25,8 @@ public class AtrIndicator : BasicIndicatorBase, IBasicIndicator
 
     public BasicResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         double high0 = candle.High.Value;
         double low0 = candle.Low.Value;
 

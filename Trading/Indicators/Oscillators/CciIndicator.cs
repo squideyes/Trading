@@ -23,6 +23,8 @@ public class CciIndicator : BasicIndicatorBase, IBasicIndicator
     public CciIndicator(int period, Pair pair, RateToUse rateToUse)
         : base(period, pair, rateToUse, 2)
     {
+        ArgumentNullException.ThrowIfNull(pair);
+
         sma = new SmaIndicator(period, pair, rateToUse);
 
         typical = new SlidingBuffer<double>(period, true);
@@ -30,6 +32,8 @@ public class CciIndicator : BasicIndicatorBase, IBasicIndicator
 
     public BasicResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         double result;
 
         typical.Add(candle.AsFunc(c =>

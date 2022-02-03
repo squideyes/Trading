@@ -31,6 +31,8 @@ public class SmmaIndicator : BasicIndicatorBase, IBasicIndicator
 
     public BasicResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         var price = candle.GetRate(Pair, RateToUse);
 
         buffer.Add(price);

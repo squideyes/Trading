@@ -71,12 +71,9 @@ public class PeggedEmbargoTests
     //////////////////////////
 
     [Theory]
-    [InlineData(PegTo.Open, false, true)]
-    [InlineData(PegTo.Open, true, false)]
-    [InlineData(PegTo.Close, false, true)]
-    [InlineData(PegTo.Close, true, false)]
-    public void IsEmbargoedWithBadTickOn(
-        PegTo pegTo, bool goodSession, bool goodTickOn)
+    [InlineData(PegTo.Open)]
+    [InlineData(PegTo.Close)]
+    public void IsEmbargoedWithBadTickOn(PegTo pegTo)
     {
         var embargo = new PeggedEmbargo(pegTo, 15);
 
@@ -84,12 +81,10 @@ public class PeggedEmbargoTests
 
         var tickOn = pegTo == PegTo.Open ? session.MinTickOn : session.MaxTickOn;
 
-        FluentActions.Invoking(() => _ = embargo.IsEmbargoed(
-            goodSession ? session : null!,
-            goodTickOn ? tickOn : tickOn.Value.AddDays(1)))
-            .Should().Throw<ArgumentOutOfRangeException>();
+        embargo.IsEmbargoed(session, tickOn.Value.AddDays(1)).Should().BeFalse();
     }
 
+    //////////////////////////
 
     [Fact]
     public void IsEmbargoedWithBadSession()

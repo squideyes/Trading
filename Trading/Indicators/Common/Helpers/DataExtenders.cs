@@ -17,6 +17,8 @@ public static class DataExtenders
     public static float GetRate(
         this ICandle candle, Pair pair, RateToUse rateToUse)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         return rateToUse switch
         {
             RateToUse.Open => candle.Open.GetFloat(pair.Digits),
@@ -30,6 +32,9 @@ public static class DataExtenders
     public static BasicResult ToBasicResult(
         this ICandle candle, Pair pair, RateToUse rateToUse)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+        ArgumentNullException.ThrowIfNull(pair);
+
         return new()
         {
             OpenOn = candle.OpenOn,

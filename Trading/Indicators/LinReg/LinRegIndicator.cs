@@ -38,6 +38,8 @@ public class LinRegIndicator : BasicIndicatorBase, IBasicIndicator
 
     public BasicResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         var dataPoint = candle.ToBasicResult(Pair, RateToUse);
 
         values.Add(dataPoint.Value);

@@ -35,6 +35,8 @@ public class KeltnerChannelIndictor : BasicIndicatorBase
 
     public ChannelResult AddAndCalc(ICandle candle)
     {
+        ArgumentNullException.ThrowIfNull(candle);
+
         diff.Add(candle.High.Value - candle.Low.Value);
 
         typical.Add(candle.AsFunc(c => (c.High.Value + c.Low.Value + c.Close.Value) / 3.0));
