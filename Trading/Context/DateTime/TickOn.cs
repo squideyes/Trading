@@ -24,7 +24,7 @@ public struct TickOn : IEquatable<TickOn>, IComparable<TickOn>
         Value = value;
     }
 
-    internal DateTime Value { get; init; }
+    internal DateTime Value { get; private set; }
 
     public bool IsEmpty => Value == default;
 

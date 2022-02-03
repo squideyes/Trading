@@ -20,7 +20,8 @@ public static class DateTimeExtenders
     public static string ToDateText(this DateTime value) =>
         value.ToString("MM/dd/yyyy");
 
-    public static DateOnly ToTradeDate(this DateTime value, bool validate)
+    public static DateOnly ToTradeDate(
+        this DateTime value, bool validate = true)
     {
         DateOnly tradeDate;
 

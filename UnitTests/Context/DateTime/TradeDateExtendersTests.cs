@@ -50,7 +50,7 @@ public class TradeDateExtendersTests
     [Theory]
     [ClassData(typeof(ToTradeDateWithGoodArgsData))]
     public void ToTradeDateWithGoodArgs(DateTime tickOn, DateOnly date) =>
-        tickOn.ToTradeDate(true).Should().Be(date);
+        tickOn.ToTradeDate().Should().Be(date);
 
     //////////////////////////
 
@@ -67,7 +67,7 @@ public class TradeDateExtendersTests
     [ClassData(typeof(ToTradeDateWithBadArgsData))]
     public void ToTradeDateWithBadArgs(DateTime tickOn)
     {
-        FluentActions.Invoking(() => _ = tickOn.ToTradeDate(true))
+        FluentActions.Invoking(() => _ = tickOn.ToTradeDate())
             .Should().Throw<ArgumentOutOfRangeException>();
     }
 
