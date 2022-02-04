@@ -46,28 +46,23 @@ public class OffsetEmbargo : EmbargoBase
         return tickOn >= minTickOn && tickOn <= maxTickOn;
     }
 
-    // TODO: ??????????????????????????????
-    public override string ToString() => GetToString(
-        $"{minOffset.ToTimeSpanText()} to {maxOffset.ToTimeSpanText()}", dayOfWeek, true);
-
-    protected string GetToString(string bodyText, DayOfWeek? dayOfWeek, bool includeDayOfWeek)
+    public override string ToString()
     {
-        string GetDayOfWeekText()
+        var sb = new StringBuilder();
+
+        sb.Append("Offset Embargo (");
+        sb.Append(minOffset.ToTimeSpanText());
+        sb.Append(" to ");
+        sb.Append(maxOffset.ToTimeSpanText());
+
+        if (dayOfWeek.HasValue)
         {
-            var sb = new StringBuilder();
-
             sb.Append("; ");
-
-            if (dayOfWeek.HasValue)
-                sb.Append(dayOfWeek);
-            else
-                sb.Append("All Week");
-
-            return sb.ToString();
+            sb.Append(dayOfWeek);
         }
 
-        var dow = includeDayOfWeek ? GetDayOfWeekText() : "";
+        sb.Append(')');
 
-        return $"Embargo ({Kind}; {bodyText}{dow})";
+        return sb.ToString();
     }
 }
