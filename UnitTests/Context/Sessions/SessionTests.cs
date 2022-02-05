@@ -12,55 +12,89 @@ using SquidEyes.Trading.Context;
 using System;
 using Xunit;
 using static SquidEyes.Trading.Context.Extent;
+using static SquidEyes.Trading.Context.Session.Defaults;
 
 namespace SquidEyes.UnitTests.Context;
 
 public class SessionTests
 {
     private class GoodContructorArgsData
-        : Testing.TheoryData<Extent, DateOnly, DateTime, DateTime>
+        : Testing.TheoryData<Extent, DateOnly, DateTime, DateTime, (int, int)>
     {
         public GoodContructorArgsData()
         {
-            Add(Day, DO("01/06/2020"), DT("01/05/2020 17:00:00.000"), DT("01/06/2020 16:59:59.999"));
-            Add(Day, DO("01/07/2020"), DT("01/06/2020 17:00:00.000"), DT("01/07/2020 16:59:59.999"));
-            Add(Day, DO("01/08/2020"), DT("01/07/2020 17:00:00.000"), DT("01/08/2020 16:59:59.999"));
-            Add(Day, DO("01/09/2020"), DT("01/08/2020 17:00:00.000"), DT("01/09/2020 16:59:59.999"));
-            Add(Day, DO("01/10/2020"), DT("01/09/2020 17:00:00.000"), DT("01/10/2020 16:59:59.999"));
-            Add(Week, DO("01/06/2020"), DT("01/05/2020 17:00:00.000"), DT("01/10/2020 16:59:59.999"));
+            Add(Day, DO("01/06/2020"), DT("01/05/2020 17:00:00.000"),
+                DT("01/06/2020 16:59:59.999"), default);
+            Add(Day, DO("01/07/2020"), DT("01/06/2020 17:00:00.000"),
+                DT("01/07/2020 16:59:59.999"), default);
+            Add(Day, DO("01/08/2020"), DT("01/07/2020 17:00:00.000"),
+                DT("01/08/2020 16:59:59.999"), default);
+            Add(Day, DO("01/09/2020"), DT("01/08/2020 17:00:00.000"),
+                DT("01/09/2020 16:59:59.999"), default);
+            Add(Day, DO("01/10/2020"), DT("01/09/2020 17:00:00.000"),
+                DT("01/10/2020 16:59:59.999"), default);
+            Add(Week, DO("01/06/2020"), DT("01/05/2020 17:00:00.000"),
+                DT("01/10/2020 16:59:59.999"), default);
+
+            Add(Day, DO("01/06/2020"), DT("01/05/2020 17:00:00.000"),
+                DT("01/06/2020 16:59:59.999"), (20, 20));
+            Add(Day, DO("01/07/2020"), DT("01/06/2020 17:00:00.000"),
+                DT("01/07/2020 16:59:59.999"), (20, 20));
+            Add(Day, DO("01/08/2020"), DT("01/07/2020 17:00:00.000"),
+                DT("01/08/2020 16:59:59.999"), (20, 20));
+            Add(Day, DO("01/09/2020"), DT("01/08/2020 17:00:00.000"),
+                DT("01/09/2020 16:59:59.999"), (20, 20));
+            Add(Day, DO("01/10/2020"), DT("01/09/2020 17:00:00.000"),
+                DT("01/10/2020 16:59:59.999"), (20, 20));
+            Add(Week, DO("01/06/2020"), DT("01/05/2020 17:00:00.000"),
+                DT("01/10/2020 16:59:59.999"), (20, 20));
         }
     }
 
     [Theory]
     [ClassData(typeof(GoodContructorArgsData))]
-    public void GoodContructorArgs(
-        Extent extent, DateOnly tradeDate, DateTime minTickOn, DateTime maxTickOn)
+    public void GoodContructorArgs(Extent extent, DateOnly tradeDate,
+        DateTime minTickOn, DateTime maxTickOn, (int FromOpen, int FromClose) endCaps)
     {
-        var session = new Session(extent, tradeDate);
+        var session = new Session(extent, tradeDate, endCaps);
 
         session.Extent.Should().Be(extent);
         session.TradeDate.Should().Be(tradeDate);
         session.MinTickOn.Should().Be(minTickOn);
         session.MaxTickOn.Should().Be(maxTickOn);
+        session.EndCaps.Should().Be(
+            endCaps == default ? (FromOpen, FromClose) : endCaps);
     }
 
     //////////////////////////
 
-    private class BadContructorArgsData : Testing.TheoryData<Extent, DateOnly>
+    private class BadContructorArgsData :
+        Testing.TheoryData<Extent, DateOnly, int?, int?>
     {
         public BadContructorArgsData()
         {
-            Add(0, DateOnly.MinValue);
-            Add(Day, DO("01/05/2020"));
-            Add(Week, DO("01/05/2020"));
+            Add(0, DateOnly.MinValue, FromOpen, FromClose);
+            Add(Day, DO("01/05/2020"), FromOpen, FromClose);
+            Add(Day, DO("01/06/2020"), -1, FromClose);
+            Add(Day, DO("01/06/2020"), FromOpen, 0);
+            Add(Week, DO("01/05/2020"), FromOpen, FromClose);
+            Add(Week, DO("01/06/2020"), -1, FromClose);
+            Add(Week, DO("01/06/2020"), FromOpen, 0);
         }
     }
 
     [Theory]
     [ClassData(typeof(BadContructorArgsData))]
-    public void BadContructorArgs(Extent extent, DateOnly baseDate)
+    public void BadContructorArgs(
+        Extent extent, DateOnly baseDate, int? fromOpen, int? fromClose)
     {
-        FluentActions.Invoking(() => _ = new Session(extent, baseDate))
+        FluentActions.Invoking(() =>
+        {
+            var endCaps = fromOpen.HasValue ?
+                (fromOpen!.Value, fromClose!.Value) : default;
+
+            _ = new Session(extent, baseDate, endCaps);
+        })
             .Should().Throw<ArgumentOutOfRangeException>();
     }
 
@@ -73,8 +107,10 @@ public class SessionTests
     {
         var tradeDate = new DateOnly(2020, 1, 6);
 
-        new Session(extent, tradeDate).ToString()
-            .Should().Be($"{tradeDate:MM/dd/yyyy} ({extent})");
+        var endCaps = (FromOpen, FromClose);
+
+        new Session(extent, tradeDate).ToString().Should().Be(
+            $"{tradeDate:MM/dd/yyyy} ({extent}, EndCaps: {endCaps})");
     }
 
     //////////////////////////
@@ -92,10 +128,98 @@ public class SessionTests
 
     [Theory]
     [ClassData(typeof(InSessionWithMixedArgsData))]
-    public void InSessionWithMixedArgs(Extent extent, DateTime tickOn, bool result)
+    public void InSessionWithMixedArgs(
+        Extent extent, DateTime tickOn, bool result)
     {
         new Session(extent, new DateOnly(2020, 1, 7))
             .InSession(tickOn).Should().Be(result);
+    }
+
+    //////////////////////////
+
+    private class MustGoFlatWithMixedArgsData :
+        Testing.TheoryData<Extent, int?, TickOn, bool>
+    {
+        public MustGoFlatWithMixedArgsData()
+        {
+            Add(Day, FromClose, DT("01/06/2020 16:59:59.999"), true);
+            Add(Day, null, DT("01/06/2020 16:59:59.999"), true);
+            Add(Day, FromClose, DT("01/06/2020 16:30:00.000"), true);
+            Add(Day, null, DT("01/06/2020 16:30:00.000"), true);
+            Add(Day, FromClose, DT("01/06/2020 16:29:59.999"), false);
+            Add(Day, null, DT("01/06/2020 16:29:59.999"), false);
+            Add(Day, FromClose, DT("01/05/2020 17:00:00.000"), false);
+            Add(Day, null, DT("01/05/2020 17:00:00.000"), false);
+            Add(Week, FromClose, DT("01/10/2020 16:59:59.999"), true);
+            Add(Week, null, DT("01/10/2020 16:59:59.999"), true);
+            Add(Week, FromClose, DT("01/10/2020 16:30:00.000"), true);
+            Add(Week, null, DT("01/10/2020 16:30:00.000"), true);
+            Add(Week, FromClose, DT("01/10/2020 16:29:59.999"), false);
+            Add(Week, null, DT("01/10/2020 16:29:59.999"), false);
+            Add(Week, FromClose, DT("01/09/2020 17:00:00.000"), false);
+            Add(Week, null, DT("01/09/2020 17:00:00.000"), false);
+        }
+    }
+
+    [Theory]
+    [ClassData(typeof(MustGoFlatWithMixedArgsData))]
+    public void MustGoFlatWithMixedArgs(
+        Extent extent, int? fromClose, TickOn tickOn, bool expected)
+    {
+        var endCaps = fromClose.HasValue ? (0, fromClose!.Value) : default;
+
+        var session = new Session(
+            extent, new DateOnly(2020, 1, 6), endCaps);
+
+        session.MustGoFlat(tickOn).Should().Be(expected);
+    }
+
+    //////////////////////////
+
+    private class CanTradeWithMixedArgsData :
+        Testing.TheoryData<Extent, int?, int?, TickOn, bool>
+    {
+        public CanTradeWithMixedArgsData()
+        {
+            Add(Day, FromOpen, FromClose, DT("01/05/2020 17:00:00.000"), false);
+            Add(Day, null, null, DT("01/05/2020 17:00:00.000"), false);
+            Add(Day, FromOpen, FromClose, DT("01/05/2020 17:14:59.999"), false);
+            Add(Day, null, null, DT("01/05/2020 17:14:59.999"), false);
+            Add(Day, FromOpen, FromClose, DT("01/05/2020 17:15:00.000"), true);
+            Add(Day, null, null, DT("01/05/2020 17:15:00.000"), true);
+            Add(Day, FromOpen, FromClose, DT("01/06/2020 16:29:59.999"), true);
+            Add(Day, null, null, DT("01/06/2020 16:29:59.999"), true);
+            Add(Day, FromOpen, FromClose, DT("01/06/2020 16:30:00.000"), false);
+            Add(Day, null, null, DT("01/06/2020 16:30:00.000"), false);
+            Add(Day, FromOpen, FromClose, DT("01/06/2020 16:59:59.999"), false);
+            Add(Day, null, null, DT("01/06/2020 16:59:59.999"), false);
+            Add(Week, FromOpen, FromClose, DT("01/05/2020 17:00:00.000"), false);
+            Add(Week, null, null, DT("01/05/2020 17:00:00.000"), false);
+            Add(Week, FromOpen, FromClose, DT("01/05/2020 17:14:59.999"), false);
+            Add(Week, null, null, DT("01/05/2020 17:14:59.999"), false);
+            Add(Week, FromOpen, FromClose, DT("01/05/2020 17:15:00.000"), true);
+            Add(Week, null, null, DT("01/05/2020 17:15:00.000"), true);
+            Add(Week, FromOpen, FromClose, DT("01/10/2020 16:29:59.999"), true);
+            Add(Week, null, null, DT("01/10/2020 16:29:59.999"), true);
+            Add(Week, FromOpen, FromClose, DT("01/10/2020 16:30:00.000"), false);
+            Add(Week, null, null, DT("01/10/2020 16:30:00.000"), false);
+            Add(Week, FromOpen, FromClose, DT("01/10/2020 16:59:59.999"), false);
+            Add(Week, null, null, DT("01/10/2020 16:59:59.999"), false);
+        }
+    }
+
+    [Theory]
+    [ClassData(typeof(CanTradeWithMixedArgsData))]
+    public void CanTradeWithMixedArgs(Extent extent,
+        int? fromOpen, int? fromClose, TickOn tickOn, bool expected)
+    {
+        var endCaps = fromOpen.HasValue ?
+            (fromOpen!.Value, fromClose!.Value) : default;
+
+        var session = new Session(
+            extent, new DateOnly(2020, 1, 6), endCaps);
+
+        session.CanTrade(tickOn).Should().Be(expected);
     }
 
     //////////////////////////

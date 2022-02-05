@@ -25,7 +25,7 @@ public class OffsetEmbargo : EmbargoBase
             v => v >= TimeSpan.Zero && v < TimeSpan.FromDays(1));
 
         this.maxOffset = maxOffset.Validated(nameof(maxOffset),
-            v => v >= minOffset && v < TimeSpan.FromDays(1));
+            v => v > minOffset && v < TimeSpan.FromDays(1));
 
         this.dayOfWeek = dayOfWeek.Validated(
             nameof(dayOfWeek), v => !v.HasValue || v.Value.IsWeekday());

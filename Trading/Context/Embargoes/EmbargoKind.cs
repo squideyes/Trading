@@ -7,14 +7,11 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.Context
+namespace SquidEyes.Trading.Context;
+
+public enum EmbargoKind
 {
-    public enum EmbargoKind
-    {
-        OneTime,
-        Open,
-        Close,
-        AdHoc,
-        Offset
-    }
+    OneTime,
+    AdHoc,
+    Offset
 }

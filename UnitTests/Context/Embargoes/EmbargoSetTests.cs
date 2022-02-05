@@ -22,8 +22,6 @@ public class EmbargoSetTests
     {
         public MultipleEmbargoesHonoredData()
         {
-            Add(DT("01/06/2022 17:00:00.000"), Open);
-            Add(DT("01/06/2022 17:14:59.599"), Open);
             Add(DT("01/06/2022 17:15:00.000"), null);
             Add(DT("01/06/2022 17:59:59.000"), null);
             Add(DT("01/06/2022 18:00:00.000"), Offset);
@@ -45,11 +43,7 @@ public class EmbargoSetTests
     {
         var session = new Session(Extent.Day, new DateOnly(2020, 1, 6));
 
-        var embargoes = new EmbargoSet(session)
-        {
-            new PeggedEmbargo(PegTo.Open, 15),
-            new PeggedEmbargo(PegTo.Close, 30)
-        };
+        var embargoes = new EmbargoSet(session);
 
         var minOffset = TimeSpan.FromHours(1);
 

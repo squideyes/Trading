@@ -14,7 +14,14 @@ namespace SquidEyes.Trading.Context
 {
     public class Session : IEquatable<Session>
     {
-        public Session(Extent extent, DateOnly tradeDate)
+        public static class Defaults
+        {
+            public const int FromOpen = 15;
+            public const int FromClose = 30;
+        }
+
+        public Session(Extent extent, DateOnly tradeDate,
+            (int FromOpen, int FromClose) endCaps = default)
         {
             Extent = extent.Validated(nameof(extent), v => v.IsEnumValue());
 
@@ -26,18 +33,41 @@ namespace SquidEyes.Trading.Context
 
             MaxTickOn = new TickOn(MinTickOn.Value.AddDays(
                 extent == Day ? 0 : 4).AddMinutes(1440).AddMilliseconds(-1));
+
+            if (endCaps == default)
+                endCaps = (Defaults.FromOpen, Defaults.FromClose);
+
+            if (!endCaps.FromOpen.Between(0, 60))
+                throw new ArgumentOutOfRangeException(nameof(endCaps));
+
+            if (!endCaps.FromClose.Between(5, 60))
+                throw new ArgumentOutOfRangeException(nameof(endCaps));
+
+            EndCaps = endCaps;
         }
 
         public Extent Extent { get; }
         public DateOnly TradeDate { get; }
         public TickOn MinTickOn { get; }
         public TickOn MaxTickOn { get; }
+        public (int FromOpen, int FromClose) EndCaps { get; }
 
         public bool InSession(TickOn tickOn) => tickOn != default
             && tickOn >= MinTickOn && tickOn <= MaxTickOn;
 
+        public bool MustGoFlat(TickOn tickOn)
+        {
+            TickOn minGoFlatTickOn = MaxTickOn.Value
+                .AddMinutes(-EndCaps.FromClose).AddMilliseconds(1);
+
+            return tickOn >= minGoFlatTickOn;
+        }
+
+        public bool CanTrade(TickOn tickOn) => !MustGoFlat(tickOn)
+            && tickOn >= MinTickOn.Value.AddMinutes(EndCaps.FromOpen);
+
         public override string ToString() =>
-            $"{TradeDate.ToDateText()} ({Extent})";
+            $"{TradeDate.ToDateText()} ({Extent}, EndCaps: {EndCaps})";
 
         public bool Equals(Session? other)
         {
