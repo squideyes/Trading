@@ -137,10 +137,10 @@ public class SessionTests
 
     //////////////////////////
 
-    private class MustGoFlatWithMixedArgsData :
+    private class MustBeFlatWithMixedArgsData :
         Testing.TheoryData<Extent, int?, TickOn, bool>
     {
-        public MustGoFlatWithMixedArgsData()
+        public MustBeFlatWithMixedArgsData()
         {
             Add(Day, FromClose, DT("01/06/2020 16:59:59.999"), true);
             Add(Day, null, DT("01/06/2020 16:59:59.999"), true);
@@ -162,8 +162,8 @@ public class SessionTests
     }
 
     [Theory]
-    [ClassData(typeof(MustGoFlatWithMixedArgsData))]
-    public void MustGoFlatWithMixedArgs(
+    [ClassData(typeof(MustBeFlatWithMixedArgsData))]
+    public void MustBeFlatWithMixedArgs(
         Extent extent, int? fromClose, TickOn tickOn, bool expected)
     {
         var endCaps = fromClose.HasValue ? (0, fromClose!.Value) : default;
@@ -171,7 +171,7 @@ public class SessionTests
         var session = new Session(
             extent, new DateOnly(2020, 1, 6), endCaps);
 
-        session.MustGoFlat(tickOn).Should().Be(expected);
+        session.MustBeFlat(tickOn).Should().Be(expected);
     }
 
     //////////////////////////
@@ -220,6 +220,16 @@ public class SessionTests
             extent, new DateOnly(2020, 1, 6), endCaps);
 
         session.CanTrade(tickOn).Should().Be(expected);
+    }
+
+    //////////////////////////
+
+    [Fact]
+    public void GoodUntilReturnsExpectedValue()
+    {
+        var session = new Session(Day, new DateOnly(2020, 1, 6), (0, 10));
+
+        session.GoodUntil.Should().Be(new DateTime(2020, 1, 6, 16, 50, 0));
     }
 
     //////////////////////////
