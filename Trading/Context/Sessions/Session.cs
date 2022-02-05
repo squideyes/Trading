@@ -52,13 +52,13 @@ namespace SquidEyes.Trading.Context
         public TickOn MaxTickOn { get; }
         public (int FromOpen, int FromClose) EndCaps { get; }
 
-        public TickOn GoodUntil => MaxTickOn.Value
+        public TickOn AutoFlatOn => MaxTickOn.Value
             .AddMinutes(-EndCaps.FromClose).AddMilliseconds(1);
 
         public bool InSession(TickOn tickOn) => tickOn != default
             && tickOn >= MinTickOn && tickOn <= MaxTickOn;
 
-        public bool MustBeFlat(TickOn tickOn) => tickOn >= GoodUntil;
+        public bool MustBeFlat(TickOn tickOn) => tickOn >= AutoFlatOn;
 
         public bool CanTrade(TickOn tickOn) => !MustBeFlat(tickOn)
             && tickOn >= MinTickOn.Value.AddMinutes(EndCaps.FromOpen);
