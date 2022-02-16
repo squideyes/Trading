@@ -20,8 +20,7 @@ public static class FastMath
     {
         var adjustment = adjustments[digits];
 
-        return MathF.Floor(
-            value * adjustment + 0.5f) / adjustments[digits];
+        return MathF.Floor(value * adjustment + 0.5f) / adjustments[digits];
     }
 
     private static float[] GetAdjustments()
