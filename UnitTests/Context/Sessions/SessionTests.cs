@@ -229,7 +229,7 @@ public class SessionTests
     {
         var session = new Session(Day, new DateOnly(2020, 1, 6), (0, 10));
 
-        session.GoodUntil.Should().Be(new DateTime(2020, 1, 6, 16, 50, 0));
+        session.AutoFlatOn.Should().Be(new DateTime(2020, 1, 6, 16, 50, 0));
     }
 
     //////////////////////////

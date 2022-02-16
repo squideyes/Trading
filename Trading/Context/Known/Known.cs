@@ -114,15 +114,15 @@ public static class Known
         void Add(Symbol symbol, int digits) =>
             new Pair(symbol, digits).AsAction(p => pairs.Add(p.Symbol, p));
 
-        Add(EURUSD, 5);
-        Add(USDJPY, 3);
-        Add(GBPUSD, 5);
         Add(AUDUSD, 5);
+        Add(EURGBP, 5);
+        Add(EURJPY, 3);
+        Add(EURUSD, 5);
+        Add(GBPUSD, 5);
+        Add(NZDUSD, 5);
+        Add(USDJPY, 3);
         Add(USDCAD, 5);
         Add(USDCHF, 5);
-        Add(NZDUSD, 5);
-        Add(EURJPY, 3);
-        Add(EURGBP, 5);
 
         return pairs;
     }
@@ -135,14 +135,14 @@ public static class Known
             convertWith.Add(Pairs[symbol], (toBase, toQuote));
 
         AddLookups(AUDUSD, Pairs[AUDUSD], Pairs[AUDUSD]);
+        AddLookups(EURGBP, Pairs[EURUSD], Pairs[GBPUSD]);
+        AddLookups(EURJPY, Pairs[EURUSD], Pairs[USDJPY]);
         AddLookups(EURUSD, Pairs[EURUSD], Pairs[EURUSD]);
         AddLookups(GBPUSD, Pairs[GBPUSD], Pairs[GBPUSD]);
         AddLookups(NZDUSD, Pairs[NZDUSD], Pairs[NZDUSD]);
         AddLookups(USDCAD, Pairs[USDCAD], Pairs[USDCAD]);
         AddLookups(USDCHF, Pairs[USDCHF], Pairs[USDCHF]);
         AddLookups(USDJPY, Pairs[USDJPY], Pairs[USDJPY]);
-        AddLookups(EURGBP, Pairs[EURUSD], Pairs[GBPUSD]);
-        AddLookups(EURJPY, Pairs[EURUSD], Pairs[USDJPY]);
 
         return convertWith;
     }
