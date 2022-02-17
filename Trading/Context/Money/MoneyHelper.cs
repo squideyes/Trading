@@ -9,7 +9,6 @@
 
 using SquidEyes.Trading.FxData;
 using SquidEyes.Trading.Orders;
-using SquidEyes.Trading.Shared.Helpers;
 
 namespace SquidEyes.Trading.Context
 {
@@ -19,33 +18,40 @@ namespace SquidEyes.Trading.Context
 
         public MoneyHelper(UsdValueOf usdValueOf)
         {
-            this.usdValueOf = usdValueOf;
+            this.usdValueOf = usdValueOf 
+                ?? throw new ArgumentNullException(nameof(usdValueOf));
         }
 
-        public double GetGrossProfit(Pair pair, Side side, int units, Rate entryRate, Rate exitRate)
+        public double GetGrossProfit(
+            Pair pair, Side side, int units, Rate entryRate, Rate exitRate)
         {
             if (Equals(pair, null!))
                 throw new ArgumentNullException(nameof(pair));
 
-            var entry = entryRate.GetFloat(pair.Digits);
+            double entry = entryRate.GetFloat(pair.Digits);
 
-            var exit = exitRate.GetFloat(pair.Digits);
+            double exit = exitRate.GetFloat(pair.Digits);
 
-            var move = (exit - entry) * (side == Side.Buy ? 1.0f : -1.0f);
+            var move = (exit - entry) * (side == Side.Buy ? 1.0 : -1.0);
 
             if (pair.Base == Currency.USD)
             {
-                return MathF.Round(move * units * (1.0f / exit), 2);
+                return Math.Round(move * units * (1.0 / exit), 2);
             }
             else if (pair.Quote == Currency.USD)
             {
-                return MathF.Round(exit * units * move, 2);
+                return Math.Round(exit * units * move, 2);
             }
             else
             {
-                var eurToUsdConversionRate = usdValueOf.GetRateInUsd(pair.Base);
+                var yieldInBase = 1.0 / exit * units * move;
 
-                return 0; // eurToUsdConversionRate.GetFloat(pair.Digits) * yieldInBase;
+                var (@base, _) = Known.ConvertWith[pair];
+
+                var baseUsdValueOf = usdValueOf
+                    .GetRateInUsd(@base.Base).GetFloat(@base.Digits);
+
+                return Math.Round(yieldInBase * baseUsdValueOf, 2);
             }
         }
 
