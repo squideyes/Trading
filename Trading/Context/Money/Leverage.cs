@@ -9,9 +9,11 @@
 
 namespace SquidEyes.Trading.Context;
 
-public enum MidBidOrAsk
+public enum Leverage
 {
-    Mid = 1,
-    Bid,
-    Ask
+    TenToOne = 10,
+    TwentyToOne = 20,
+    ThirtyToOne = 30,
+    FortyToOne = 40,
+    FiftyToOne = 50
 }

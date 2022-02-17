@@ -18,9 +18,9 @@ public class UsdValueOf
 {
     private readonly ConcurrentDictionary<Pair, Rate> rates = new();
 
-    private readonly MidBidOrAsk midBidOrAsk;
+    private readonly MidOrAsk midBidOrAsk;
 
-    public UsdValueOf(MidBidOrAsk midBidOrAsk)
+    public UsdValueOf(MidOrAsk midBidOrAsk)
     {
         this.midBidOrAsk = midBidOrAsk
             .Validated(nameof(midBidOrAsk), v => v.IsEnumValue());
@@ -36,9 +36,8 @@ public class UsdValueOf
 
         var rate = midBidOrAsk switch
         {
-            MidBidOrAsk.Mid => metaTick.Tick.Mid,
-            MidBidOrAsk.Ask => metaTick.Tick.Ask,
-            MidBidOrAsk.Bid => metaTick.Tick.Bid,
+            MidOrAsk.Mid => metaTick.Tick.Mid,
+            MidOrAsk.Ask => metaTick.Tick.Ask,
             _ => throw new ArgumentOutOfRangeException(nameof(metaTick))
         };
 

@@ -9,24 +9,31 @@
 
 using SquidEyes.Trading.FxData;
 using SquidEyes.Trading.Orders;
+using SquidEyes.Basics;
 
 namespace SquidEyes.Trading.Context
 {
     public class MoneyHelper
     {
         private readonly UsdValueOf usdValueOf;
+        private readonly IMinMargin minMargin;
 
-        public MoneyHelper(UsdValueOf usdValueOf)
+        public MoneyHelper(UsdValueOf usdValueOf, IMinMargin minMargin)
         {
-            this.usdValueOf = usdValueOf 
+            this.usdValueOf = usdValueOf
                 ?? throw new ArgumentNullException(nameof(usdValueOf));
+
+            this.minMargin = minMargin ??
+                throw new ArgumentNullException(nameof(minMargin));
         }
 
-        public double GetGrossProfit(
-            Pair pair, Side side, int units, Rate entryRate, Rate exitRate)
+        public double GetPNL(Pair pair, Side side, int units, Rate entryRate, Rate exitRate)
         {
             if (Equals(pair, null!))
                 throw new ArgumentNullException(nameof(pair));
+
+            if (!side.IsEnumValue())
+                throw new ArgumentOutOfRangeException(nameof(side));
 
             double entry = entryRate.GetFloat(pair.Digits);
 
@@ -55,30 +62,30 @@ namespace SquidEyes.Trading.Context
             }
         }
 
-
-
-
-        // Units traded * margin percent * value of 
-        public double MarginNeeded()
+        public double GetMarginInUsd(
+            Pair pair, int units, Leverage leverage, double cushion)
         {
-            return default;
-        }
+            if (Equals(pair, null!))
+                throw new ArgumentNullException(nameof(pair));
 
-        //  entrymargin, initialmargin, maint margin
+            if (units <= 0)
+                throw new ArgumentOutOfRangeException(nameof(units));
 
-        // Fee assessed separately
+            if (!leverage.IsEnumValue())
+                throw new ArgumentOutOfRangeException(nameof(leverage));
 
+            if (!cushion.Between(0.0, 1.0))
+                throw new ArgumentOutOfRangeException(nameof(cushion));
 
-        // Entry to Current Price, converted to USD
-        public double UnrealizedProfit()
-        {
-            return default;
-        }
+            var margin = units * Math.Max(1.0 / (int)leverage, minMargin[pair]);
+            
+            if (pair.Base != Currency.USD)
+                margin *= usdValueOf.GetRateInUsd(pair.Base).GetFloat(pair.Digits);
 
-        // Unrealized P&L (all open trades) + Realized in USD
-        public double LiquidationValue()
-        {
-            return 0;
+            if (pair.Quote == Currency.JPY)
+                margin /= 100.0;
+
+            return Math.Round(margin + (margin * cushion), 2);
         }
     }
 }

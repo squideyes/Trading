@@ -16,18 +16,17 @@ namespace SquidEyes.UnitTests.Context;
 
 public static class MoneyData
 {
-    private static readonly Dictionary<MidBidOrAsk, UsdValueOf> data = new();
+    private static readonly Dictionary<MidOrAsk, UsdValueOf> data = new();
 
     static MoneyData()
     {
-        data[MidBidOrAsk.Bid] = GetData(MidBidOrAsk.Bid);
-        data[MidBidOrAsk.Mid] = GetData(MidBidOrAsk.Mid);
-        data[MidBidOrAsk.Ask] = GetData(MidBidOrAsk.Ask);
+        data[MidOrAsk.Mid] = GetData(MidOrAsk.Mid);
+        data[MidOrAsk.Ask] = GetData(MidOrAsk.Ask);
     }
 
-    public static UsdValueOf GetUsdValueOf(MidBidOrAsk minBidOrAsk) => data[minBidOrAsk];
+    public static UsdValueOf GetUsdValueOf(MidOrAsk midOrAsk) => data[midOrAsk];
 
-    private static UsdValueOf GetData(MidBidOrAsk midBidOrAsk)
+    private static UsdValueOf GetData(MidOrAsk midBidOrAsk)
     {
         var usdValueOf = new UsdValueOf(midBidOrAsk);
 
