@@ -26,9 +26,9 @@ public static class MoneyData
 
     public static UsdValueOf GetUsdValueOf(MidOrAsk midOrAsk) => data[midOrAsk];
 
-    private static UsdValueOf GetData(MidOrAsk midBidOrAsk)
+    private static UsdValueOf GetData(MidOrAsk midOrAsk)
     {
-        var usdValueOf = new UsdValueOf(midBidOrAsk);
+        var usdValueOf = new UsdValueOf(midOrAsk);
 
         var session = new Session(Extent.Day, new DateOnly(2020, 1, 6));
 

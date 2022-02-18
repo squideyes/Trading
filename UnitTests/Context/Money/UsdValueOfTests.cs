@@ -33,9 +33,9 @@ public class UsdValueOfTests
     [InlineData(Currency.USD, MidOrAsk.Mid, 100000)]
     [InlineData(Currency.USD, MidOrAsk.Ask, 100000)]
     public void GetRateInUsdReturnedExpectedValue(
-        Currency currency, MidOrAsk midBidOrAsk, int rate)
+        Currency currency, MidOrAsk midOrAsk, int rate)
     {
-        var usdValueOf = MoneyData.GetUsdValueOf(midBidOrAsk);
+        var usdValueOf = MoneyData.GetUsdValueOf(midOrAsk);
 
         usdValueOf.GetRateInUsd(currency).Should().Be(rate);
     }

@@ -18,12 +18,11 @@ public class UsdValueOf
 {
     private readonly ConcurrentDictionary<Pair, Rate> rates = new();
 
-    private readonly MidOrAsk midBidOrAsk;
+    private readonly MidOrAsk midOrAsk;
 
-    public UsdValueOf(MidOrAsk midBidOrAsk)
+    public UsdValueOf(MidOrAsk midOrAsk)
     {
-        this.midBidOrAsk = midBidOrAsk
-            .Validated(nameof(midBidOrAsk), v => v.IsEnumValue());
+        this.midOrAsk = midOrAsk.Validated(nameof(midOrAsk), v => v.IsEnumValue());
     }
 
     public void Update(MetaTick metaTick)
@@ -34,7 +33,7 @@ public class UsdValueOf
         if (metaTick.Pair.Base != USD && metaTick.Pair.Quote != USD)
             return;
 
-        var rate = midBidOrAsk switch
+        var rate = midOrAsk switch
         {
             MidOrAsk.Mid => metaTick.Tick.Mid,
             MidOrAsk.Ask => metaTick.Tick.Ask,
