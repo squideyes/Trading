@@ -29,17 +29,14 @@ public class EmbargoSet : ListBase<IEmbargo>
         Items.Add(embargo);
     }
 
-    public (bool IsEmbargoed, IEmbargo? Embargo) IsEmbargoed(
-        Session session, TickOn tickOn)
+    public (bool IsEmbargoed, IEmbargo? Embargo) IsEmbargoed(TickOn tickOn)
     {
-        ArgumentNullException.ThrowIfNull(session);
-
         if (!Session.InSession(tickOn))
             return (false, null);
 
         foreach (var embargo in Items)
         {
-            if (embargo.IsEmbargoed(session, tickOn))
+            if (embargo.IsEmbargoed(Session, tickOn))
                 return (true, embargo);
         }
 

@@ -17,30 +17,26 @@ namespace SquidEyes.UnitTests.Context;
 
 public class EmbargoSetTests
 {
-    private class MultipleEmbargoesHonoredData
-        : Testing.TheoryData<DateTime, EmbargoKind?>
-    {
-        public MultipleEmbargoesHonoredData()
-        {
-            Add(DT("01/06/2022 17:15:00.000"), null);
-            Add(DT("01/06/2022 17:59:59.000"), null);
-            Add(DT("01/06/2022 18:00:00.000"), Offset);
-            Add(DT("01/06/2022 18:59:59.999"), Offset);
-            Add(DT("01/06/2022 19:00:00.000"), null);
-            Add(DT("01/06/2022 19:59:59.999"), null);
-            Add(DT("01/06/2022 20:00:00.000"), AdHoc);
-            Add(DT("01/06/2022 20:59:59.999"), AdHoc);
-            Add(DT("01/06/2022 21:00:00.000"), null);
-            Add(DT("01/06/2022 21:59:59.999"), null);
-            Add(DT("01/06/2022 22:00:00.000"), OneTime);
-            Add(DT("01/06/2022 22:59:59.999"), OneTime);
-        }
-    }
-
     [Theory]
-    [ClassData(typeof(MultipleEmbargoesHonoredData))]
-    public void MultipleEmbargoesHonored(TickOn tickOn, EmbargoKind? kind)
+    [InlineData("01/05/2020 17:00:00.000", null)]
+    [InlineData("01/05/2020 17:59:59.999", null)]
+    [InlineData("01/05/2020 18:00:00.000", Offset)]
+    [InlineData("01/05/2020 18:59:59.999", Offset)]
+    [InlineData("01/05/2020 19:00:00.000", null)]
+    [InlineData("01/06/2020 12:59:59.999", null)]
+    [InlineData("01/06/2020 13:00:00.000", AdHoc)]
+    [InlineData("01/06/2020 13:59:59.000", AdHoc)]
+    [InlineData("01/06/2020 14:00:00.000", null)]
+    [InlineData("01/06/2020 14:59:59.999", null)]
+    [InlineData("01/06/2020 15:00:00.000", OneTime)]
+    [InlineData("01/06/2020 15:59:59.000", OneTime)]
+    [InlineData("01/06/2020 16:00:00.000", null)]
+    [InlineData("01/06/2020 16:59:59.000", null)]
+    public void MultipleEmbargoesHonored(
+        string tickOnString, EmbargoKind? kind)
     {
+        TickOn tickOn = DateTime.Parse(tickOnString);
+
         var session = new Session(Extent.Day, new DateOnly(2020, 1, 6));
 
         var embargoes = new EmbargoSet(session);
@@ -51,21 +47,21 @@ public class EmbargoSetTests
             .Add(TimeSpan.FromMilliseconds(-1));
 
         embargoes.Add(new OffsetEmbargo(
-            minOffset, maxOffset, DayOfWeek.Sunday));
+            minOffset, maxOffset, DayOfWeek.Monday));
 
         embargoes.Add(new OneTimeEmbargo(session,
-            new DateTime(2020, 1, 6, 20, 0, 0),
-            new DateTime(2020, 1, 6, 20, 59, 59, 999), true));
+            new DateTime(2020, 1, 6, 13, 0, 0),
+            new DateTime(2020, 1, 6, 13, 59, 59, 999), true));
 
         embargoes.Add(new OneTimeEmbargo(session,
-            new DateTime(2020, 1, 6, 22, 0, 0),
-            new DateTime(2020, 1, 6, 22, 59, 59, 999), false));
+            new DateTime(2020, 1, 6, 15, 0, 0),
+            new DateTime(2020, 1, 6, 15, 59, 59, 999), false));
 
-        var (isEmbargoed, embargo) = embargoes.IsEmbargoed(session, tickOn);
+        var (isEmbargoed, embargo) = embargoes.IsEmbargoed(tickOn);
 
-        isEmbargoed.Should().Be(kind.HasValue);
-
-        if (isEmbargoed)
+        if (kind.HasValue)
             embargo!.Kind.Should().Be(kind);
+        else
+            isEmbargoed.Should().BeFalse();
     }
 }

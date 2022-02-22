@@ -11,7 +11,7 @@ namespace SquidEyes.Trading.Context;
 
 public enum EmbargoKind
 {
-    OneTime,
+    OneTime = 1,
     AdHoc,
     Offset
 }
