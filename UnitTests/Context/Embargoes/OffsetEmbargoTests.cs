@@ -1,85 +1,82 @@
-// ********************************************************
-// Copyright (C) 2021 Louis S. Berman (louis@squideyes.com)
-//
-// This file is part of SquidEyes.Trading
-//
-// The use of this source code is licensed under the terms
-// of the MIT License (https://opensource.org/licenses/MIT)
-// ********************************************************
+//// ********************************************************
+//// Copyright (C) 2021 Louis S. Berman (louis@squideyes.com)
+////
+//// This file is part of SquidEyes.Trading
+////
+//// The use of this source code is licensed under the terms
+//// of the MIT License (https://opensource.org/licenses/MIT)
+//// ********************************************************
 
 //using FluentAssertions;
-//using SquidEyes.Quark.Shared.Context;
+//using SquidEyes.Basics;
+//using SquidEyes.Trading.Context;
 //using System;
 //using Xunit;
-//using SquidEyes.Basics;
+//using static SquidEyes.Trading.Context.Extent;
 //using static System.DayOfWeek;
-//using static SquidEyes.Quark.Shared.Context.Extent;
-//using SquidEyes.UnitTests.Context.Testing;
 
 //namespace SquidEyes.UnitTests.Context;
 
 //public class OffsetEmbargoTests
 //{
 //    private class GoodConstructorArgsData
-//        : Testing.TheoryData<TimeSpan, TimeSpan, DayOfWeek?, bool>
+//        : Testing.TheoryData<TimeSpan, TimeSpan, DayOfWeek?>
 //    {
 //        public GoodConstructorArgsData()
 //        {
-//            Add(TS("00:00:00.000"), TS("23:59:59.999"), Monday, true);
-//            Add(TS("00:00:00.001"), TS("23:59:59.998"), Monday, false);
-//            Add(TS("00:00:00.000"), TS("23:59:59.999"), null, true);
-//            Add(TS("00:00:00.001"), TS("23:59:59.998"), null, false);
-//            Add(TS("00:00:00.000"), TS("23:59:59.999"), Monday, true);
-//            Add(TS("00:00:00.001"), TS("23:59:59.998"), Monday, false);
-//            Add(TS("00:00:00.000"), TS("23:59:59.999"), null, true);
-//            Add(TS("00:00:00.001"), TS("23:59:59.998"), null, false);
+//            Add(TS("00:00:00.000"), TS("23:59:59.999"), Monday);
 //        }
 //    }
 
 //    [Theory]
 //    [ClassData(typeof(GoodConstructorArgsData))]
-//    public void GoodConstructorArgs(TimeSpan minOffset,
-//        TimeSpan maxOffset, bool fullSpan)
+//    public void GoodConstructorArgs(
+//        TimeSpan minOffset, TimeSpan maxOffset, DayOfWeek? dayOfWeek)
 //    {
 //        void Validate(Session session, DayOfWeek dayOfWeek)
 //        {
-//            var (minTickOn, maxTickOn) = session.MinTickOn.AddDays((int)dayOfWeek - 1)
-//                .AsFunc(d => (d.Add(minOffset), d.Add(maxOffset)));
+//            var (minTickOn, maxTickOn) = session.MinTickOn.Value
+//                .AddDays((int)dayOfWeek - 1).AsFunc(
+//                d => (d.Add(minOffset), d.Add(maxOffset)));
 
 //            var embargo = new OffsetEmbargo(minOffset, maxOffset, dayOfWeek);
 
 //            embargo.Kind.Should().Be(EmbargoKind.Offset);
 
-//            _ = embargo.IsEmbargoed(minTickOn).Should().Be(true);
-//            _ = embargo.IsEmbargoed(maxTickOn).Should().Be(true);
-
-//            if (!fullSpan)
+//            void AssertIsValid(DateTime tickOn, int offset, bool expected)
 //            {
-//                _ = embargo.IsEmbargoed(minTickOn.AddMilliseconds(-1)).Should().Be(false);
-//                _ = embargo.IsEmbargoed(minTickOn.AddMilliseconds(1)).Should().Be(true);
-//                _ = embargo.IsEmbargoed(maxTickOn.AddMilliseconds(-1)).Should().Be(true);
-//                _ = embargo.IsEmbargoed(maxTickOn.AddMilliseconds(1)).Should().Be(false);
+//                _ = embargo!.IsEmbargoed(session, 
+//                    tickOn.AddMilliseconds(offset)).Should().Be(expected);
 //            }
+
+//            AssertIsValid(minTickOn, 0, true);
+//            AssertIsValid(maxTickOn, 0, true);
+
+//            //if (!fullSpan)
+//            //{
+//            //    AssertIsValid(minTickOn, -1, false);
+//            //    AssertIsValid(minTickOn, 1, true);
+//            //    AssertIsValid(maxTickOn, -1, true);
+//            //    AssertIsValid(maxTickOn, 1, false);
+//            //}
 //        }
 
 //        var tradeDate = new DateOnly(2020, 1, 6);
 
-//        //if (dayOfWeek != null)
-//        //{
-//        //    Validate(new Session(estOrUtc == EST ?
-//        //        EstDay : UtcDay, tradeDate), dayOfWeek.Value);
-//        //}
-//        //else
-//        //{
-//        //    var session = new Session(estOrUtc == EST ?
-//        //        EstWeek : UtcWeek, tradeDate);
+//        if (dayOfWeek != null)
+//        {
+//            Validate(new Session(Day, tradeDate), dayOfWeek.Value);
+//        }
+//        else
+//        {
+//            var session = new Session(Week, tradeDate);
 
-//        //    for (var dow = Monday; dow <= Friday; dow += 1)
-//        //        Validate(session, dow);
-//        //}
+//            for (var dow = Monday; dow <= Friday; dow += 1)
+//                Validate(session, dow);
+//        }
 //    }
 
-//    ////////////////////////////
+//    //////////////////////////
 
 //    //private class BadConstructorArgsData
 //    //    : Testing.TheoryData<TimeSpan, TimeSpan, DayOfWeek?>
@@ -168,13 +165,13 @@
 //    //        "Embargo (Offset; 01:00:00.000 to 01:59:59.999; Sunday)");
 //    //}
 
-//    ////////////////////////////
+//    //////////////////////////
 
-//    //private static OffsetEmbargo GetEmbargo(DayOfWeek? dayOfWeek)
-//    //{
-//    //    var minOffset = new TimeSpan(1, 0, 0);
-//    //    var maxOffset = new TimeSpan(0, 1, 59, 59, 999);
+//    private static OffsetEmbargo GetEmbargo(DayOfWeek? dayOfWeek)
+//    {
+//        var minOffset = new TimeSpan(1, 0, 0);
+//        var maxOffset = new TimeSpan(0, 1, 59, 59, 999);
 
-//    //    return new OffsetEmbargo(minOffset, maxOffset, dayOfWeek);
-//    //}
+//        return new OffsetEmbargo(minOffset, maxOffset, dayOfWeek);
+//    }
 //}

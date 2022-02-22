@@ -17,7 +17,7 @@ namespace SquidEyes.UnitTests.Context;
 
 public class EmbargoSetTests
 {
-    private class MultipleEmbargoesHonoredData 
+    private class MultipleEmbargoesHonoredData
         : Testing.TheoryData<DateTime, EmbargoKind?>
     {
         public MultipleEmbargoesHonoredData()
@@ -57,7 +57,7 @@ public class EmbargoSetTests
             new DateTime(2020, 1, 6, 20, 0, 0),
             new DateTime(2020, 1, 6, 20, 59, 59, 999), true));
 
-        embargoes.Add(new OneTimeEmbargo(session, 
+        embargoes.Add(new OneTimeEmbargo(session,
             new DateTime(2020, 1, 6, 22, 0, 0),
             new DateTime(2020, 1, 6, 22, 59, 59, 999), false));
 

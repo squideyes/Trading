@@ -36,7 +36,7 @@ public class IntervalFeed : ICandleFeed
     public void HandleTick(Tick tick)
     {
         if (tick.IsDefaultValue())
-            throw new ArgumentNullException(nameof(tick));
+            throw new ArgumentOutOfRangeException(nameof(tick));
 
         var openOn = tick.TickOn.ToOpenOn(Session, Interval);
 
