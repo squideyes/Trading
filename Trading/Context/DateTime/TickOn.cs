@@ -28,6 +28,17 @@ public struct TickOn : IEquatable<TickOn>, IComparable<TickOn>
 
     public bool IsEmpty => Value == default;
 
+    public DateOnly TradeDate
+    {
+        get
+        {
+            if (Value.Hour >= 17)
+                return DateOnly.FromDateTime(Value.Date.AddDays(1));
+            else
+                return DateOnly.FromDateTime(Value.Date);
+        }
+    }
+
     public override string ToString() => Value.ToTickOnText();
 
     public int CompareTo(TickOn other) =>

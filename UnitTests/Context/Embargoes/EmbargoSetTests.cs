@@ -37,9 +37,8 @@ public class EmbargoSetTests
     {
         TickOn tickOn = DateTime.Parse(tickOnString);
 
-        var session = new Session(Extent.Day, new DateOnly(2020, 1, 6));
-
-        var embargoes = new EmbargoSet(session);
+        var embargoes = new EmbargoSet(
+            new Session(Extent.Day, new DateOnly(2020, 1, 6)));
 
         var minOffset = TimeSpan.FromHours(1);
 
@@ -49,11 +48,11 @@ public class EmbargoSetTests
         embargoes.Add(new OffsetEmbargo(
             minOffset, maxOffset, DayOfWeek.Monday));
 
-        embargoes.Add(new OneTimeEmbargo(session,
+        embargoes.Add(new OneTimeEmbargo(
             new DateTime(2020, 1, 6, 13, 0, 0),
             new DateTime(2020, 1, 6, 13, 59, 59, 999), true));
 
-        embargoes.Add(new OneTimeEmbargo(session,
+        embargoes.Add(new OneTimeEmbargo(
             new DateTime(2020, 1, 6, 15, 0, 0),
             new DateTime(2020, 1, 6, 15, 59, 59, 999), false));
 

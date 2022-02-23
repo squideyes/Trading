@@ -21,11 +21,11 @@ public class OffsetEmbargo : EmbargoBase
     public OffsetEmbargo(TimeSpan minOffset, TimeSpan maxOffset, DayOfWeek? dayOfWeek = null)
         : base(EmbargoKind.Offset)
     {
-        this.minOffset = minOffset.Validated(nameof(minOffset),
-            v => v >= TimeSpan.Zero && v < TimeSpan.FromDays(1));
+        this.minOffset = minOffset.Validated(
+            nameof(minOffset), v => v >= TimeSpan.Zero && v < TimeSpan.FromDays(1));
 
-        this.maxOffset = maxOffset.Validated(nameof(maxOffset),
-            v => v > minOffset && v < TimeSpan.FromDays(1));
+        this.maxOffset = maxOffset.Validated(
+            nameof(maxOffset), v => v > minOffset && v < TimeSpan.FromDays(1));
 
         this.dayOfWeek = dayOfWeek.Validated(
             nameof(dayOfWeek), v => !v.HasValue || v.Value.IsWeekday());
@@ -40,7 +40,9 @@ public class OffsetEmbargo : EmbargoBase
         if (dayOfWeek.HasValue && tradeDate.DayOfWeek != dayOfWeek)
             return false;
 
-        var (minTickOn, maxTickOn) = session.MinTickOn.Value
+        var days = dayOfWeek.HasValue ? (int)dayOfWeek - 1 : 0;
+
+        var (minTickOn, maxTickOn) = session.MinTickOn.Value.AddDays(days)
             .AsFunc(d => (d.Add(minOffset), d.Add(maxOffset)));
 
         return tickOn >= minTickOn && tickOn <= maxTickOn;

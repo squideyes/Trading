@@ -13,21 +13,19 @@ namespace SquidEyes.Trading.Context;
 
 public class OneTimeEmbargo : EmbargoBase
 {
-    private readonly DateTime minTickOn;
-    private readonly DateTime maxTickOn;
+    private readonly TickOn minTickOn;
+    private readonly TickOn maxTickOn;
 
-    public OneTimeEmbargo(Session session, DateTime minTickOn, 
-        DateTime maxTickOn, bool isAdHoc = false)
+    public OneTimeEmbargo(TickOn minTickOn, TickOn maxTickOn, bool isAdHoc)
         : base(isAdHoc ? EmbargoKind.AdHoc : EmbargoKind.OneTime)
     {
-        ArgumentNullException.ThrowIfNull(session);
-
         this.minTickOn = minTickOn.Validated(
-            nameof(minTickOn), v => session.InSession(minTickOn));
+            nameof(minTickOn), v => !v.IsDefaultValue());
 
-        this.maxTickOn = maxTickOn.Validated(nameof(maxTickOn),
-            v => session.InSession(v) && maxTickOn > minTickOn
-                && minTickOn.ToTradeDate() == maxTickOn.ToTradeDate());
+        if (maxTickOn.IsDefaultValue() || maxTickOn.TradeDate != minTickOn.TradeDate)
+            throw new ArgumentOutOfRangeException(nameof(maxTickOn));
+
+        this.maxTickOn = maxTickOn.Validated(nameof(maxTickOn), v => v > minTickOn);
     }
 
     public override bool IsEmbargoed(Session session, TickOn tickOn)
@@ -38,5 +36,5 @@ public class OneTimeEmbargo : EmbargoBase
     }
 
     public override string ToString() =>
-        $"OneTime Embargo ({minTickOn.ToTickOnText()} to {maxTickOn.ToTickOnText()}";
+        $"{Kind} Embargo ({minTickOn} to {maxTickOn})";
 }
