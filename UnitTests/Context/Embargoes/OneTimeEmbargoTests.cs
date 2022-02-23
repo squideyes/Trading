@@ -50,7 +50,7 @@ public class OneTimeEmbargoTests
     [InlineData("01/05/2020 18:59:59.999", true)]
     [InlineData("01/05/2020 19:00:00.000", false)]
     [InlineData("01/06/2020 16:59:59.999", false)]
-    public void IsEmbargoedWithGoodAndBadArgs(DateTime tickOn, bool result)
+    public void IsEmbargoedWithMixedArgs(DateTime tickOn, bool result)
     {
         var session = new Session(Day, new DateOnly(2020, 1, 6));
 

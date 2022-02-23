@@ -69,10 +69,14 @@ public struct TickOn : IEquatable<TickOn>, IComparable<TickOn>
         return Known.TradeDates.Contains(tradeDate);
     }
 
-    public static TickOn Parse(string value) => new(DateTime.Parse(value));
+    public static TickOn Parse(string value) => 
+        new(DateTime.Parse(value));
 
     public static implicit operator TickOn(DateTime value) =>
         new(value);
+
+    public static implicit operator TickOn(string value) =>
+        Parse(value);
 
     public static explicit operator DateTime(TickOn value) =>
         value.Value;

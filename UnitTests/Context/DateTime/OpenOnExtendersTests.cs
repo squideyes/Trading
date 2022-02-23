@@ -17,53 +17,42 @@ namespace SquidEyes.UnitTests.Context;
 
 public class OpenOnExtendersTests
 {
-    private class IsIntervalWithGoodAndBadArgsData
-        : Testing.TheoryData<TimeSpan, bool>
-    {
-        public IsIntervalWithGoodAndBadArgsData()
-        {
-            Add(TS("00:00:00.000"), false);
-            Add(TS("00:00:04.999"), false);
-            Add(TS("00:00:05.000"), true);
-            Add(TS("00:00:05.001"), false);
-            Add(TS("01:00:00.000"), true);
-            Add(TS("01:00:05.000"), false);
-        }
-    }
-
     [Theory]
-    [ClassData(typeof(IsIntervalWithGoodAndBadArgsData))]
-    public void IsLongIntervalWithGoodAndBadArgs(TimeSpan interval, bool result) =>
-        interval.Ticks.IsInterval().Should().Be(result);
-
-    [Theory]
-    [ClassData(typeof(IsIntervalWithGoodAndBadArgsData))]
-    public void IsTimeSpanIntervalWithGoodAndBadArgs(TimeSpan interval, bool result) =>
-        interval.IsInterval().Should().Be(result);
+    [InlineData("00:00:00.000", false)]
+    [InlineData("00:00:04.999", false)]
+    [InlineData("00:00:05.000", true)]
+    [InlineData("00:00:05.001", false)]
+    [InlineData("01:00:00.000", true)]
+    [InlineData("01:00:05.000", false)]
+    public void IsLongIntervalWithMixedArgs(string intervalString, bool result) =>
+        Parse(intervalString).Ticks.IsInterval().Should().Be(result);
 
     ////////////////////////////
 
-    private class IsOpenOnWithMixedArgsData
-        : Testing.TheoryData<TickOn, bool>
-    {
-        public IsOpenOnWithMixedArgsData()
-        {
-            Add(DT("01/06/2020 16:00:45.000"), false);
-            Add(DT("01/06/2020 16:00:59.999"), false);
-            Add(DT("01/06/2020 17:00:00.000"), true);
-            Add(DT("01/06/2020 17:00:00.001"), false);
-            Add(DT("01/06/2020 17:00:14.999"), false);
-            Add(DT("01/06/2020 17:00:15.000"), true);
-        }
-    }
+    [Theory]
+    [InlineData("00:00:00.000", false)]
+    [InlineData("00:00:04.999", false)]
+    [InlineData("00:00:05.000", true)]
+    [InlineData("00:00:05.001", false)]
+    [InlineData("01:00:00.000", true)]
+    [InlineData("01:00:05.000", false)]
+    public void IsTimeSpanIntervalWithMixedArgs(string intervalString, bool result) =>
+        Parse(intervalString).IsInterval().Should().Be(result);
+
+    ////////////////////////////
 
     [Theory]
-    [ClassData(typeof(IsOpenOnWithMixedArgsData))]
-    public void IsOpenOnWithMixedArgs(TickOn tickOn, bool result)
+    [InlineData("01/06/2020 16:00:45.000", false)]
+    [InlineData("01/06/2020 16:00:59.999", false)]
+    [InlineData("01/06/2020 17:00:00.000", true)]
+    [InlineData("01/06/2020 17:00:00.001", false)]
+    [InlineData("01/06/2020 17:00:14.999", false)]
+    [InlineData("01/06/2020 17:00:15.000", true)]
+    public void IsOpenOnWithMixedArgs(string tickOnString, bool result)
     {
         var session = new Session(Extent.Day, new DateOnly(2020, 1, 7));
 
-        tickOn.IsOpenOn(session, FromSeconds(15)).Should().Be(result);
+        ((TickOn)tickOnString).IsOpenOn(session, FromSeconds(15)).Should().Be(result);
     }
 
     ////////////////////////////
@@ -79,24 +68,15 @@ public class OpenOnExtendersTests
 
     ////////////////////////////
 
-    private class ToOpenOnWithGoodArgsData
-        : Testing.TheoryData<TickOn, DateTime>
-    {
-        public ToOpenOnWithGoodArgsData()
-        {
-            Add(DT("01/05/2020 17:00:00.000"), DT("01/05/2020 17:00:00.000"));
-            Add(DT("01/05/2020 17:00:14.999"), DT("01/05/2020 17:00:00.000"));
-            Add(DT("01/05/2020 17:00:15.000"), DT("01/05/2020 17:00:15.000"));
-        }
-    }
-
-    [Theory]
-    [ClassData(typeof(ToOpenOnWithGoodArgsData))]
-    public void ToOpenOnWithGoodArgs(TickOn tickOn, DateTime result)
+    [Theory]    
+    [InlineData("01/05/2020 17:00:00.000", "01/05/2020 17:00:00.000")]
+    [InlineData("01/05/2020 17:00:14.999", "01/05/2020 17:00:00.000")]
+    [InlineData("01/05/2020 17:00:15.000", "01/05/2020 17:00:15.000")]
+    public void ToOpenOnWithGoodArgs(string tickOnString, DateTime result)
     {
         var session = new Session(Extent.Day, new DateOnly(2020, 1, 6));
 
-        tickOn.ToOpenOn(session, FromSeconds(15)).Should().Be(result);
+        ((TickOn)tickOnString).ToOpenOn(session, FromSeconds(15)).Should().Be(result);
     }
 
     ////////////////////////////

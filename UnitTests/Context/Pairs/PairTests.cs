@@ -72,7 +72,7 @@ public class PairTests
     [InlineData(USDJPY, 0.001, true)]
     [InlineData(USDJPY, 999.999, true)]
     [InlineData(USDJPY, 1000.0, false)]
-    public void IsPriceWithGoodAndBadArgs(
+    public void IsPriceWithMixedArgs(
         Symbol symbol, float value, bool result)
     {
         GetPair(symbol).IsPrice(value).Should().Be(result);
@@ -85,7 +85,7 @@ public class PairTests
     [InlineData(USDJPY, 0.0011f, 0.001f)]
     [InlineData(USDJPY, 0.0014f, 0.001f)]
     [InlineData(USDJPY, 0.0015f, 0.002f)]
-    public void RoundWithGoodAndBadArgs(
+    public void RoundWithMixedArgs(
         Symbol symbol, float value, float result)
     {
         GetPair(symbol).Round(value).Should().Be(result);

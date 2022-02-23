@@ -10,6 +10,7 @@
 using FluentAssertions;
 using SquidEyes.Trading.Context;
 using System;
+using System.Globalization;
 using Xunit;
 using static System.DateTimeKind;
 
@@ -72,87 +73,72 @@ public class TickOnTests
 
     ////////////////////////////
 
-    private class IsTickOnWithMixedArgsData
-        : Testing.TheoryData<DateTime, bool>
-    {
-        public IsTickOnWithMixedArgsData()
-        {
-            Add(Known.MinTickOnValue.AddMilliseconds(-1), false);
-            Add(Known.MinTickOnValue, true);
-            Add(Known.MaxTickOnValue, true);
-            Add(Known.MaxTickOnValue.AddMilliseconds(1), false);
-        }
-    }
-
     [Theory]
-    [ClassData(typeof(IsTickOnWithMixedArgsData))]
-    public void IsTickOnWithMixedArgs(DateTime value, bool result) =>
+    [InlineData(false, -1, false)]
+    [InlineData(false, 0, true)]
+    [InlineData(true, 0, true)]
+    [InlineData(true, 1, false)]
+    public void IsTickOnWithMixedArgs(bool useMaxValue, int offset, bool result)
+    {
+        var value = (useMaxValue ? Known.MaxTickOnValue
+            : Known.MinTickOnValue).AddMilliseconds(offset);
+
         TickOn.IsTickOn(value).Should().Be(result);
-
-    //////////////////////////
-
-    private class IsTickOnWithGoodArgsData
-    : Testing.TheoryData<DateTime, bool>
-    {
-        public IsTickOnWithGoodArgsData()
-        {
-            Add(DT("01/05/2020 16:59:59.999", Utc), false);
-            Add(DT("01/05/2020 17:00:00.000", Utc), false);
-            Add(DT("01/05/2020 23:59:59.999", Utc), false);
-            Add(DT("01/06/2020 00:00:00.000", Utc), false);
-            Add(DT("01/06/2020 16:59:59.999", Utc), false);
-            Add(DT("01/06/2020 17:00:00.000", Utc), false);
-            Add(DT("01/06/2020 23:59:59.999", Utc), false);
-            Add(DT("01/07/2020 00:00:00.000", Utc), false);
-            Add(DT("01/07/2020 16:59:59.999", Utc), false);
-            Add(DT("01/07/2020 17:00:00.000", Utc), false);
-            Add(DT("01/07/2020 23:59:59.999", Utc), false);
-            Add(DT("01/08/2020 00:00:00.000", Utc), false);
-            Add(DT("01/08/2020 16:59:59.999", Utc), false);
-            Add(DT("01/08/2020 17:00:00.000", Utc), false);
-            Add(DT("01/08/2020 23:59:59.999", Utc), false);
-            Add(DT("01/09/2020 00:00:00.000", Utc), false);
-            Add(DT("01/09/2020 16:59:59.999", Utc), false);
-            Add(DT("01/09/2020 17:00:00.000", Utc), false);
-            Add(DT("01/09/2020 23:59:59.999", Utc), false);
-            Add(DT("01/10/2020 00:00:00.000", Utc), false);
-            Add(DT("01/10/2020 16:59:59.999", Utc), false);
-            Add(DT("01/10/2020 17:00:00.000", Utc), false);
-            Add(DT("01/05/2020 16:59:59.999", Unspecified), false);
-            Add(DT("01/05/2020 17:00:00.000", Unspecified), true);
-            Add(DT("01/05/2020 23:59:59.999", Unspecified), true);
-            Add(DT("01/06/2020 00:00:00.000", Unspecified), true);
-            Add(DT("01/06/2020 16:59:59.999", Unspecified), true);
-            Add(DT("01/06/2020 17:00:00.000", Unspecified), true);
-            Add(DT("01/06/2020 23:59:59.999", Unspecified), true);
-            Add(DT("01/07/2020 00:00:00.000", Unspecified), true);
-            Add(DT("01/07/2020 16:59:59.999", Unspecified), true);
-            Add(DT("01/07/2020 17:00:00.000", Unspecified), true);
-            Add(DT("01/07/2020 23:59:59.999", Unspecified), true);
-            Add(DT("01/08/2020 00:00:00.000", Unspecified), true);
-            Add(DT("01/08/2020 16:59:59.999", Unspecified), true);
-            Add(DT("01/08/2020 17:00:00.000", Unspecified), true);
-            Add(DT("01/08/2020 23:59:59.999", Unspecified), true);
-            Add(DT("01/09/2020 00:00:00.000", Unspecified), true);
-            Add(DT("01/09/2020 16:59:59.999", Unspecified), true);
-            Add(DT("01/09/2020 17:00:00.000", Unspecified), true);
-            Add(DT("01/09/2020 23:59:59.999", Unspecified), true);
-            Add(DT("01/10/2020 00:00:00.000", Unspecified), true);
-            Add(DT("01/10/2020 16:59:59.999", Unspecified), true);
-            Add(DT("01/10/2020 17:00:00.000", Unspecified), false);
-        }
     }
 
-    [Theory]
-    [ClassData(typeof(IsTickOnWithGoodArgsData))]
-    public void IsTickOnWithGoodArgs(DateTime tickOn, bool result) =>
-        tickOn.IsTickOn().Should().Be(result);
-
     //////////////////////////
 
-    [Fact]
-    public void TickOnNotEqualToNullTickOn() =>
-          new TickOn().Equals(null).Should().BeFalse();
+    [Theory]
+    [InlineData("01/05/2020 16:59:59.999", true, false)]
+    [InlineData("01/05/2020 17:00:00.000", true, false)]
+    [InlineData("01/05/2020 23:59:59.999", true, false)]
+    [InlineData("01/06/2020 00:00:00.000", true, false)]
+    [InlineData("01/06/2020 16:59:59.999", true, false)]
+    [InlineData("01/06/2020 17:00:00.000", true, false)]
+    [InlineData("01/06/2020 23:59:59.999", true, false)]
+    [InlineData("01/07/2020 00:00:00.000", true, false)]
+    [InlineData("01/07/2020 16:59:59.999", true, false)]
+    [InlineData("01/07/2020 17:00:00.000", true, false)]
+    [InlineData("01/07/2020 23:59:59.999", true, false)]
+    [InlineData("01/08/2020 00:00:00.000", true, false)]
+    [InlineData("01/08/2020 16:59:59.999", true, false)]
+    [InlineData("01/08/2020 17:00:00.000", true, false)]
+    [InlineData("01/08/2020 23:59:59.999", true, false)]
+    [InlineData("01/09/2020 00:00:00.000", true, false)]
+    [InlineData("01/09/2020 16:59:59.999", true, false)]
+    [InlineData("01/09/2020 17:00:00.000", true, false)]
+    [InlineData("01/09/2020 23:59:59.999", true, false)]
+    [InlineData("01/10/2020 00:00:00.000", true, false)]
+    [InlineData("01/10/2020 16:59:59.999", true, false)]
+    [InlineData("01/10/2020 17:00:00.000", true, false)]
+    [InlineData("01/05/2020 16:59:59.999", false, false)]
+    [InlineData("01/05/2020 17:00:00.000", false, true)]
+    [InlineData("01/05/2020 23:59:59.999", false, true)]
+    [InlineData("01/06/2020 00:00:00.000", false, true)]
+    [InlineData("01/06/2020 16:59:59.999", false, true)]
+    [InlineData("01/06/2020 17:00:00.000", false, true)]
+    [InlineData("01/06/2020 23:59:59.999", false, true)]
+    [InlineData("01/07/2020 00:00:00.000", false, true)]
+    [InlineData("01/07/2020 16:59:59.999", false, true)]
+    [InlineData("01/07/2020 17:00:00.000", false, true)]
+    [InlineData("01/07/2020 23:59:59.999", false, true)]
+    [InlineData("01/08/2020 00:00:00.000", false, true)]
+    [InlineData("01/08/2020 16:59:59.999", false, true)]
+    [InlineData("01/08/2020 17:00:00.000", false, true)]
+    [InlineData("01/08/2020 23:59:59.999", false, true)]
+    [InlineData("01/09/2020 00:00:00.000", false, true)]
+    [InlineData("01/09/2020 16:59:59.999", false, true)]
+    [InlineData("01/09/2020 17:00:00.000", false, true)]
+    [InlineData("01/09/2020 23:59:59.999", false, true)]
+    [InlineData("01/10/2020 00:00:00.000", false, true)]
+    [InlineData("01/10/2020 16:59:59.999", false, true)]
+    [InlineData("01/10/2020 17:00:00.000", false, false)]
+    public void IsTickOnWithGoodArgs(string tickOnString, bool utc, bool result)
+    {
+        var styles = utc ? DateTimeStyles.AssumeUniversal : DateTimeStyles.None;
+
+        DateTime.Parse(tickOnString, null, styles).IsTickOn().Should().Be(result);
+    }
 
     ////////////////////////////
 
@@ -179,12 +165,6 @@ public class TickOnTests
     [InlineData(false)]
     public void ObjectEquals(bool result) => GetTickOn(1)
         .Equals(result ? GetTickOn(1) : GetTickOn(2)).Should().Be(result);
-
-    ////////////////////////////
-
-    [Fact]
-    public void NullNotEquals() =>
-        GetTickOn(1).Equals(null).Should().BeFalse();
 
     ////////////////////////////
 
@@ -270,6 +250,16 @@ public class TickOnTests
     {
         TickOn.Parse("01/05/2020 17:00:00.000").Should().Be(
             new DateTime(2020, 1, 5, 17, 0, 0, 0, Unspecified));
+    }
+
+    ////////////////////////////
+
+    [Fact]
+    public void StringToTickOn()
+    {
+        TickOn tickOn = "01/05/2020 17:00:00.000";
+
+        tickOn.Should().Be(new DateTime(2020, 1, 5, 17, 0, 0, 0, Unspecified));
     }
 
     ////////////////////////////

@@ -29,45 +29,28 @@ public class TradeDateExtendersTests
 
     //////////////////////////
 
-    private class ToTradeDateWithGoodArgsData
-        : Testing.TheoryData<DateTime, DateOnly>
-    {
-        public ToTradeDateWithGoodArgsData()
-        {
-            Add(DT("01/05/2020 17:00:00.000"), DO("01/06/2020"));
-            Add(DT("01/06/2020 16:59:59.999"), DO("01/06/2020"));
-            Add(DT("01/06/2020 17:00:00.000"), DO("01/07/2020"));
-            Add(DT("01/07/2020 16:59:59.999"), DO("01/07/2020"));
-            Add(DT("01/07/2020 17:00:00.000"), DO("01/08/2020"));
-            Add(DT("01/08/2020 16:59:59.999"), DO("01/08/2020"));
-            Add(DT("01/08/2020 17:00:00.000"), DO("01/09/2020"));
-            Add(DT("01/09/2020 16:59:59.999"), DO("01/09/2020"));
-            Add(DT("01/09/2020 17:00:00.000"), DO("01/10/2020"));
-            Add(DT("01/10/2020 16:59:59.999"), DO("01/10/2020"));
-        }
-    }
-
     [Theory]
-    [ClassData(typeof(ToTradeDateWithGoodArgsData))]
-    public void ToTradeDateWithGoodArgs(DateTime tickOn, DateOnly date) =>
-        tickOn.ToTradeDate().Should().Be(date);
+    [InlineData("01/05/2020 17:00:00.000", "01/06/2020")]
+    [InlineData("01/06/2020 16:59:59.999", "01/06/2020")]
+    [InlineData("01/06/2020 17:00:00.000", "01/07/2020")]
+    [InlineData("01/07/2020 16:59:59.999", "01/07/2020")]
+    [InlineData("01/07/2020 17:00:00.000", "01/08/2020")]
+    [InlineData("01/08/2020 16:59:59.999", "01/08/2020")]
+    [InlineData("01/08/2020 17:00:00.000", "01/09/2020")]
+    [InlineData("01/09/2020 16:59:59.999", "01/09/2020")]
+    [InlineData("01/09/2020 17:00:00.000", "01/10/2020")]
+    [InlineData("01/10/2020 16:59:59.999", "01/10/2020")]
+    public void ToTradeDateWithGoodArgs(string tickOnString, string dateString) =>
+        ((TickOn)tickOnString).TradeDate.Should().Be(DateOnly.Parse(dateString));
 
     //////////////////////////
 
-    private class ToTradeDateWithBadArgsData : Testing.TheoryData<DateTime>
-    {
-        public ToTradeDateWithBadArgsData()
-        {
-            Add(DT("01/05/2020 16:59:59.999"));
-            Add(DT("01/10/2020 17:00:00.000"));
-        }
-    }
-
     [Theory]
-    [ClassData(typeof(ToTradeDateWithBadArgsData))]
-    public void ToTradeDateWithBadArgs(DateTime tickOn)
+    [InlineData("01/05/2020 16:59:59.999")]
+    [InlineData("01/10/2020 17:00:00.000")]
+    public void ToTradeDateWithBadArgs(string tickOnString)
     {
-        FluentActions.Invoking(() => _ = tickOn.ToTradeDate())
+        FluentActions.Invoking(() => _ = ((TickOn)tickOnString).TradeDate)
             .Should().Throw<ArgumentOutOfRangeException>();
     }
 

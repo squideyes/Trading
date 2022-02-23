@@ -143,7 +143,7 @@ public class OffsetEmbargoTests
     [InlineData(Week, Friday, "01/09/2020 18:59:59.999", true)]
     [InlineData(Week, Friday, "01/09/2020 19:00:00.000", false)]
     [InlineData(Week, Friday, "01/10/2020 16:59:59.999", false)]
-    public void IsEmbargoedWithGoodAndBadArgs(
+    public void IsEmbargoedWithMixedArgs(
         Extent extent, DayOfWeek? dayOfWeek, string tickOnString, bool result)
     {
         var session = new Session(extent, new DateOnly(2020, 1, 6));

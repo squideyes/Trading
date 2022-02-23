@@ -24,7 +24,7 @@ public class DateOnlyExtendersTests
     [InlineData(9, true)]
     [InlineData(10, true)]
     [InlineData(11, false)]
-    public void IsWeekdayWithGoodAndBadArgs(int day, bool result) =>
+    public void IsWeekdayWithMixedArgs(int day, bool result) =>
         new DateOnly(2020, 1, day).IsWeekday().Should().Be(result);
 
     //////////////////////////
