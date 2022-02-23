@@ -38,7 +38,7 @@ public class TickOnTests
     {
         var tickOn = new TickOn();
 
-        tickOn.Value.Kind.Should().Be(DateTimeKind.Unspecified);
+        tickOn.Value.Kind.Should().Be(Unspecified);
         tickOn.Should().Be(new TickOn(Known.MinTickOnValue));
         tickOn.Value.Should().Be(Known.MinTickOnValue);
         tickOn.IsEmpty.Should().Be(false);
@@ -51,7 +51,7 @@ public class TickOnTests
     {
         TickOn tickOn = default;
 
-        tickOn.Value.Kind.Should().Be(DateTimeKind.Unspecified);
+        tickOn.Value.Kind.Should().Be(Unspecified);
         tickOn.Should().Be(default);
         tickOn.Value.Should().Be(default);
         tickOn.IsEmpty.Should().Be(true);
@@ -264,6 +264,5 @@ public class TickOnTests
 
     ////////////////////////////
 
-    private static TickOn GetTickOn(int days) =>
-        new(Known.MinTickOnValue.AddDays(days));
+    private static TickOn GetTickOn(int days) => new(Known.MinTickOnValue.AddDays(days));
 }
