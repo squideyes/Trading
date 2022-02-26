@@ -1,15 +1,16 @@
-﻿namespace SquidEyes.Trading.FxData;
+﻿using SquidEyes.Trading.Context;
+
+namespace SquidEyes.Trading.FxData;
 
 public static class MiscExtenders
 {
-    public static Rate ToRate(this Tick tick, RateToUse rateToUse)
+    public static Rate ToRate(this Tick tick, MidOrAsk midOrAsk)
     {
-        return rateToUse switch
+        return midOrAsk switch
         {
-            RateToUse.Bid => tick.Bid,
-            RateToUse.Ask => tick.Ask,
-            RateToUse.Mid => tick.Mid,
-            _=> throw new ArgumentOutOfRangeException(nameof(rateToUse))
+            MidOrAsk.Mid => tick.Mid,
+            MidOrAsk.Ask => tick.Ask,
+            _=> throw new ArgumentOutOfRangeException(nameof(midOrAsk))
         };
     }
 }

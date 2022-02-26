@@ -15,7 +15,7 @@ public class WickoFeed
     }
 
     private readonly Rate brickSize;
-    private readonly RateToUse rateToUse;
+    private readonly MidOrAsk midOrAsk;
 
     private bool firstTick = true;
     private Wicko lastWicko = null!;
@@ -29,11 +29,15 @@ public class WickoFeed
 
     public event EventHandler<WickoArgs>? OnWicko;
 
-    public WickoFeed(Rate pips, RateToUse rateToUse)
+    public WickoFeed(Session session, Rate pips, MidOrAsk midOrAsk)
     {
+        Session = session ?? throw new ArgumentNullException(nameof(session));
+
         brickSize = pips.Value * 10;
-        this.rateToUse = rateToUse;
+        this.midOrAsk = midOrAsk;
     }
+
+    public Session Session { get; }
 
     private Wicko GetNewWicko(Rate open, Rate high, Rate low, Rate close)
     {
@@ -61,8 +65,7 @@ public class WickoFeed
             OnWicko?.Invoke(this, new WickoArgs(wicko));
 
             openOn = closeOn;
-            open = limit;
-            low = limit;
+            open = low = limit;
         }
     }
 
@@ -79,8 +82,7 @@ public class WickoFeed
             OnWicko?.Invoke(this, new WickoArgs(wicko));
 
             openOn = closeOn;
-            open = limit;
-            high = limit;
+            open = high = limit;
         }
     }
 
@@ -88,7 +90,13 @@ public class WickoFeed
 
     public void HandleTick(Tick tick)
     {
-        var rate = tick.ToRate(rateToUse);
+        if (!Session.InSession(tick.TickOn))
+        {
+            throw new InvalidOperationException(
+                $"{tick.TickOn} is not within the \"{Session}\" session");
+        }
+
+        var rate = tick.ToRate(midOrAsk);
 
         if (firstTick)
         {
@@ -96,10 +104,7 @@ public class WickoFeed
 
             openOn = tick.TickOn;
             closeOn = tick.TickOn;
-            open = rate;
-            high = rate;
-            low = rate;
-            close = rate;
+            open = high = low = close = rate;
         }
         else
         {
@@ -134,8 +139,7 @@ public class WickoFeed
                     OnWicko?.Invoke(this, new WickoArgs(wicko));
 
                     openOn = closeOn;
-                    open = limit;
-                    low = limit;
+                    open = low = limit;
 
                     Rising();
                 }
@@ -160,8 +164,7 @@ public class WickoFeed
                     OnWicko?.Invoke(this, new WickoArgs(wicko));
 
                     openOn = closeOn;
-                    open = limit;
-                    high = limit;
+                    open = high = limit;
 
                     Falling();
                 }
