@@ -52,8 +52,8 @@ public class Candle : IEquatable<Candle>, ICandle
             if (!session.InSession(closeOn))
                 throw new ArgumentOutOfRangeException(nameof(session));
 
-            if (closeOn <= openOn)
-                throw new ArgumentOutOfRangeException(nameof(session));
+            //if (closeOn <= openOn)
+            //    throw new ArgumentOutOfRangeException(nameof(session));
 
             if (open.IsDefaultValue())
                 throw new ArgumentOutOfRangeException(nameof(open));
