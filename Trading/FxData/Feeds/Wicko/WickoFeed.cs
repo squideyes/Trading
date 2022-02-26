@@ -14,14 +14,14 @@ public class WickoFeed
         public Wicko Wicko { get; }
     }
 
-    private readonly Rate size;
+    private readonly Rate brickSize;
     private readonly RateToUse rateToUse;
 
     private bool firstTick = true;
     private Wicko lastWicko = null!;
 
-    private DateTime openOn;
-    private DateTime closeOn;
+    private TickOn openOn;
+    private TickOn closeOn;
     private Rate open;
     private Rate high;
     private Rate low;
@@ -31,7 +31,7 @@ public class WickoFeed
 
     public WickoFeed(Rate pips, RateToUse rateToUse)
     {
-        size = pips.Value * 10;
+        brickSize = pips.Value * 10;
         this.rateToUse = rateToUse;
     }
 
@@ -52,7 +52,7 @@ public class WickoFeed
     {
         Rate limit;
 
-        while (close > (limit = open.Value + size.Value))
+        while (close > (limit = open + brickSize))
         {
             var wicko = GetNewWicko(open, limit, low, limit);
 
@@ -70,7 +70,7 @@ public class WickoFeed
     {
         Rate limit;
 
-        while (close < (limit = open.Value - size.Value))
+        while (close < (limit = open - brickSize))
         {
             var wicko = GetNewWicko(open, high, limit, limit);
 
@@ -94,8 +94,8 @@ public class WickoFeed
         {
             firstTick = false;
 
-            openOn = tick.TickOn.Value;
-            closeOn = tick.TickOn.Value;
+            openOn = tick.TickOn;
+            closeOn = tick.TickOn;
             open = rate;
             high = rate;
             low = rate;
@@ -103,7 +103,7 @@ public class WickoFeed
         }
         else
         {
-            closeOn = tick.TickOn.Value;
+            closeOn = tick.TickOn;
 
             if (rate > high)
                 high = rate;
@@ -122,7 +122,7 @@ public class WickoFeed
                     return;
                 }
 
-                Rate limit = lastWicko.Open.Value + size.Value;
+                var limit = lastWicko.Open + brickSize;
 
                 if (close > limit)
                 {
@@ -149,7 +149,7 @@ public class WickoFeed
                     return;
                 }
 
-                Rate limit = lastWicko.Open.Value - size.Value;
+                var limit = lastWicko.Open - brickSize;
 
                 if (close < limit)
                 {

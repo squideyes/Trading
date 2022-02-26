@@ -174,6 +174,18 @@ public class RateTests
 
     //////////////////////////
 
+    [Fact]
+    public void AddOperator() =>
+        (new Rate(1) + new Rate(2)).Should().Be(new Rate(3));
+
+    //////////////////////////
+
+    [Fact]
+    public void SubtractOperator() =>
+        (new Rate(3) - new Rate(2)).Should().Be(new Rate(1));
+
+    //////////////////////////
+
     [Theory]
     [InlineData(3, 3, false)]
     [InlineData(2, 3, true)]
