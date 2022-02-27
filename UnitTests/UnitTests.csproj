@@ -50,4 +50,8 @@
 	  </EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="FxData\Feeds\MetaTicks\" />
+	</ItemGroup>
+
 </Project>
