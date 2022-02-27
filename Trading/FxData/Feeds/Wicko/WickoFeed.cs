@@ -120,11 +120,11 @@ public class WickoFeed
 
                 if (close > limit)
                 {
-                    var wicko = GetCandle(lastCandle.Open, limit, low, limit);
+                    var candle = GetCandle(lastCandle.Open, limit, low, limit);
 
-                    lastCandle = wicko;
+                    lastCandle = candle;
 
-                    OnCandle?.Invoke(this, new CandleArgs(tick, wicko));
+                    OnCandle?.Invoke(this, new CandleArgs(tick, candle));
 
                     openOn = closeOn;
                     open = low = limit;
@@ -145,11 +145,11 @@ public class WickoFeed
 
                 if (close < limit)
                 {
-                    var wicko = GetCandle(lastCandle.Open, high, limit, limit);
+                    var candle = GetCandle(lastCandle.Open, high, limit, limit);
 
-                    lastCandle = wicko;
+                    lastCandle = candle;
 
-                    OnCandle?.Invoke(this, new CandleArgs(tick, wicko));
+                    OnCandle?.Invoke(this, new CandleArgs(tick, candle));
 
                     openOn = closeOn;
                     open = high = limit;
