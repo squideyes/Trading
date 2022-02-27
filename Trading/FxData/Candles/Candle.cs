@@ -39,6 +39,17 @@ public class Candle : IEquatable<Candle>, ICandle
         Open = High = Low = Close = tick.Mid;
     }
 
+    internal Candle(TickOn openOn, 
+        TickOn closeOn, Rate open, Rate high, Rate low, Rate close)
+    {
+        OpenOn = openOn;
+        CloseOn = closeOn;
+        Open = open;
+        High = high;
+        Low = low;
+        Close = close;
+    }
+
     public Candle(Session session, TickOn openOn, TickOn closeOn,
         Rate open, Rate high, Rate low, Rate close, bool validate = true)
     {
@@ -52,8 +63,8 @@ public class Candle : IEquatable<Candle>, ICandle
             if (!session.InSession(closeOn))
                 throw new ArgumentOutOfRangeException(nameof(session));
 
-            //if (closeOn <= openOn)
-            //    throw new ArgumentOutOfRangeException(nameof(session));
+            if (closeOn <= openOn)
+                throw new ArgumentOutOfRangeException(nameof(session));
 
             if (open.IsDefaultValue())
                 throw new ArgumentOutOfRangeException(nameof(open));
@@ -99,6 +110,19 @@ public class Candle : IEquatable<Candle>, ICandle
     public Rate Low { get; private set; }
     public Rate Close { get; private set; }
 
+    public Trend Trend
+    {
+        get
+        {
+            if (Open < Close)
+                return Trend.Rising;
+            else if (Open > Close)
+                return Trend.Falling;
+            else
+                return Trend.NoTrend;
+        }
+    }
+
     internal void Adjust(Tick tick, TimeSpan? interval = null)
     {
         if (tick.IsDefaultValue())
@@ -140,25 +164,21 @@ public class Candle : IEquatable<Candle>, ICandle
         return sb.ToString();
     }
 
-    public bool Equals(Candle? other)
-    {
-        return !Equals(other!, null!)
-            && OpenOn.Equals(other.OpenOn)
-            && CloseOn.Equals(other.CloseOn)
-            && Open.Equals(other.Open)
-            && High.Equals(other.High)
-            && Low.Equals(other.Low)
-            && Close.Equals(other.Close);
-    }
+    public bool Equals(Candle? other) => other is not null 
+        && (OpenOn, CloseOn, Open, High, Low, Close) 
+        == (other.OpenOn, other.CloseOn, other.Open, other.High, other.Low, other.Close);
 
-    public override bool Equals(object? other) => Equals(other as Candle);
+    public override bool Equals(object? other) => 
+        (other is Candle o) && Equals(o);
 
     public override int GetHashCode() =>
         HashCode.Combine(OpenOn, CloseOn, Open, High, Low, Close);
 
     public Candle Clone() => (Candle)MemberwiseClone();
 
-    public static bool operator ==(Candle left, Candle right) => left.Equals(right);
+    public static bool operator ==(in Candle left, in Candle right) =>
+        Equals(left, right);
 
-    public static bool operator !=(Candle left, Candle right) => !(left == right);
+    public static bool operator !=(in Candle left, in Candle right) =>
+        !Equals(left, right);
 }

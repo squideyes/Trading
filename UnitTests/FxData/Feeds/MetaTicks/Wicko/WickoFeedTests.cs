@@ -1,4 +1,13 @@
-﻿using FluentAssertions;
+﻿// ********************************************************
+// Copyright (C) 2021 Louis S. Berman (louis@squideyes.com)
+//
+// This file is part of SquidEyes.Trading
+//
+// The use of this source code is licensed under the terms
+// of the MIT License (https://opensource.org/licenses/MIT)
+// ********************************************************
+
+using FluentAssertions;
 using SquidEyes.Basics;
 using SquidEyes.Trading.Context;
 using SquidEyes.Trading.FxData;
@@ -18,7 +27,7 @@ public class WickoFeedTests
         var tradeDate = new DateOnly(2020, 1, 6);
         var session = new Session(Extent.Day, tradeDate);
 
-        var candles = new List<Candle>();
+        var expected = new List<Candle>();
 
         foreach (var fields in new CsvEnumerator(WickoCandles.ToStream(), 6))
         {
@@ -29,27 +38,25 @@ public class WickoFeedTests
             var low = new Rate(float.Parse(fields[4]), pair.Digits);
             var close = new Rate(float.Parse(fields[5]), pair.Digits);
 
-            candles.Add(new Candle(session, openOn, closeOn, open, high, low, close));
+            expected.Add(new Candle(openOn, closeOn, open, high, low, close));
         }
 
-        var feed = new WickoFeed(1, RateToUse.Mid);
-
-        var wickos = new List<Wicko>();
+        var feed = new WickoFeed(session, 1, MidOrAsk.Mid);
 
         var index = 0;
 
-        feed.OnWicko += (s, e) =>
+        feed.OnCandle += (s, e) =>
         {
-            var candle = candles[index];
+            var candle = expected[index];
 
-            e.Wicko.Open.Should().Be(candle.Open);
-            e.Wicko.High.Should().Be(candle.High);
-            e.Wicko.Low.Should().Be(candle.Low);
-            e.Wicko.Close.Should().Be(candle.Close);
+            e.Candle.OpenOn.Should().Be(candle.OpenOn);
+            e.Candle.CloseOn.Should().Be(candle.CloseOn);
+            e.Candle.Open.Should().Be(candle.Open);
+            e.Candle.High.Should().Be(candle.High);
+            e.Candle.Low.Should().Be(candle.Low);
+            e.Candle.Close.Should().Be(candle.Close);
 
             index++;
-
-            wickos.Add(e.Wicko);
         };
 
         foreach (var fields in new CsvEnumerator(WickoTicks.ToStream(), 3))
@@ -62,5 +69,14 @@ public class WickoFeedTests
 
             feed.HandleTick(tick);
         }
+
+        feed.OpenCandle.OpenOn.Should().Be(
+            new TickOn(new DateTime(2020, 1, 5, 21, 0, 48, 680)));
+        feed.OpenCandle.CloseOn.Should().Be(
+            new TickOn(new DateTime(2020, 1, 5, 21, 0, 48, 930)));
+        feed.OpenCandle.Open.Should().Be(new Rate(105946));
+        feed.OpenCandle.High.Should().Be(new Rate(105947));
+        feed.OpenCandle.Low.Should().Be(new Rate(105946));
+        feed.OpenCandle.Close.Should().Be(new Rate(105946));
     }
 }

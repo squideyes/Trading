@@ -1,24 +1,23 @@
-﻿using SquidEyes.Trading.Context;
+﻿// ********************************************************
+// Copyright (C) 2021 Louis S. Berman (louis@squideyes.com)
+//
+// This file is part of SquidEyes.Trading
+//
+// The use of this source code is licensed under the terms
+// of the MIT License (https://opensource.org/licenses/MIT)
+// ********************************************************
+
+using SquidEyes.Trading.Context;
 
 namespace SquidEyes.Trading.FxData;
 
 public class WickoFeed
 {
-    public class WickoArgs : EventArgs
-    {
-        public WickoArgs(Wicko wicko)
-        {
-            Wicko = wicko;
-        }
-
-        public Wicko Wicko { get; }
-    }
-
     private readonly Rate brickSize;
     private readonly MidOrAsk midOrAsk;
 
     private bool firstTick = true;
-    private Wicko lastWicko = null!;
+    private Candle lastCandle = null!;
 
     private TickOn openOn;
     private TickOn closeOn;
@@ -27,7 +26,7 @@ public class WickoFeed
     private Rate low;
     private Rate close;
 
-    public event EventHandler<WickoArgs>? OnWicko;
+    public event EventHandler<CandleArgs>? OnCandle;
 
     public WickoFeed(Session session, Rate pips, MidOrAsk midOrAsk)
     {
@@ -39,54 +38,44 @@ public class WickoFeed
 
     public Session Session { get; }
 
-    private Wicko GetNewWicko(Rate open, Rate high, Rate low, Rate close)
-    {
-        return new Wicko()
-        {
-            OpenOn = openOn,
-            CloseOn = closeOn,
-            Open = open,
-            High = high,
-            Low = low,
-            Close = close
-        };
-    }
+    private Candle GetCandle(Rate open, Rate high, Rate low, Rate close) =>
+        new(openOn, closeOn, open, high, low, close);
 
-    private void Rising()
+    private void Rising(Tick tick)
     {
         Rate limit;
 
         while (close > (limit = open + brickSize))
         {
-            var wicko = GetNewWicko(open, limit, low, limit);
+            var candle = GetCandle(open, limit, low, limit);
 
-            lastWicko = wicko;
+            lastCandle = candle;
 
-            OnWicko?.Invoke(this, new WickoArgs(wicko));
+            OnCandle?.Invoke(this, new CandleArgs(tick, candle));
 
             openOn = closeOn;
             open = low = limit;
         }
     }
 
-    private void Falling()
+    private void Falling(Tick tick)
     {
         Rate limit;
 
         while (close < (limit = open - brickSize))
         {
-            var wicko = GetNewWicko(open, high, limit, limit);
+            var candle = GetCandle(open, high, limit, limit);
 
-            lastWicko = wicko;
+            lastCandle = candle;
 
-            OnWicko?.Invoke(this, new WickoArgs(wicko));
+            OnCandle?.Invoke(this, new CandleArgs(tick, candle));
 
             openOn = closeOn;
             open = high = limit;
         }
     }
 
-    internal Wicko OpenWicko => GetNewWicko(open, high, low, close);
+    internal Candle OpenCandle => GetCandle(open, high, low, close);
 
     public void HandleTick(Tick tick)
     {
@@ -120,53 +109,52 @@ public class WickoFeed
 
             if (close > open)
             {
-                if (lastWicko == null || (lastWicko.Trend == Trend.Rising))
+                if (lastCandle == null! || (lastCandle.Trend == Trend.Rising))
                 {
-                    Rising();
+                    Rising(tick);
 
                     return;
                 }
 
-                var limit = lastWicko.Open + brickSize;
+                var limit = lastCandle!.Open + brickSize;
 
                 if (close > limit)
                 {
-                    var wicko = GetNewWicko(
-                        lastWicko.Open, limit, low, limit);
+                    var wicko = GetCandle(lastCandle.Open, limit, low, limit);
 
-                    lastWicko = wicko;
+                    lastCandle = wicko;
 
-                    OnWicko?.Invoke(this, new WickoArgs(wicko));
+                    OnCandle?.Invoke(this, new CandleArgs(tick, wicko));
 
                     openOn = closeOn;
                     open = low = limit;
 
-                    Rising();
+                    Rising(tick);
                 }
             }
             else if (close < open)
             {
-                if (lastWicko == null || (lastWicko.Trend == Trend.Falling))
+                if (lastCandle == null! || (lastCandle.Trend == Trend.Falling))
                 {
-                    Falling();
+                    Falling(tick);
 
                     return;
                 }
 
-                var limit = lastWicko.Open - brickSize;
+                var limit = lastCandle!.Open - brickSize;
 
                 if (close < limit)
                 {
-                    var wicko = GetNewWicko(lastWicko.Open, high, limit, limit);
+                    var wicko = GetCandle(lastCandle.Open, high, limit, limit);
 
-                    lastWicko = wicko;
+                    lastCandle = wicko;
 
-                    OnWicko?.Invoke(this, new WickoArgs(wicko));
+                    OnCandle?.Invoke(this, new CandleArgs(tick, wicko));
 
                     openOn = closeOn;
                     open = high = limit;
 
-                    Falling();
+                    Falling(tick);
                 }
             }
         }

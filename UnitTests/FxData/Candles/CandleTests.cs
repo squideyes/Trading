@@ -120,15 +120,79 @@ public class CandleTests
 
     //////////////////////////////
 
-    [Fact]
-    public void CandleNotEqualToNullCandle() =>
-        GetCandle(3, 4, 1, 2).Equals(null).Should().BeFalse();
+    [Theory]
+    [InlineData(true, true, 4, 5, 2, 3, true)]
+    [InlineData(true, false, 4, 5, 2, 3, false)]
+    [InlineData(false, true, 4, 5, 2, 3, false)]
+    [InlineData(false, false, 4, 5, 2, 3, true)]
+    [InlineData(false, false, 3, 5, 2, 3, false)]
+    [InlineData(false, false, 4, 6, 2, 3, false)]
+    [InlineData(false, false, 4, 5, 1, 3, false)]
+    [InlineData(false, false, 4, 5, 2, 4, false)]
+    public void ClassEqualsOperator(bool leftNull, bool rightNull,
+        int open, int high, int low, int close, bool result)
+    {
+        var left = leftNull ? null : GetCandle(4, 5, 2, 3);
+        var right = rightNull ? null : GetCandle(open, high, low, close);
+
+        (left! == right!).Should().Be(result);
+    }
 
     //////////////////////////////
 
-    [Fact]
-    public void CandleNotEqualToNullObject() =>
-        GetCandle(3, 4, 1, 2).Equals((object?)null).Should().BeFalse();
+    [Theory]
+    [InlineData(true, true, 4, 5, 2, 3, false)]
+    [InlineData(true, false, 4, 5, 2, 3, true)]
+    [InlineData(false, true, 4, 5, 2, 3, true)]
+    [InlineData(false, false, 4, 5, 2, 3, false)]
+    [InlineData(false, false, 3, 5, 2, 3, true)]
+    [InlineData(false, false, 4, 6, 2, 3, true)]
+    [InlineData(false, false, 4, 5, 1, 3, true)]
+    [InlineData(false, false, 4, 5, 2, 4, true)]
+    public void ClassNotEqualsOperator(bool leftNull, bool rightNull,
+        int open, int high, int low, int close, bool result)
+    {
+        var left = leftNull ? null : GetCandle(open, high, low, close);
+        var right = rightNull ? null : GetCandle(4, 5, 2, 3);
+
+        (left! != right!).Should().Be(result);
+    }
+
+    //////////////////////////////
+
+    [Theory]
+    [InlineData(true, 4, 5, 2, 3, false)]
+    [InlineData(false, 4, 5, 2, 3, true)]
+    [InlineData(false, 3, 5, 2, 3, false)]
+    [InlineData(false, 4, 6, 2, 3, false)]
+    [InlineData(false, 4, 5, 1, 3, false)]
+    [InlineData(false, 4, 5, 2, 4, false)]
+    public void ClassEqualsMethod(bool rightNull,
+        int open, int high, int low, int close, bool result)
+    {
+        var left = GetCandle(4, 5, 2, 3);
+        var right = rightNull ? null : GetCandle(open, high, low, close);
+
+        left!.Equals(right!).Should().Be(result);
+    }
+
+    //////////////////////////////
+
+    [Theory]
+    [InlineData(true, 4, 5, 2, 3, false)]
+    [InlineData(false, 4, 5, 2, 3, true)]
+    [InlineData(false, 3, 5, 2, 3, false)]
+    [InlineData(false, 4, 6, 2, 3, false)]
+    [InlineData(false, 4, 5, 1, 3, false)]
+    [InlineData(false, 4, 5, 2, 4, false)]
+    public void ObjectEqualsMethod(bool rightNull,
+        int open, int high, int low, int close, bool result)
+    {
+        var left = GetCandle(4, 5, 2, 3);
+        var right = rightNull ? null : GetCandle(open, high, low, close);
+
+        left!.Equals((object)right!).Should().Be(result);
+    }
 
     //////////////////////////////
 
@@ -146,40 +210,13 @@ public class CandleTests
     //////////////////////////////
 
     [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CandleEqualsCandle(bool result)
+    [InlineData(1, 1, 1, 1, Trend.NoTrend)]
+    [InlineData(1, 2, 1, 2, Trend.Rising)]
+    [InlineData(2, 2, 1, 1, Trend.Falling)]
+    public void TrendReturnsExpectedResult(
+        int open, int high, int low, int close, Trend expected)
     {
-        var candle1 = GetCandle(3, 4, 1, 2);
-        var candle2 = result ? GetCandle(3, 4, 1, 2) : GetCandle(3, 4, 1, 3);
-
-        candle1.Equals(candle2).Should().Be(result);
-    }
-
-    //////////////////////////////
-
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CandleEqualsCandleOperator(bool result)
-    {
-        var candle1 = GetCandle(3, 4, 1, 2);
-        var candle2 = result ? GetCandle(3, 4, 1, 2) : GetCandle(3, 4, 1, 3);
-
-        (candle1 == candle2).Should().Be(result);
-    }
-
-    //////////////////////////////
-
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CandleNotEqualsCandleOperator(bool result)
-    {
-        var candle1 = GetCandle(3, 4, 1, 2);
-        var candle2 = result ? GetCandle(3, 4, 1, 3) : GetCandle(3, 4, 1, 2);
-
-        (candle1 != candle2).Should().Be(result);
+        GetCandle(open, high, low, close).Trend.Should().Be(expected);
     }
 
     //////////////////////////////

@@ -7,11 +7,12 @@
 // of the MIT License (https://opensource.org/licenses/MIT)
 // ********************************************************
 
-namespace SquidEyes.Trading.FxData;
-
-public enum RateToUse
+namespace SquidEyes.Trading.FxData
 {
-    Bid = 1,
-    Mid,
-    Ask
+    public enum Trend
+    {
+        Rising = 1,
+        NoTrend,
+        Falling
+    }
 }
