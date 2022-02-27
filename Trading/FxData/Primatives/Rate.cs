@@ -34,7 +34,7 @@ public struct Rate : IEquatable<Rate>, IComparable<Rate>
     {
     }
 
-    internal int Value { get; }
+    public int Value { get; }
 
     public bool IsEmpty => Value == default;
 
