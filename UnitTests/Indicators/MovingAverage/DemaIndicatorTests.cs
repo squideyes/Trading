@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class DemaIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new DemaIndicator(
+            10, Known.Pairs[Symbol.EURUSD], RateToUse.Close);
+
+        TestingHelper<DemaIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 10, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void DemaIndicatorBaseline()
     {
         var results = new double[]

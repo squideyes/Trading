@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class CciIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new CciIndicator(
+            20, Known.Pairs[Symbol.EURUSD], RateToUse.Close);
+
+        TestingHelper<CciIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 20, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void StochasticsIndicatorBaseline()
     {
         var results = new double[]

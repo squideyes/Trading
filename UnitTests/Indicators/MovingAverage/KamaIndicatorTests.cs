@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class KamaIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new KamaIndicator(
+            10, 5, 15, Known.Pairs[Symbol.EURUSD], RateToUse.Close);
+
+        TestingHelper<KamaIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 11, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void KamaIndicatorBaseline()
     {
         var results = new double[]

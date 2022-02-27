@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class BollingerBandsIndictorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new BollingerBandsIndictor(
+            10, Known.Pairs[Symbol.EURUSD], RateToUse.Close, 2.0);
+
+        TestingHelper<BollingerBandsIndictor>.IsPrimedReturnsExpectedValue(
+            indicator, 11, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void BollingerBandsIndicatorBaseline()
     {
         var results = new (double Upper, double Middle, double Lower)[]

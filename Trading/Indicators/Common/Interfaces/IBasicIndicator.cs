@@ -13,5 +13,7 @@ namespace SquidEyes.Trading.Indicators;
 
 public interface IBasicIndicator
 {
+    bool IsPrimed { get; }
+
     BasicResult AddAndCalc(ICandle candle);
 }

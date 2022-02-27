@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class StdDevIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new StdDevIndicator(
+            10, Known.Pairs[Symbol.EURUSD], RateToUse.Close);
+
+        TestingHelper<StdDevIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 11, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void StdDevIndicatorBaseline()
     {
         var results = new double[]

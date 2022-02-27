@@ -36,6 +36,8 @@ public class LinRegIndicator : BasicIndicatorBase, IBasicIndicator
         values = new SlidingBuffer<double>(period + 1);
     }
 
+    public bool IsPrimed => values.IsPrimed;
+
     public BasicResult AddAndCalc(ICandle candle)
     {
         ArgumentNullException.ThrowIfNull(candle);

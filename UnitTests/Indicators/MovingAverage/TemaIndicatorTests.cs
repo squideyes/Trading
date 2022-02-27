@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class TemaIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new TemaIndicator(
+            10, Known.Pairs[Symbol.EURUSD], RateToUse.Close);
+
+        TestingHelper<TemaIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 10, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void TemaIndicatorBaseline()
     {
         var results = new double[]

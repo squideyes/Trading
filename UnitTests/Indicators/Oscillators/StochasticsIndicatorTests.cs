@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class StochasticsIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new StochasticsIndicator(
+            14, 7, 3, Known.Pairs[Symbol.EURUSD]);
+
+        TestingHelper<StochasticsIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 14, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void StochasticsIndicatorBaseline()
     {
         var results = new (double AddK, double AddD, double UpdateK, double UpdateD)[]

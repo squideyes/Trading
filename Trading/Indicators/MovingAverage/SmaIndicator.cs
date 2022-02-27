@@ -27,6 +27,8 @@ public class SmaIndicator : BasicIndicatorBase, IBasicIndicator
         buffer = new SlidingBuffer<double>(period + 1);
     }
 
+    public bool IsPrimed => buffer.IsPrimed;
+
     public BasicResult AddAndCalc(ICandle candle)
     {
         ArgumentNullException.ThrowIfNull(candle);

@@ -33,6 +33,8 @@ public class KeltnerChannelIndictor : BasicIndicatorBase
         smaTypical = new SmaIndicator(period, pair, rateToUse);
     }
 
+    public bool IsPrimed => diff.IsPrimed;
+
     public ChannelResult AddAndCalc(ICandle candle)
     {
         ArgumentNullException.ThrowIfNull(candle);

@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class MacdIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new MacdIndicator(
+            10, 15, 3, Known.Pairs[Symbol.EURUSD], RateToUse.Close);
+
+        TestingHelper<MacdIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 10, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void MacdIndicatorBaseline()
     {
         var results = new (double Value, double Average, double Difference)[]

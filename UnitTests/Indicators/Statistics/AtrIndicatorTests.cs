@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class AtrIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new AtrIndicator(
+            10, Known.Pairs[Symbol.EURUSD], RateToUse.Close);
+
+        TestingHelper<AtrIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 10, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void AtrIndicatorBaseline()
     {
         var results = new double[]

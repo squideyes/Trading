@@ -34,6 +34,8 @@ public class KamaIndicator : BasicIndicatorBase, IBasicIndicator
         values = new SlidingBuffer<double>(period + 1, true);
     }
 
+    public bool IsPrimed => values.IsPrimed;
+
     public BasicResult AddAndCalc(ICandle candle)
     {
         ArgumentNullException.ThrowIfNull(candle);

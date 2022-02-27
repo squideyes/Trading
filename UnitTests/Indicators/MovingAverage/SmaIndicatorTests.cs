@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class SmaIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new SmaIndicator(
+            10, Known.Pairs[Symbol.EURUSD], RateToUse.Close);
+
+        TestingHelper<SmaIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 11, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void SmaIndicatorBaseline()
     {
         var results = new double[]

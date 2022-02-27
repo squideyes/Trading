@@ -19,14 +19,16 @@ public class WmaIndicator : BasicIndicatorBase, IBasicIndicator
 
     private int index = 0;
 
-    private double priorSum;
-    private double priorWsum;
+    private double prevSum;
+    private double prevWsum;
 
     public WmaIndicator(int period, Pair pair, RateToUse rateToUse)
         : base(period, pair, rateToUse, 2)
     {
         buffer = new SlidingBuffer<float>(period + 1);
     }
+
+    public bool IsPrimed => buffer.IsPrimed;
 
     public BasicResult AddAndCalc(ICandle candle)
     {
@@ -38,18 +40,18 @@ public class WmaIndicator : BasicIndicatorBase, IBasicIndicator
 
         var factor = Math.Min(index + 1, Period);
 
-        var wsum = priorWsum -
-            (index >= Period ? priorSum : 0.0) + factor * price;
+        var wsum = prevWsum -
+            (index >= Period ? prevSum : 0.0) + factor * price;
 
-        var sum = priorSum + price -
+        var sum = prevSum + price -
             (index >= Period ? buffer[0] : 0.0);
 
         var wma = wsum / (0.5 * factor * (factor + 1));
 
         index++;
 
-        priorWsum = wsum;
-        priorSum = sum;
+        prevWsum = wsum;
+        prevSum = sum;
 
         return GetBasicResult(candle.OpenOn, wma);
     }

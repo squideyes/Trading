@@ -16,6 +16,9 @@ public class EmaIndicator : BasicIndicatorBase, IBasicIndicator
 {
     private readonly double constant1;
     private readonly double constant2;
+
+    private int addAndCalcCount = 0;
+
     private double? lastEma;
 
     public EmaIndicator(int period, Pair pair, RateToUse rateToUse)
@@ -24,6 +27,8 @@ public class EmaIndicator : BasicIndicatorBase, IBasicIndicator
         constant1 = 2.0 / (1 + period);
         constant2 = 1.0 - (2.0 / (1 + period));
     }
+
+    public bool IsPrimed => addAndCalcCount >= Period;
 
     public BasicResult AddAndCalc(ICandle candle)
     {
@@ -34,6 +39,8 @@ public class EmaIndicator : BasicIndicatorBase, IBasicIndicator
 
     public BasicResult AddAndCalc(BasicResult result)
     {
+        addAndCalcCount++;
+
         ArgumentNullException.ThrowIfNull(result);
 
         var ema = !lastEma.HasValue ? result.Value :

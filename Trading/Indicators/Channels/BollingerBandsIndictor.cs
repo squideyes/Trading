@@ -14,8 +14,8 @@ namespace SquidEyes.Trading.Indicators;
 
 public class BollingerBandsIndictor : BasicIndicatorBase
 {
-    private readonly SmaIndicator smaIndicator;
-    private readonly StdDevIndicator stdDevIndicator;
+    private readonly SmaIndicator sma;
+    private readonly StdDevIndicator stdDev;
     private readonly double stdDevFactor;
 
     public BollingerBandsIndictor(
@@ -27,18 +27,20 @@ public class BollingerBandsIndictor : BasicIndicatorBase
 
         this.stdDevFactor = stdDevFactor;
 
-        smaIndicator = new SmaIndicator(period, pair, rateToUse);
+        sma = new SmaIndicator(period, pair, rateToUse);
 
-        stdDevIndicator = new StdDevIndicator(period, pair, rateToUse);
+        stdDev = new StdDevIndicator(period, pair, rateToUse);
     }
+
+    public bool IsPrimed => sma.IsPrimed;
 
     public ChannelResult AddAndCalc(ICandle candle)
     {
         ArgumentNullException.ThrowIfNull(candle);
 
-        var smaValue = smaIndicator.AddAndCalc(candle).Value;
+        var smaValue = sma.AddAndCalc(candle).Value;
 
-        var stdDevValue = stdDevIndicator.AddAndCalc(candle).Value;
+        var stdDevValue = stdDev.AddAndCalc(candle).Value;
 
         var delta = stdDevFactor * stdDevValue;
 

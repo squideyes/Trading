@@ -47,6 +47,8 @@ public class MacdIndicator
         this.rateToUse = rateToUse;
     }
 
+    public bool IsPrimed => fastEmas.IsPrimed;
+
     public MacdResult AddAndCalc(ICandle candle)
     {
         ArgumentNullException.ThrowIfNull(candle);

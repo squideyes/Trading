@@ -23,6 +23,8 @@ public class AtrIndicator : BasicIndicatorBase, IBasicIndicator
     {
     }
 
+    public bool IsPrimed => index >= Period;
+
     public BasicResult AddAndCalc(ICandle candle)
     {
         ArgumentNullException.ThrowIfNull(candle);
@@ -44,8 +46,8 @@ public class AtrIndicator : BasicIndicatorBase, IBasicIndicator
             var trueRange = Math.Max(Math.Abs(low0 - close1),
                 Math.Max(high0 - low0, Math.Abs(high0 - close1)));
 
-            var result = ((Math.Min(index, Period) - 1) * lastValue + trueRange) /
-                Math.Min(index, Period);
+            var result = ((Math.Min(index, Period) - 1)
+                * lastValue + trueRange) / Math.Min(index, Period);
 
             lastCandle = candle;
             lastValue = result;

@@ -26,6 +26,8 @@ public class TemaIndicator : BasicIndicatorBase, IBasicIndicator
         ema3 = new EmaIndicator(period, pair, rateToUse);
     }
 
+    public bool IsPrimed => ema1.IsPrimed;
+
     public BasicResult AddAndCalc(ICandle candle)
     {
         ArgumentNullException.ThrowIfNull(candle);

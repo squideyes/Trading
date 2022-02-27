@@ -16,7 +16,7 @@ namespace SquidEyes.Trading.Indicators;
 public class CciIndicator : BasicIndicatorBase, IBasicIndicator
 {
     private readonly SmaIndicator sma;
-    private readonly SlidingBuffer<double> typical;
+    private readonly SlidingBuffer<double> buffer;
 
     private int barCount = 0;
 
@@ -27,8 +27,10 @@ public class CciIndicator : BasicIndicatorBase, IBasicIndicator
 
         sma = new SmaIndicator(period, pair, rateToUse);
 
-        typical = new SlidingBuffer<double>(period, true);
+        buffer = new SlidingBuffer<double>(period, true);
     }
+
+    public bool IsPrimed => buffer.IsPrimed;
 
     public BasicResult AddAndCalc(ICandle candle)
     {
@@ -36,10 +38,10 @@ public class CciIndicator : BasicIndicatorBase, IBasicIndicator
 
         double result;
 
-        typical.Add(candle.AsFunc(c =>
-            (c.High.Value + c.Low.Value + c.Close.Value) / 3.0));
+        buffer.Add(candle.AsFunc(
+            c => (c.High.Value + c.Low.Value + c.Close.Value) / 3.0));
 
-        var sma0 = sma.AddAndCalc(candle.OpenOn, typical[0]).Value;
+        var sma0 = sma.AddAndCalc(candle.OpenOn, buffer[0]).Value;
 
         if (barCount == 0)
         {
@@ -50,9 +52,9 @@ public class CciIndicator : BasicIndicatorBase, IBasicIndicator
             var mean = 0.0;
 
             for (var idx = Math.Min(barCount, Period - 1); idx >= 0; idx--)
-                mean += Math.Abs(typical[idx] - sma0);
+                mean += Math.Abs(buffer[idx] - sma0);
 
-            result = (typical[0] - sma0) / (mean.Approximates(0.0) ?
+            result = (buffer[0] - sma0) / (mean.Approximates(0.0) ?
                 1 : (0.015 * (mean / Math.Min(Period, barCount + 1))));
         }
 

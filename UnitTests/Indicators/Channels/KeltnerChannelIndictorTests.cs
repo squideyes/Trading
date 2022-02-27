@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class KeltnerChannelIndictorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new KeltnerChannelIndictor(
+            20, Known.Pairs[Symbol.EURUSD], RateToUse.Close, 1.5);
+
+        TestingHelper<KeltnerChannelIndictor>.IsPrimedReturnsExpectedValue(
+            indicator, 20, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void KeltnerChannelIndicatorBaseline()
     {
         var results = new (double Upper, double Middle, double Lower)[]

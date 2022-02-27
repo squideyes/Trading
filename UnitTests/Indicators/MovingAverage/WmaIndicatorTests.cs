@@ -18,6 +18,16 @@ namespace SquidEyes.UnitTests.Indicators;
 public class WmaIndicatorTests
 {
     [Fact]
+    public void IsPrimedReturnsExpectedValue()
+    {
+        var indicator = new WmaIndicator(
+            10, Known.Pairs[Symbol.EURUSD], RateToUse.Close);
+
+        TestingHelper<WmaIndicator>.IsPrimedReturnsExpectedValue(
+            indicator, 11, (i, c) => i.AddAndCalc(c), i => i.IsPrimed);
+    }
+
+    [Fact]
     public void WmaIndicatorBaseline()
     {
         var results = new double[]

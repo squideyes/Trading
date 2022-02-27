@@ -24,6 +24,8 @@ public class DemaIndicator : BasicIndicatorBase, IBasicIndicator
         ema2 = new EmaIndicator(period, pair, rateToUse);
     }
 
+    public bool IsPrimed => ema1.IsPrimed;
+
     public BasicResult AddAndCalc(ICandle candle)
     {
         ArgumentNullException.ThrowIfNull(candle);

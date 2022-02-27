@@ -14,8 +14,7 @@ namespace SquidEyes.Trading.Indicators;
 
 public abstract class BasicIndicatorBase
 {
-    public BasicIndicatorBase(
-        int period, Pair pair, RateToUse rateToUse, int minPeriod)
+    public BasicIndicatorBase(int period, Pair pair, RateToUse rateToUse, int minPeriod)
     {
         Period = period.Validated(nameof(period), v => v >= minPeriod);
         Pair = pair ?? throw new ArgumentNullException(nameof(pair));
@@ -26,9 +25,12 @@ public abstract class BasicIndicatorBase
     protected Pair Pair { get; }
     protected RateToUse RateToUse { get; }
 
-    protected static BasicResult GetBasicResult(TickOn openOn, double value) => new()
+    static protected BasicResult GetBasicResult(TickOn openOn, double value)
     {
-        OpenOn = openOn,
-        Value = value
-    };
+        return new BasicResult()
+        {
+            OpenOn = openOn,
+            Value = value
+        };
+    }
 }
