@@ -26,32 +26,26 @@ public class MetaTickSetTests
     [InlineData(Extent.Week, false)]
     public void ConstructsWithGoodArgs(Extent extent, bool withJpy)
     {
-        var tradeDate = new DateOnly(2020, 1, 6);
-
-        var session = new Session(Extent.Week, tradeDate);
+        var session = new Session(Extent.Week, new DateOnly(2020, 1, 6));
 
         var pairs = new HashSet<Pair>() { Known.Pairs[Symbol.EURUSD] };
 
         if (withJpy)
-        {
             pairs.Add(Known.Pairs[Symbol.EURJPY]);
-            pairs.Add(Known.Pairs[Symbol.USDJPY]);
-        }
+
+        var metaTicks = new MetaTickSet(Source.SquidEyes, session, pairs);
 
         List<TickSet> GetTickSets(int days, int dataId)
         {
             var tickSets = new List<TickSet>();
 
-            foreach (var pair in pairs)
-                tickSets.Add(GetTickSet(pair, tradeDate, days, dataId));
+            foreach (var pair in metaTicks.Pairs.Keys)
+                tickSets.Add(GetTickSet(pair, session, days, dataId));
 
             return tickSets;
         };
 
-        var metaTicks = new MetaTickSet(Source.SquidEyes, session, pairs)
-            {
-                GetTickSets(0, 1)
-            };
+        metaTicks.Add(GetTickSets(0, 1));
 
         if (extent == Extent.Week)
         {
@@ -60,9 +54,24 @@ public class MetaTickSetTests
             metaTicks.Add(GetTickSets(4, 4));
         }
 
-        var count = extent == Extent.Week ? 24 : 6;
-
-        metaTicks.Count().Should().Be(withJpy ? count * 3 : count);
+        if (withJpy)
+        {
+            metaTicks.Pairs.Should().HaveCount(3);
+            metaTicks.Pairs.Should().ContainInOrder(
+                new Dictionary<Pair, bool>() {
+                    { Known.Pairs[Symbol.EURUSD], true },
+                    { Known.Pairs[Symbol.EURJPY], true },
+                    { Known.Pairs[Symbol.USDJPY], false } });
+            metaTicks.Count().Should().Be(extent == Extent.Day ? 18 : 72);
+        }
+        else
+        {
+            metaTicks.Pairs.Should().HaveCount(1);
+            metaTicks.Pairs.Should().ContainInOrder(
+                new Dictionary<Pair, bool>() {
+                    { Known.Pairs[Symbol.EURUSD], true } });
+            metaTicks.Count().Should().Be(extent == Extent.Day ? 6 : 24);
+        }
     }
 
     [Fact]
@@ -90,11 +99,11 @@ public class MetaTickSetTests
         var session = new Session(Extent.Day, tradeDate);
 
         var pairs = new HashSet<Pair>()
-            {
-                Known.Pairs[Symbol.USDJPY],
-                Known.Pairs[Symbol.EURJPY],
-                Known.Pairs[Symbol.EURUSD]
-            };
+        {
+            Known.Pairs[Symbol.USDJPY],
+            Known.Pairs[Symbol.EURJPY],
+            Known.Pairs[Symbol.EURUSD]
+        };
 
         var metaTickSet = new MetaTickSet(Source.SquidEyes, session, pairs);
 
@@ -134,10 +143,10 @@ public class MetaTickSetTests
     }
 
     private static TickSet GetTickSet(
-        Pair pair, DateOnly tradeDate, int days, int dataId)
+        Pair pair, Session session, int days, int dataId)
     {
         var tickSet = new TickSet(
-            Source.SquidEyes, pair, tradeDate.AddDays(days));
+            Source.SquidEyes, pair, session.TradeDate.AddDays(days));
 
         switch (dataId)
         {

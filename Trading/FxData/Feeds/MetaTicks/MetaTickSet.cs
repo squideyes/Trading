@@ -23,10 +23,37 @@ public class MetaTickSet : IEnumerable<MetaTick>
     public MetaTickSet(Source source, Session session, HashSet<Pair> pairs)
     {
         Source = source.Validated(nameof(source), v => v.IsEnumValue());
-        Session = session?? throw new ArgumentNullException(nameof(session));
-        Pairs = pairs.Validated(nameof(pairs), v => v.HasItems());
+
+        Session = session ?? throw new ArgumentNullException(nameof(session));
+
+        if (!pairs.HasItems())
+            throw new ArgumentOutOfRangeException(nameof(pairs));
+
+        Pairs = new Dictionary<Pair, bool>();
+
+        void AddOrUpdate(Pair pair, bool canTrade)
+        {
+            if (Pairs.ContainsKey(pair))
+            {
+                if (canTrade)
+                    Pairs[pair] = canTrade;
+            }
+            else
+            {
+                Pairs.Add(pair, canTrade);
+            }
+        }
 
         foreach (var pair in pairs)
+        {
+            var (basePair, quotePair) = Known.ConvertWith[pair];
+
+            AddOrUpdate(pair, true);
+            AddOrUpdate(basePair, false);
+            AddOrUpdate(quotePair, false);
+        }
+
+        foreach (var pair in Pairs.Keys)
             tickSets.Add(pair, new List<TickSet>());
 
         minTradeDate = session.TradeDate;
@@ -41,7 +68,7 @@ public class MetaTickSet : IEnumerable<MetaTick>
 
     public Source Source { get; }
     public Session Session { get; }
-    public HashSet<Pair> Pairs { get; }
+    public Dictionary<Pair, bool> Pairs { get; }
 
     public void Add(List<TickSet> tickSets)
     {
@@ -71,7 +98,7 @@ public class MetaTickSet : IEnumerable<MetaTick>
         if (!tickSets.Select(ts => ts.Pair).IsUnique())
             throw new ArgumentOutOfRangeException(nameof(tickSets));
 
-        if (tickSets.Any(ts => !Pairs.Contains(ts.Pair)))
+        if (tickSets.Any(ts => !Pairs.ContainsKey(ts.Pair)))
             throw new ArgumentOutOfRangeException(nameof(tickSets));
 
         foreach (var tickSet in tickSets)
