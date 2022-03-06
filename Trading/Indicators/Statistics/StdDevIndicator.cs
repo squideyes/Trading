@@ -21,7 +21,7 @@ public class StdDevIndicator : BasicIndicatorBase, IBasicIndicator
     private int index = 0;
 
     public StdDevIndicator(int period, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         prices = new SlidingBuffer<double>(period + 1, true);
         sumSeries = new SlidingBuffer<double>(period + 1, true);

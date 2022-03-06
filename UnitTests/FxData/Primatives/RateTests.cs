@@ -26,7 +26,7 @@ public class RateTests
         var rate = new Rate(intValue);
 
         rate.Value.Should().Be(intValue);
-        rate.GetFloat(digits).Should().Be(floatValue);
+        rate.AsFloat(digits).Should().Be(floatValue);
         rate.ToString().Should().Be(intValue.ToString());
         rate.ToString(digits).Should().Be(floatValue.ToString("N" + digits));
     }
@@ -43,7 +43,7 @@ public class RateTests
         var rate = new Rate(floatValue, digits);
 
         rate.Value.Should().Be(intValue);
-        rate.GetFloat(digits).Should().Be(floatValue);
+        rate.AsFloat(digits).Should().Be(floatValue);
         rate.ToString().Should().Be(intValue.ToString());
         rate.ToString(digits).Should().Be(floatValue.ToString("N" + digits));
     }

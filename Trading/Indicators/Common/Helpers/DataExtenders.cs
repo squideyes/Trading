@@ -21,10 +21,10 @@ public static class DataExtenders
 
         return rateToUse switch
         {
-            RateToUse.Open => candle.Open.GetFloat(pair.Digits),
-            RateToUse.High => candle.High.GetFloat(pair.Digits),
-            RateToUse.Low => candle.Low.GetFloat(pair.Digits),
-            RateToUse.Close => candle.Close.GetFloat(pair.Digits),
+            RateToUse.Open => candle.Open.AsFloat(pair.Digits),
+            RateToUse.High => candle.High.AsFloat(pair.Digits),
+            RateToUse.Low => candle.Low.AsFloat(pair.Digits),
+            RateToUse.Close => candle.Close.AsFloat(pair.Digits),
             _ => throw new ArgumentOutOfRangeException(nameof(rateToUse))
         };
     }

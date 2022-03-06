@@ -25,7 +25,7 @@ public class KamaIndicator : BasicIndicatorBase, IBasicIndicator
     private int index = 0;
 
     public KamaIndicator(int period, int fast, int slow, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         fastCF = 2.0 / (fast + 1);
         slowCF = 2.0 / (slow + 1);

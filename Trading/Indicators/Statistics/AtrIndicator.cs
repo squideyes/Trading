@@ -19,7 +19,7 @@ public class AtrIndicator : BasicIndicatorBase, IBasicIndicator
     private ICandle lastCandle = null!;
 
     public AtrIndicator(int period, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
     }
 

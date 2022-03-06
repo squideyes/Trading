@@ -22,7 +22,7 @@ public class EmaIndicator : BasicIndicatorBase, IBasicIndicator
     private double? lastEma;
 
     public EmaIndicator(int period, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         constant1 = 2.0 / (1 + period);
         constant2 = 1.0 - (2.0 / (1 + period));

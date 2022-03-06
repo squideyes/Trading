@@ -19,7 +19,7 @@ public class TemaIndicator : BasicIndicatorBase, IBasicIndicator
     private readonly EmaIndicator ema3;
 
     public TemaIndicator(int period, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         ema1 = new EmaIndicator(period, pair, rateToUse);
         ema2 = new EmaIndicator(period, pair, rateToUse);

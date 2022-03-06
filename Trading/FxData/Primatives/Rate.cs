@@ -44,13 +44,13 @@ public struct Rate : IEquatable<Rate>, IComparable<Rate>
     {
         return digits switch
         {
-            5 => GetFloat(digits).ToString("N5"),
-            3 => GetFloat(digits).ToString("N3"),
+            5 => AsFloat(digits).ToString("N5"),
+            3 => AsFloat(digits).ToString("N3"),
             _ => throw new ArgumentOutOfRangeException(nameof(digits))
         };
     }
 
-    public float GetFloat(int digits) =>
+    public float AsFloat(int digits) =>
         FastMath.Round(Value / GetFactor(digits), digits);
 
     public bool Equals(Rate other) => Value.Equals(other.Value);

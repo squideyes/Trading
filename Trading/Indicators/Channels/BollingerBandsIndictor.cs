@@ -20,7 +20,7 @@ public class BollingerBandsIndictor : BasicIndicatorBase
 
     public BollingerBandsIndictor(
         int period, Pair pair, RateToUse rateToUse, double stdDevFactor)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         if (stdDevFactor <= 0.0)
             throw new ArgumentOutOfRangeException(nameof(stdDevFactor));

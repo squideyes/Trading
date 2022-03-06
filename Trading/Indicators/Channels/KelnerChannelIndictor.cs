@@ -22,7 +22,7 @@ public class KeltnerChannelIndictor : BasicIndicatorBase
     private readonly SlidingBuffer<double> typical;
 
     public KeltnerChannelIndictor(int period, Pair pair, RateToUse rateToUse, double offsetMultiplier = 1.5)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         this.offsetMultiplier = offsetMultiplier
             .Validated(nameof(offsetMultiplier), v => v.Between(0.5, 5.0));

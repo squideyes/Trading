@@ -70,6 +70,8 @@ public class WickoFeedTests
             feed.HandleTick(tick);
         }
 
+        index.Should().Be(expected.Count);
+
         feed.OpenCandle.OpenOn.Should().Be(
             new TickOn(new DateTime(2020, 1, 5, 21, 0, 48, 680)));
         feed.OpenCandle.CloseOn.Should().Be(

@@ -21,7 +21,7 @@ public class CciIndicator : BasicIndicatorBase, IBasicIndicator
     private int barCount = 0;
 
     public CciIndicator(int period, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         ArgumentNullException.ThrowIfNull(pair);
 

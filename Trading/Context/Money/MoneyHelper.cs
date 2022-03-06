@@ -34,9 +34,9 @@ public class MoneyHelper
         if (!side.IsEnumValue())
             throw new ArgumentOutOfRangeException(nameof(side));
 
-        double entry = entryRate.GetFloat(pair.Digits);
+        double entry = entryRate.AsFloat(pair.Digits);
 
-        double exit = exitRate.GetFloat(pair.Digits);
+        double exit = exitRate.AsFloat(pair.Digits);
 
         var move = (exit - entry) * (side == Side.Buy ? 1.0 : -1.0);
 
@@ -55,7 +55,7 @@ public class MoneyHelper
             var (@base, _) = Known.ConvertWith[pair];
 
             var baseUsdValueOf = usdValueOf
-                .GetRateInUsd(@base.Base).GetFloat(@base.Digits);
+                .GetRateInUsd(@base.Base).AsFloat(@base.Digits);
 
             return Math.Round(yieldInBase * baseUsdValueOf, 2);
         }
@@ -78,7 +78,7 @@ public class MoneyHelper
         var margin = units * Math.Max(1.0 / (int)leverage, minMargin[pair]);
 
         if (pair.Base != Currency.USD)
-            margin *= usdValueOf.GetRateInUsd(pair.Base).GetFloat(pair.Digits);
+            margin *= usdValueOf.GetRateInUsd(pair.Base).AsFloat(pair.Digits);
 
         if (pair.Base != Currency.USD && pair.Quote == Currency.JPY)
             margin /= 100.0;

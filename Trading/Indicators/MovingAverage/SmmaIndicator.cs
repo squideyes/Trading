@@ -24,7 +24,7 @@ public class SmmaIndicator : BasicIndicatorBase, IBasicIndicator
     private double prevsmma = 0;
 
     public SmmaIndicator(int period, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         buffer = new SlidingBuffer<float>(period);
     }

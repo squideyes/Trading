@@ -23,7 +23,7 @@ public class WmaIndicator : BasicIndicatorBase, IBasicIndicator
     private double prevWsum;
 
     public WmaIndicator(int period, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         buffer = new SlidingBuffer<float>(period + 1);
     }

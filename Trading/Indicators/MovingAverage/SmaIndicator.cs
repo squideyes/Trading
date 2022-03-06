@@ -22,7 +22,7 @@ public class SmaIndicator : BasicIndicatorBase, IBasicIndicator
     private double priorSum = 0;
 
     public SmaIndicator(int period, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         buffer = new SlidingBuffer<double>(period + 1);
     }

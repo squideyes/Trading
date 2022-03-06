@@ -24,7 +24,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="FluentValidation" Version="10.3.6" />
-		<PackageReference Include="SquidEyes.Basics" Version="1.0.14" />
+		<PackageReference Include="SquidEyes.Basics" Version="1.0.15" />
 	</ItemGroup>
 
 </Project>

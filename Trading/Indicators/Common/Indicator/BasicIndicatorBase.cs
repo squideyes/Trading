@@ -14,9 +14,11 @@ namespace SquidEyes.Trading.Indicators;
 
 public abstract class BasicIndicatorBase
 {
-    public BasicIndicatorBase(int period, Pair pair, RateToUse rateToUse, int minPeriod)
+    private const int MIN_PERIOD = 2;
+
+    public BasicIndicatorBase(int period, Pair pair, RateToUse rateToUse)
     {
-        Period = period.Validated(nameof(period), v => v >= minPeriod);
+        Period = period.Validated(nameof(period), v => v >= MIN_PERIOD);
         Pair = pair ?? throw new ArgumentNullException(nameof(pair));
         RateToUse = rateToUse.Validated(nameof(rateToUse), v => v.IsEnumValue());
     }

@@ -31,7 +31,7 @@ public class LinRegIndicator : BasicIndicatorBase, IBasicIndicator
     private double sumY = 0.0;
 
     public LinRegIndicator(int period, Pair pair, RateToUse rateToUse)
-        : base(period, pair, rateToUse, 2)
+        : base(period, pair, rateToUse)
     {
         values = new SlidingBuffer<double>(period + 1);
     }
