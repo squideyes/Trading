@@ -1,7 +1,6 @@
 ﻿using SquidEyes.Basics;
 using SquidEyes.Trading.Context;
 using SquidEyes.Trading.FxData;
-using SquidEyes.Trading.Shared.Helpers;
 
 namespace SquidEyes.Trading.Indicators;
 
@@ -15,12 +14,12 @@ public class ParabolicSarIndicator : BasicIndicatorBase, IBasicIndicator
     private readonly MinMaxStep acceleration;
     private double af = 0.0;
     private bool afIncreased = false;
-    private bool longPosition = false;
+    private bool isLong = false;
     private int prevBar = 0;
     private double prevSar = 0.0;
     private int reverseBar = 0;
     private double reverseValue = 0.0;
-    private double todaySar = 0.0;
+    private double todaysSar = 0.0;
     private double xp = 0.0;
     private int currentBar = -1;
 
@@ -51,11 +50,11 @@ public class ParabolicSarIndicator : BasicIndicatorBase, IBasicIndicator
             var max = AsDouble(candles.Select(c => c.High).Max());
             var min = AsDouble(candles.Select(c => c.Low).Min());
 
-            longPosition = candle.High > candles[1].High;
-            xp = longPosition ? max : min;
+            isLong = candle.High > candles[1].High;
+            xp = isLong ? max : min;
             af = acceleration.Value;
 
-            var value = xp + (longPosition ? -1 : 1) * ((max - min) * af);
+            var value = xp + (isLong ? -1 : 1) * ((max - min) * af);
 
             values.Update(value);
 
@@ -72,34 +71,29 @@ public class ParabolicSarIndicator : BasicIndicatorBase, IBasicIndicator
 
         if (reverseBar != currentBar)
         {
-            todaySar = GetTodaysSar(values[1] + af * (xp - values[1]));
+            todaysSar = GetTodaysSar(
+                values[1] + af * (xp - values[1]), low0, low1, high0, high1);
 
-            for (var x = 1; x <= 2; x++)
+            for (var i = 1; i <= 2; i++)
             {
-                if (longPosition)
+                if (isLong)
                 {
-                    if (todaySar > AsDouble(candles[x].Low))
-                        todaySar = AsDouble(candles[x].Low);
+                    AsDouble(candles[i].Low).DoIfCanDo(
+                        r => todaysSar > r, r => todaysSar = r);
                 }
                 else
                 {
-                    if (todaySar < AsDouble(candles[x].High))
-                        todaySar = AsDouble(candles[x].High);
+                    AsDouble(candles[i].High).DoIfCanDo(
+                        r => todaysSar < r, r => todaysSar = r);
                 }
             }
 
-            if (longPosition)
+            if (isLong)
             {
                 if (prevBar != currentBar || low0 < prevSar)
-                {
-                    values.Update(todaySar);
-
-                    prevSar = todaySar;
-                }
+                    values.Update(prevSar = todaysSar);
                 else
-                {
                     values.Update(prevSar);
-                }
 
                 if (high0 > xp)
                 {
@@ -108,18 +102,12 @@ public class ParabolicSarIndicator : BasicIndicatorBase, IBasicIndicator
                     AfIncrease();
                 }
             }
-            else if (!longPosition)
+            else
             {
                 if (prevBar != currentBar || high0 > prevSar)
-                {
-                    values.Update(todaySar);
-
-                    prevSar = todaySar;
-                }
+                    values.Update(prevSar = todaysSar);
                 else
-                {
                     values.Update(prevSar);
-                }
 
                 if (low0 < xp)
                 {
@@ -131,43 +119,40 @@ public class ParabolicSarIndicator : BasicIndicatorBase, IBasicIndicator
         }
         else
         {
-            if (longPosition && high0 > xp)
+            if (isLong && high0 > xp)
                 xp = high0;
-            else if (!longPosition && low0 < xp)
+            else if (!isLong && low0 < xp)
                 xp = low0;
 
             values.Update(prevSar);
 
-            todaySar = GetTodaysSar(longPosition
-                ? Math.Min(reverseValue, low0)
-                : Math.Max(reverseValue, high0));
+            todaysSar = GetTodaysSar(isLong ? Math.Min(reverseValue, low0)
+                : Math.Max(reverseValue, high0), low0, low1, high0, high1);
         }
 
         prevBar = currentBar;
 
-        if ((longPosition && (low0 < todaySar || low1 < todaySar))
-            || (!longPosition && (high0 > todaySar || high1 > todaySar)))
+        if ((isLong && (low0 < todaysSar || low1 < todaysSar))
+            || (!isLong && (high0 > todaysSar || high1 > todaysSar)))
         {
-            values.Update(Reverse());
+            values.Update(Reverse(low0, high0));
         }
 
         return GetBasicResult(candle.OpenOn, values[0]);
     }
 
-    private double Reverse()
+    private double Reverse(double low0, double high0)
     {
-        double todaySar = xp;
+        var todaySar = xp;
 
-        if ((longPosition && prevSar > AsDouble(candles[0].Low))
-            || (!longPosition && prevSar < AsDouble(candles[0].High))
-            || prevBar != currentBar)
+        if ((isLong && prevSar > low0) || (!isLong && prevSar < high0) || prevBar != currentBar)
         {
-            longPosition = !longPosition;
+            isLong = !isLong;
             reverseBar = currentBar;
             reverseValue = xp;
             af = acceleration.Value;
-            xp = longPosition ? AsDouble(candles[0].High) : AsDouble(candles[0].Low);
             prevSar = todaySar;
+            xp = isLong ? high0 : low0;
         }
         else
         {
@@ -187,22 +172,21 @@ public class ParabolicSarIndicator : BasicIndicatorBase, IBasicIndicator
         }
     }
 
-    private double GetTodaysSar(double todaySar)
+    private double GetTodaysSar(
+        double todaySar, double low0, double low1, double high0, double high1)
     {
-        if (longPosition)
+        if (isLong)
         {
-            var lowestSar = Math.Min(Math.Min(todaySar,
-                AsDouble(candles[0].Low)), AsDouble(candles[1].Low));
+            var lowestSar = Math.Min(Math.Min(todaySar, low0), low1);
 
-            if (AsDouble(candles[0].Low) > lowestSar)
+            if (low0 > lowestSar)
                 todaySar = lowestSar;
         }
         else
         {
-            var highestSar = Math.Max(Math.Max(todaySar,
-                AsDouble(candles[0].High)), AsDouble(candles[1].High));
+            var highestSar = Math.Max(Math.Max(todaySar, high0), high1);
 
-            if (AsDouble(candles[0].High) < highestSar)
+            if (high0 < highestSar)
                 todaySar = highestSar;
         }
 
