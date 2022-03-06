@@ -16,7 +16,6 @@ namespace SquidEyes.UnitTests
             public double Value { get; init; }
         }
 
-
         [Fact]
         public void ParabolicSarIndicatorBaseline()
         {
