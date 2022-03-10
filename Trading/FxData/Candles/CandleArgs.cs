@@ -11,12 +11,14 @@ namespace SquidEyes.Trading.FxData;
 
 public class CandleArgs : EventArgs
 {
-    internal CandleArgs(Tick tick, ICandle candle)
+    internal CandleArgs(int candleSetId, Tick tick, ICandle candle)
     {
+        CandleSetId = candleSetId;
         Tick = tick;
         Candle = candle;
     }
 
+    public int CandleSetId { get; }
     public Tick Tick { get; }
     public ICandle Candle { get; }
 }

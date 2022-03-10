@@ -16,6 +16,7 @@ public class IntervalFeed : ICandleFeed
 {
     private DateTime? lastOpenOn = null;
     private Candle? candle = null;
+    private int candleSetId = -1;
 
     public event EventHandler<CandleArgs>? OnCandle;
 
@@ -46,7 +47,7 @@ public class IntervalFeed : ICandleFeed
         }
         else if (lastOpenOn < openOn)
         {
-            OnCandle?.Invoke(this, new CandleArgs(tick, candle));
+            OnCandle?.Invoke(this, new CandleArgs(++candleSetId, tick, candle));
 
             candle = new Candle(Session, tick, Interval);
         }
@@ -63,7 +64,7 @@ public class IntervalFeed : ICandleFeed
         if (tick == default)
             throw new ArgumentOutOfRangeException(nameof(tick));
 
-        OnCandle?.Invoke(this, new CandleArgs(tick, candle!));
+        OnCandle?.Invoke(this, new CandleArgs(++candleSetId, tick, candle!));
 
         candle = null;
     }

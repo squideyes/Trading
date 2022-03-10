@@ -26,8 +26,8 @@ public class WickoFeedTests
         var pair = Known.Pairs[Symbol.EURUSD];
         var tradeDate = new DateOnly(2020, 1, 6);
         var session = new Session(Extent.Day, tradeDate);
-
         var expected = new List<Candle>();
+        var countByCandleSetId = new Dictionary<int, int>();
 
         foreach (var fields in new CsvEnumerator(WickoCandles.ToStream(), 6))
         {
@@ -57,6 +57,11 @@ public class WickoFeedTests
             e.Candle.Close.Should().Be(candle.Close);
 
             index++;
+
+            if (!countByCandleSetId.ContainsKey(e.CandleSetId))
+                countByCandleSetId.Add(e.CandleSetId, 1);
+            else
+                countByCandleSetId[e.CandleSetId]++;
         };
 
         foreach (var fields in new CsvEnumerator(WickoTicks.ToStream(), 3))

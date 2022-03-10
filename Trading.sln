@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{535BD978-0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trading", "Trading\Trading.csproj", "{FB62B95C-565D-442E-9003-7308121EC611}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrickLoad", "BrickLoad\BrickLoad.csproj", "{4CE34D38-B861-464D-895A-7BB6C9EFCC0A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{FB62B95C-565D-442E-9003-7308121EC611}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB62B95C-565D-442E-9003-7308121EC611}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB62B95C-565D-442E-9003-7308121EC611}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CE34D38-B861-464D-895A-7BB6C9EFCC0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CE34D38-B861-464D-895A-7BB6C9EFCC0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CE34D38-B861-464D-895A-7BB6C9EFCC0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CE34D38-B861-464D-895A-7BB6C9EFCC0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +48,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E9D4FAAB-2B84-4E0A-8AAD-D008DCF92080} = {60DA8C98-1695-4C24-AB0A-D087F1D94C75}
 		{FB62B95C-565D-442E-9003-7308121EC611} = {D61B5A3A-E34A-4FA9-A294-E5215E740E51}
+		{4CE34D38-B861-464D-895A-7BB6C9EFCC0A} = {60DA8C98-1695-4C24-AB0A-D087F1D94C75}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DE88B44F-709F-40A9-A026-B9324F612352}

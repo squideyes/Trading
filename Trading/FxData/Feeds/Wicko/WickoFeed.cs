@@ -18,6 +18,7 @@ public class WickoFeed
 
     private bool firstTick = true;
     private Candle lastCandle = null!;
+    private int candleSetId = -1;
 
     private TickOn openOn;
     private TickOn closeOn;
@@ -45,13 +46,22 @@ public class WickoFeed
     {
         Rate limit;
 
+        var firstTime = true;
+
         while (close > (limit = open + brickSize))
         {
+            if (firstTime)
+            {
+                candleSetId++;
+                
+                firstTime = false;
+            }
+
             var candle = GetCandle(open, limit, low, limit);
 
             lastCandle = candle;
 
-            OnCandle?.Invoke(this, new CandleArgs(tick, candle));
+            RaiseCandle(candleSetId, tick, candle);
 
             openOn = closeOn;
             open = low = limit;
@@ -62,13 +72,22 @@ public class WickoFeed
     {
         Rate limit;
 
+        var firstTime = true;
+
         while (close < (limit = open - brickSize))
         {
+            if (firstTime)
+            {
+                candleSetId++;
+
+                firstTime = false;
+            }
+
             var candle = GetCandle(open, high, limit, limit);
 
             lastCandle = candle;
 
-            OnCandle?.Invoke(this, new CandleArgs(tick, candle));
+            RaiseCandle(candleSetId, tick, candle);
 
             openOn = closeOn;
             open = high = limit;
@@ -124,7 +143,7 @@ public class WickoFeed
 
                     lastCandle = candle;
 
-                    OnCandle?.Invoke(this, new CandleArgs(tick, candle));
+                    RaiseCandle(++candleSetId, tick, candle);
 
                     openOn = closeOn;
                     open = low = limit;
@@ -149,7 +168,7 @@ public class WickoFeed
 
                     lastCandle = candle;
 
-                    OnCandle?.Invoke(this, new CandleArgs(tick, candle));
+                    RaiseCandle(++candleSetId, tick, candle);
 
                     openOn = closeOn;
                     open = high = limit;
@@ -159,4 +178,7 @@ public class WickoFeed
             }
         }
     }
+
+    private void RaiseCandle(int candleSetId, Tick tick, Candle candle) =>
+        OnCandle?.Invoke(this, new CandleArgs(candleSetId, tick, candle));
 }
