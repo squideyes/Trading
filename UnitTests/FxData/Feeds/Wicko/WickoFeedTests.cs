@@ -41,7 +41,7 @@ public class WickoFeedTests
             expected.Add(new Candle(openOn, closeOn, open, high, low, close));
         }
 
-        var feed = new WickoFeed(session, 1, MidOrAsk.Mid);
+        var feed = new WickoFeed(session, 10, MidOrAsk.Mid);
 
         var index = 0;
 

@@ -8,12 +8,13 @@
 // ********************************************************
 
 using SquidEyes.Trading.Context;
+using SquidEyes.Basics;
 
 namespace SquidEyes.Trading.FxData;
 
 public class WickoFeed
 {
-    private readonly Rate brickSize;
+    private readonly Rate brickTicks;
     private readonly MidOrAsk midOrAsk;
 
     private bool firstTick = true;
@@ -29,11 +30,17 @@ public class WickoFeed
 
     public event EventHandler<CandleArgs>? OnCandle;
 
-    public WickoFeed(Session session, Rate pips, MidOrAsk midOrAsk)
+    public WickoFeed(Session session, Rate brickTicks, MidOrAsk midOrAsk)
     {
         Session = session ?? throw new ArgumentNullException(nameof(session));
 
-        brickSize = pips.Value * 10;
+        if (brickTicks < 5)
+            throw new ArgumentOutOfRangeException(nameof(brickTicks));
+
+        if (!midOrAsk.IsEnumValue())
+            throw new ArgumentOutOfRangeException(nameof(midOrAsk));
+
+        this.brickTicks = brickTicks;
         this.midOrAsk = midOrAsk;
     }
 
@@ -48,12 +55,12 @@ public class WickoFeed
 
         var firstTime = true;
 
-        while (close > (limit = open + brickSize))
+        while (close > (limit = open + brickTicks))
         {
             if (firstTime)
             {
                 candleSetId++;
-                
+
                 firstTime = false;
             }
 
@@ -74,7 +81,7 @@ public class WickoFeed
 
         var firstTime = true;
 
-        while (close < (limit = open - brickSize))
+        while (close < (limit = open - brickTicks))
         {
             if (firstTime)
             {
@@ -135,7 +142,7 @@ public class WickoFeed
                     return;
                 }
 
-                var limit = lastCandle!.Open + brickSize;
+                var limit = lastCandle!.Open + brickTicks;
 
                 if (close > limit)
                 {
@@ -160,7 +167,7 @@ public class WickoFeed
                     return;
                 }
 
-                var limit = lastCandle!.Open - brickSize;
+                var limit = lastCandle!.Open - brickTicks;
 
                 if (close < limit)
                 {
